@@ -28,9 +28,9 @@ export function Hero() {
           </span>
           
           <h1 className="text-5xl md:text-7xl lg:text-9xl font-display font-bold tracking-tighter mb-6 text-white leading-[0.9]">
-            SONIC <br />
+            Curated <br />
             <span className="text-transparent bg-clip-text bg-linear-to-r from-white via-neutral-400 to-neutral-600">
-              EXCELLENCE
+              Production
             </span>
           </h1>
 
