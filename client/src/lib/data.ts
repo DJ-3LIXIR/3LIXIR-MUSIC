@@ -14,7 +14,7 @@ export const beats: Beat[] = [
   {
     id: "1",
     title: "MIDNIGHT TOKYO",
-    artist: "3LIXR Exclusive",
+    artist: "3LIXIR Exclusive",
     bpm: 140,
     key: "F#m",
     price: 199.00,
@@ -24,7 +24,7 @@ export const beats: Beat[] = [
   {
     id: "2",
     title: "CHAMPAGNE",
-    artist: "3LIXR Exclusive",
+    artist: "3LIXIR Exclusive",
     bpm: 95,
     key: "Cm",
     price: 149.00,
@@ -34,7 +34,7 @@ export const beats: Beat[] = [
   {
     id: "3",
     title: "NEON DEMONS",
-    artist: "3LIXR Exclusive",
+    artist: "3LIXIR Exclusive",
     bpm: 128,
     key: "Am",
     price: 249.00,
@@ -44,7 +44,7 @@ export const beats: Beat[] = [
   {
     id: "4",
     title: "PENTHOUSE",
-    artist: "3LIXR Exclusive",
+    artist: "3LIXIR Exclusive",
     bpm: 110,
     key: "Gm",
     price: 179.00,
@@ -54,7 +54,7 @@ export const beats: Beat[] = [
   {
     id: "5",
     title: "VOID WALKER",
-    artist: "3LIXR Exclusive",
+    artist: "3LIXIR Exclusive",
     bpm: 150,
     key: "Dm",
     price: 199.00,
@@ -64,7 +64,7 @@ export const beats: Beat[] = [
   {
     id: "6",
     title: "GOLDEN HOUR",
-    artist: "3LIXR Exclusive",
+    artist: "3LIXIR Exclusive",
     bpm: 88,
     key: "Eb",
     price: 129.00,
