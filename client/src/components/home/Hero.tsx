@@ -35,7 +35,7 @@ export function Hero() {
           </h1>
 
           <p className="max-w-xl mx-auto text-lg text-muted-foreground mb-10 font-light leading-relaxed">
-            Curated instrumentals for the modern artist. 
+            Premium instrumentals for the modern artist. 
             Define your sound with exclusive production from the world's elite sound designers.
           </p>
 
