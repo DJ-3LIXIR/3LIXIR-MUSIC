@@ -9,7 +9,7 @@ export function Navbar() {
         <div className="flex items-center gap-12">
           <Link href="/">
             <a className="text-2xl font-display font-bold tracking-tighter hover:opacity-80 transition-opacity">
-              AURA
+              3LIXR
             </a>
           </Link>
 
