@@ -36,7 +36,7 @@ export function Hero() {
 
           <p className="max-w-xl mx-auto text-lg text-muted-foreground mb-10 font-light leading-relaxed">
             Premium instrumentals for the modern artist. 
-            Define your sound with exclusive production from the world's elite sound designers.
+            Define your sound with exclusive production from California based DJ 3LIXIR.
           </p>
 
           <div className="flex flex-col md:flex-row items-center justify-center gap-4">
