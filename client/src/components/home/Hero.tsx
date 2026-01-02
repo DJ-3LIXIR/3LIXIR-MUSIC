@@ -1,7 +1,7 @@
 import { motion } from "framer-motion";
 import { Button } from "@/components/ui/button";
 import { Play } from "lucide-react";
-import heroBg from "@assets/generated_images/dark_abstract_luxury_audio_waveform_background.png";
+import heroBg from "@assets/Gemini_Generated_Image_jq82p2jq82p2jq82_1767374921463.png";
 
 export function Hero() {
   return (
