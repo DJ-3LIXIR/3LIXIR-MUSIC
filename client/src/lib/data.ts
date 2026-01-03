@@ -7,6 +7,8 @@ export interface Beat {
   price: number;
   cover: string;
   tags: string[];
+  releaseDate: string;
+  youtubeUrl?: string; // YouTube video URL
   audioUrl?: string; // Placeholder for now
 }
 
@@ -17,9 +19,12 @@ export const beats: Beat[] = [
     artist: "3LIXIR Exclusive",
     bpm: 140,
     key: "F#m",
-    price: 199.00,
-    cover: "https://images.unsplash.com/photo-1514525253440-b393452e233e?q=80&w=1000&auto=format&fit=crop",
-    tags: ["Trap", "Dark", "Atmospheric"]
+    price: 199.0,
+    cover:
+      "/attached_assets/stock_images/tokyo_neon_night_cit_526d3d5c.jpg",
+    tags: ["Trap", "Dark", "Atmospheric"],
+    releaseDate: "2026-01-02",
+    youtubeUrl: "https://youtu.be/RamMgoQDEso",
   },
   {
     id: "2",
@@ -27,9 +32,12 @@ export const beats: Beat[] = [
     artist: "3LIXIR Exclusive",
     bpm: 95,
     key: "Cm",
-    price: 149.00,
-    cover: "https://images.unsplash.com/photo-1470225620780-dba8ba36b745?q=80&w=1000&auto=format&fit=crop",
-    tags: ["R&B", "Smooth", "Luxury"]
+    price: 149.0,
+    cover:
+      "https://images.unsplash.com/photo-1470225620780-dba8ba36b745?q=80&w=1000&auto=format&fit=crop",
+    tags: ["R&B", "Smooth", "Luxury"],
+    releaseDate: "2025-12-28",
+    youtubeUrl: "https://www.youtube.com/watch?v=dQw4w9WgXcQ", // Replace with actual video ID
   },
   {
     id: "3",
@@ -37,9 +45,12 @@ export const beats: Beat[] = [
     artist: "3LIXIR Exclusive",
     bpm: 128,
     key: "Am",
-    price: 249.00,
-    cover: "https://images.unsplash.com/photo-1557672172-298e090bd0f1?q=80&w=1000&auto=format&fit=crop",
-    tags: ["Synthwave", "Cyberpunk", "Hard"]
+    price: 249.0,
+    cover:
+      "https://images.unsplash.com/photo-1557672172-298e090bd0f1?q=80&w=1000&auto=format&fit=crop",
+    tags: ["Synthwave", "Cyberpunk", "EDM"],
+    releaseDate: "2025-12-20",
+    youtubeUrl: "https://www.youtube.com/watch?v=dQw4w9WgXcQ", // Replace with actual video ID
   },
   {
     id: "4",
@@ -47,9 +58,12 @@ export const beats: Beat[] = [
     artist: "3LIXIR Exclusive",
     bpm: 110,
     key: "Gm",
-    price: 179.00,
-    cover: "https://images.unsplash.com/photo-1511671782779-c97d3d27a1d4?q=80&w=1000&auto=format&fit=crop",
-    tags: ["Hip Hop", "Soulful", "Classic"]
+    price: 179.0,
+    cover:
+      "https://images.unsplash.com/photo-1511671782779-c97d3d27a1d4?q=80&w=1000&auto=format&fit=crop",
+    tags: ["Boom Bap", "Soulful", "Classic"],
+    releaseDate: "2025-12-15",
+    youtubeUrl: "https://www.youtube.com/watch?v=dQw4w9WgXcQ", // Replace with actual video ID
   },
   {
     id: "5",
@@ -57,9 +71,12 @@ export const beats: Beat[] = [
     artist: "3LIXIR Exclusive",
     bpm: 150,
     key: "Dm",
-    price: 199.00,
-    cover: "https://images.unsplash.com/photo-1614149162883-504ce4d13909?q=80&w=1000&auto=format&fit=crop",
-    tags: ["Drill", "Aggressive", "Dark"]
+    price: 199.0,
+    cover:
+      "https://images.unsplash.com/photo-1614149162883-504ce4d13909?q=80&w=1000&auto=format&fit=crop",
+    tags: ["Trap", "Aggressive", "Dark"],
+    releaseDate: "2025-12-10",
+    youtubeUrl: "https://www.youtube.com/watch?v=dQw4w9WgXcQ", // Replace with actual video ID
   },
   {
     id: "6",
@@ -67,8 +84,11 @@ export const beats: Beat[] = [
     artist: "3LIXIR Exclusive",
     bpm: 88,
     key: "Eb",
-    price: 129.00,
-    cover: "https://images.unsplash.com/photo-1493225255756-d9584f8606e9?q=80&w=1000&auto=format&fit=crop",
-    tags: ["Lo-Fi", "Chill", "Vibes"]
-  }
+    price: 129.0,
+    cover:
+      "https://images.unsplash.com/photo-1493225255756-d9584f8606e9?q=80&w=1000&auto=format&fit=crop",
+    tags: ["Lo-Fi", "Chill", "Vibes"],
+    releaseDate: "2025-12-05",
+    youtubeUrl: "https://www.youtube.com/watch?v=dQw4w9WgXcQ", // Replace with actual video ID
+  },
 ];
