@@ -15,14 +15,14 @@ export interface Beat {
 export const beats: Beat[] = [
   {
     id: "1",
-    title: "MIDNIGHT TOKYO",
+    title: "THUNDERSHOCK",
     artist: "3LIXIR Exclusive",
-    bpm: 140,
-    key: "F#m",
-    price: 199.0,
+    bpm: 120,
+    key: "Em",
+    price: 750.0,
     cover:
       "https://images.unsplash.com/photo-1605810230434-7631ac76ec81?q=80&w=1000&auto=format&fit=crop",
-    tags: ["Trap", "Dark", "Atmospheric"],
+    tags: ["EDM", "House", "Atmospheric"],
     releaseDate: "2026-01-02",
     youtubeUrl: "https://youtu.be/RamMgoQDEso",
   },
