@@ -21,7 +21,7 @@ export const beats: Beat[] = [
     key: "F#m",
     price: 199.0,
     cover:
-      "/attached_assets/stock_images/tokyo_neon_night_cit_526d3d5c.jpg",
+      "https://images.unsplash.com/photo-1605810230434-7631ac76ec81?q=80&w=1000&auto=format&fit=crop",
     tags: ["Trap", "Dark", "Atmospheric"],
     releaseDate: "2026-01-02",
     youtubeUrl: "https://youtu.be/RamMgoQDEso",
