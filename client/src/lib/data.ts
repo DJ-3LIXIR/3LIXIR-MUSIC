@@ -28,67 +28,67 @@ export const beats: Beat[] = [
   },
   {
     id: "2",
-    title: "CHAMPAGNE",
+    title: "EVOLUTION",
     artist: "3LIXIR Exclusive",
-    bpm: 95,
-    key: "Cm",
-    price: 149.0,
+    bpm: 100,
+    key: "D",
+    price: 300.0,
     cover:
       "https://images.unsplash.com/photo-1470225620780-dba8ba36b745?q=80&w=1000&auto=format&fit=crop",
-    tags: ["R&B", "Smooth", "Luxury"],
-    releaseDate: "2025-12-28",
-    youtubeUrl: "https://www.youtube.com/watch?v=dQw4w9WgXcQ", // Replace with actual video ID
+    tags: ["Etheral", "Boom Bap", "LOFI"],
+    releaseDate: "2026-01-02",
+    youtubeUrl: "https://youtu.be/czWOFYrTASo", // Replace with actual video ID
   },
   {
     id: "3",
-    title: "NEON DEMONS",
+    title: "CHRONOPHOBIA",
     artist: "3LIXIR Exclusive",
-    bpm: 128,
-    key: "Am",
-    price: 249.0,
+    bpm: 120,
+    key: "F",
+    price: 150.0,
     cover:
       "https://images.unsplash.com/photo-1557672172-298e090bd0f1?q=80&w=1000&auto=format&fit=crop",
-    tags: ["Synthwave", "Cyberpunk", "EDM"],
-    releaseDate: "2025-12-20",
-    youtubeUrl: "https://www.youtube.com/watch?v=dQw4w9WgXcQ", // Replace with actual video ID
+    tags: ["Synthwave", "LOFI", "EDM"],
+    releaseDate: "2026-01-02",
+    youtubeUrl: "https://youtu.be/URACea9_w2Q", // Replace with actual video ID
   },
   {
     id: "4",
-    title: "PENTHOUSE",
+    title: "KINGCRAFT",
     artist: "3LIXIR Exclusive",
-    bpm: 110,
-    key: "Gm",
-    price: 179.0,
+    bpm: 100,
+    key: "D#",
+    price: 650.0,
     cover:
       "https://images.unsplash.com/photo-1511671782779-c97d3d27a1d4?q=80&w=1000&auto=format&fit=crop",
-    tags: ["Boom Bap", "Soulful", "Classic"],
-    releaseDate: "2025-12-15",
-    youtubeUrl: "https://www.youtube.com/watch?v=dQw4w9WgXcQ", // Replace with actual video ID
+    tags: ["Boom Bap", "EDM", "LOFI"],
+    releaseDate: "2026-01-03",
+    youtubeUrl: "https://youtu.be/9HMeD5Hy_FU", // Replace with actual video ID
   },
   {
     id: "5",
-    title: "VOID WALKER",
+    title: "THE HORYZON",
     artist: "3LIXIR Exclusive",
-    bpm: 150,
+    bpm: 85,
     key: "Dm",
-    price: 199.0,
+    price: 450.0,
     cover:
       "https://images.unsplash.com/photo-1614149162883-504ce4d13909?q=80&w=1000&auto=format&fit=crop",
-    tags: ["Trap", "Aggressive", "Dark"],
-    releaseDate: "2025-12-10",
-    youtubeUrl: "https://www.youtube.com/watch?v=dQw4w9WgXcQ", // Replace with actual video ID
+    tags: ["EDM", "LOFI", "Boom Bap"],
+    releaseDate: "2026-01-03",
+    youtubeUrl: "https://youtu.be/-xkH1cUp9bY", // Replace with actual video ID
   },
   {
     id: "6",
-    title: "GOLDEN HOUR",
+    title: "THE CROP BUMPER",
     artist: "3LIXIR Exclusive",
-    bpm: 88,
-    key: "Eb",
-    price: 129.0,
+    bpm: 110,
+    key: "Db",
+    price: 250.0,
     cover:
       "https://images.unsplash.com/photo-1493225255756-d9584f8606e9?q=80&w=1000&auto=format&fit=crop",
-    tags: ["Lo-Fi", "Chill", "Vibes"],
-    releaseDate: "2025-12-05",
-    youtubeUrl: "https://www.youtube.com/watch?v=dQw4w9WgXcQ", // Replace with actual video ID
+    tags: ["LOFI", "Jazz", "Boombap"],
+    releaseDate: "2026-01-03",
+    youtubeUrl: "https://youtu.be/7WRtUYAtOqk", // Replace with actual video ID
   },
 ];

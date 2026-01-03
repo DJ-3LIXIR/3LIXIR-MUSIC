@@ -3,6 +3,8 @@ import { Play, Pause, ShoppingCart, Heart } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { motion } from "framer-motion";
 import { useState } from "react";
+import { useCart } from "@/contexts/CartContext";
+import { useToast } from "@/hooks/use-toast";
 
 interface BeatCardProps {
   beat: Beat;
@@ -11,6 +13,16 @@ interface BeatCardProps {
 export function BeatCard({ beat }: BeatCardProps) {
   const [isPlaying, setIsPlaying] = useState(false);
   const [isHovered, setIsHovered] = useState(false);
+  const { addToCart } = useCart();
+  const { toast } = useToast();
+
+  const handleAddToCart = () => {
+    addToCart(beat);
+    toast({
+      title: "Added to cart",
+      description: `${beat.title} has been added to your cart.`,
+    });
+  };
 
   // Format the date
   const formatDate = (dateString: string) => {
@@ -136,6 +148,7 @@ export function BeatCard({ beat }: BeatCardProps) {
 
           <Button
             size="sm"
+            onClick={handleAddToCart}
             className="rounded-full bg-[hsl(var(--gold))] text-black hover:bg-[hsl(var(--gold))/90] font-bold text-xs uppercase px-4"
           >
             <ShoppingCart className="w-3 h-3 mr-2" />
