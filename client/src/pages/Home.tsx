@@ -8,8 +8,6 @@ export default function Home() {
       <Navbar />
       <Hero />
       <BeatList />
-
-      {/* Footer */}
       <footer className="py-20 border-t border-white/5 bg-black">
         <div className="container px-6 mx-auto">
           <div className="flex flex-col md:flex-row justify-between items-center gap-8">
