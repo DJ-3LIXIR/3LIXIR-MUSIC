@@ -1,5 +1,5 @@
 import { Link, useLocation } from "wouter";
-import { ShoppingBag, Search, Menu, X } from "lucide-react";
+import { ShoppingBag, Search, Menu, X, User } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useState } from "react";
 import { useCart } from "@/contexts/CartContext";
@@ -9,7 +9,7 @@ export function Navbar() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [, setLocation] = useLocation();
   const { totalItems } = useCart();
-  const { openAuthModal } = useAuth();
+  const { user, openAuthModal, signOut } = useAuth();
 
   return (
     <>
@@ -22,50 +22,72 @@ export function Navbar() {
             >
               3LIXIR
             </Link>
-            <div className="hidden md:flex items-center gap-8">
+            <div className="hidden md:flex items-center gap-6">
               <Link
                 href="/info"
                 className="text-sm font-medium text-muted-foreground hover:text-white transition-colors"
               >
                 Info
               </Link>
+              <span className="text-white/20">|</span>
               <Link
                 href="/beats"
                 className="text-sm font-medium text-muted-foreground hover:text-white transition-colors"
               >
                 Beats
               </Link>
+              <span className="text-white/20">|</span>
               <Link
                 href="/licenses"
                 className="text-sm font-medium text-muted-foreground hover:text-white transition-colors"
               >
                 Licenses
               </Link>
+              <span className="text-white/20">|</span>
+              <Link
+                href="/downloads"
+                className="text-sm font-medium text-muted-foreground hover:text-white transition-colors"
+              >
+                Downloads
+              </Link>
             </div>
           </div>
-          <div className="flex items-center gap-6">
-            <button className="text-muted-foreground hover:text-white transition-colors">
+          <div className="flex items-center gap-4">
+            <button className="p-2 text-muted-foreground hover:text-white transition-colors">
               <Search className="w-5 h-5" />
             </button>
-            <div className="relative group">
+            <div className="relative">
               <button
                 onClick={() => setLocation("/shop")}
-                className="text-muted-foreground hover:text-white transition-colors"
+                className="p-2 text-muted-foreground hover:text-white transition-colors"
               >
                 <ShoppingBag className="w-5 h-5" />
-                <span className="absolute -top-1 -right-1 w-4 h-4 bg-[hsl(var(--gold))] text-black text-[10px] font-bold flex items-center justify-center rounded-full">
-                  {totalItems}
-                </span>
+                {totalItems > 0 && (
+                  <span className="absolute top-0 right-0 w-4 h-4 bg-[hsl(var(--gold))] text-black text-[10px] font-bold flex items-center justify-center rounded-full">
+                    {totalItems}
+                  </span>
+                )}
               </button>
             </div>
             <div className="hidden md:block">
-              <Button
-                onClick={openAuthModal}
-                variant="outline"
-                className="border-white/10 hover:bg-white/5 hover:text-white rounded-full px-6 text-xs font-bold uppercase tracking-widest"
-              >
-                Sign In
-              </Button>
+              {user ? (
+                <Button
+                  onClick={() => setLocation("/profile")}
+                  variant="outline"
+                  className="border-white/10 hover:bg-white/5 hover:text-white rounded-full px-6 text-xs font-bold uppercase tracking-widest"
+                >
+                  <User className="w-4 h-4 mr-2" />
+                  Profile
+                </Button>
+              ) : (
+                <Button
+                  onClick={openAuthModal}
+                  variant="outline"
+                  className="border-white/10 hover:bg-white/5 hover:text-white rounded-full px-6 text-xs font-bold uppercase tracking-widest"
+                >
+                  Sign In
+                </Button>
+              )}
             </div>
             <button
               onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
@@ -110,16 +132,49 @@ export function Navbar() {
               >
                 Licenses
               </Link>
-              <Button
-                onClick={() => {
-                  setMobileMenuOpen(false);
-                  openAuthModal();
-                }}
-                variant="outline"
-                className="border-white/10 hover:bg-white/5 hover:text-white rounded-full px-6 text-xs font-bold uppercase tracking-widest w-full"
+              <Link
+                href="/downloads"
+                onClick={() => setMobileMenuOpen(false)}
+                className="text-lg font-medium text-muted-foreground hover:text-white transition-colors"
               >
-                Sign In
-              </Button>
+                Downloads
+              </Link>
+              {user ? (
+                <>
+                  <Button
+                    onClick={() => {
+                      setMobileMenuOpen(false);
+                      setLocation("/profile");
+                    }}
+                    variant="outline"
+                    className="border-white/10 hover:bg-white/5 hover:text-white rounded-full px-6 text-xs font-bold uppercase tracking-widest w-full"
+                  >
+                    <User className="w-4 h-4 mr-2" />
+                    Profile
+                  </Button>
+                  <Button
+                    onClick={() => {
+                      setMobileMenuOpen(false);
+                      signOut();
+                    }}
+                    variant="outline"
+                    className="border-red-500/20 text-red-500 hover:bg-red-500/10 hover:text-red-400 rounded-full px-6 text-xs font-bold uppercase tracking-widest w-full"
+                  >
+                    Sign Out
+                  </Button>
+                </>
+              ) : (
+                <Button
+                  onClick={() => {
+                    setMobileMenuOpen(false);
+                    openAuthModal();
+                  }}
+                  variant="outline"
+                  className="border-white/10 hover:bg-white/5 hover:text-white rounded-full px-6 text-xs font-bold uppercase tracking-widest w-full"
+                >
+                  Sign In
+                </Button>
+              )}
             </div>
           </div>
         </div>

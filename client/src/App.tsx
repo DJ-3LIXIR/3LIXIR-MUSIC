@@ -10,7 +10,10 @@ import Beats from "@/pages/Beats";
 import Info from "@/pages/Info";
 import Licenses from "@/pages/Licenses";
 import Shop from "@/pages/Shop";
+import Downloads from "@/pages/Downloads";
 import NotFound from "@/pages/not-found";
+import ProfileManager from "@/components/ProfileManager";
+import AdminDashboard from "@/components/AdminDashboard";
 
 function Router() {
   return (
@@ -20,6 +23,10 @@ function Router() {
       <Route path="/beats" component={Beats} />
       <Route path="/licenses" component={Licenses} />
       <Route path="/shop" component={Shop} />
+      <Route path="/downloads" component={Downloads} />
+      {/* Authentication Routes */}
+      <Route path="/profile" component={ProfileManager} />
+      <Route path="/admin" component={AdminDashboard} />
       <Route component={NotFound} />
     </Switch>
   );

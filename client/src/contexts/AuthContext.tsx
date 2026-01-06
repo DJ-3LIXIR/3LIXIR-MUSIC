@@ -1,24 +1,133 @@
-import { createContext, useContext, useState, ReactNode } from "react";
+import {
+  createContext,
+  useContext,
+  useState,
+  useEffect,
+  ReactNode,
+} from "react";
 import { X } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { supabase } from "@/supabaseClient";
+import type { User } from "@supabase/supabase-js";
 
 interface AuthContextType {
   showAuthModal: boolean;
   openAuthModal: () => void;
   closeAuthModal: () => void;
+  user: User | null;
+  signOut: () => Promise<void>;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
 export function AuthProvider({ children }: { children: ReactNode }) {
   const [showAuthModal, setShowAuthModal] = useState(false);
+  const [isSignUp, setIsSignUp] = useState(true);
+  const [user, setUser] = useState<User | null>(null);
+  const [loading, setLoading] = useState(false);
+  const [message, setMessage] = useState("");
 
-  const openAuthModal = () => setShowAuthModal(true);
-  const closeAuthModal = () => setShowAuthModal(false);
+  // Form fields
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [fullName, setFullName] = useState("");
+
+  useEffect(() => {
+    // Check active sessions and sets the user
+    supabase.auth.getSession().then(({ data: { session } }) => {
+      setUser(session?.user ?? null);
+    });
+
+    // Listen for changes on auth state
+    const {
+      data: { subscription },
+    } = supabase.auth.onAuthStateChange((_event, session) => {
+      setUser(session?.user ?? null);
+    });
+
+    return () => subscription.unsubscribe();
+  }, []);
+
+  const openAuthModal = () => {
+    setShowAuthModal(true);
+    setMessage("");
+  };
+
+  const closeAuthModal = () => {
+    setShowAuthModal(false);
+    setMessage("");
+    setEmail("");
+    setPassword("");
+    setFullName("");
+  };
+
+  const handleAuth = async () => {
+    setLoading(true);
+    setMessage("");
+
+    try {
+      if (isSignUp) {
+        // Sign up
+        const { data, error } = await supabase.auth.signUp({
+          email,
+          password,
+          options: {
+            data: {
+              full_name: fullName,
+            },
+          },
+        });
+
+        if (error) throw error;
+
+        // Create profile
+        if (data.user) {
+          const { error: profileError } = await supabase
+            .from("profiles")
+            .insert([
+              {
+                id: data.user.id,
+                email: email,
+                full_name: fullName,
+              },
+            ]);
+
+          if (profileError) throw profileError;
+        }
+
+        setMessage("Account created successfully! You can now sign in.");
+        setTimeout(() => {
+          setIsSignUp(false);
+        }, 2000);
+      } else {
+        // Sign in
+        const { error } = await supabase.auth.signInWithPassword({
+          email,
+          password,
+        });
+
+        if (error) throw error;
+
+        setMessage("Signed in successfully!");
+        setTimeout(() => {
+          closeAuthModal();
+        }, 1000);
+      }
+    } catch (error: any) {
+      setMessage(error.message || "An error occurred");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const signOut = async () => {
+    await supabase.auth.signOut();
+    setUser(null);
+  };
 
   return (
     <AuthContext.Provider
-      value={{ showAuthModal, openAuthModal, closeAuthModal }}
+      value={{ showAuthModal, openAuthModal, closeAuthModal, user, signOut }}
     >
       {children}
 
@@ -36,6 +145,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
             >
               <X className="w-6 h-6" />
             </button>
+
             <div className="text-center mb-6">
               <div className="w-16 h-16 rounded-full bg-[hsl(var(--gold))]/10 flex items-center justify-center mx-auto mb-4">
                 <svg
@@ -53,26 +163,82 @@ export function AuthProvider({ children }: { children: ReactNode }) {
                 </svg>
               </div>
               <h2 className="text-3xl font-display font-bold mb-2">
-                Account Required
+                {isSignUp ? "Create Account" : "Sign In"}
               </h2>
               <p className="text-muted-foreground">
-                Create an account to complete your purchase and access your
-                beats instantly.
+                {isSignUp
+                  ? "Create an account to complete your purchase and access your beats instantly."
+                  : "Welcome back! Sign in to your account."}
               </p>
             </div>
+
+            {message && (
+              <div
+                className={`mb-4 p-3 rounded-lg text-sm ${
+                  message.includes("error") || message.includes("Error")
+                    ? "bg-red-500/10 text-red-500 border border-red-500/20"
+                    : "bg-green-500/10 text-green-500 border border-green-500/20"
+                }`}
+              >
+                {message}
+              </div>
+            )}
+
+            <div className="space-y-4 mb-4">
+              {isSignUp && (
+                <input
+                  type="text"
+                  placeholder="Full Name"
+                  value={fullName}
+                  onChange={(e) => setFullName(e.target.value)}
+                  className="w-full px-4 py-3 bg-white/5 border border-white/10 rounded-lg focus:border-[hsl(var(--gold))] focus:outline-none text-white placeholder:text-muted-foreground"
+                />
+              )}
+              <input
+                type="email"
+                placeholder="Email"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                className="w-full px-4 py-3 bg-white/5 border border-white/10 rounded-lg focus:border-[hsl(var(--gold))] focus:outline-none text-white placeholder:text-muted-foreground"
+              />
+              <input
+                type="password"
+                placeholder="Password (min 6 characters)"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                className="w-full px-4 py-3 bg-white/5 border border-white/10 rounded-lg focus:border-[hsl(var(--gold))] focus:outline-none text-white placeholder:text-muted-foreground"
+              />
+            </div>
+
             <div className="space-y-3">
-              <Button className="w-full bg-[hsl(var(--gold))] text-black hover:bg-[hsl(var(--gold))]/90 rounded-full py-6 text-sm font-bold uppercase tracking-widest">
-                Create Account
-              </Button>
               <Button
+                onClick={handleAuth}
+                disabled={loading}
+                className="w-full bg-[hsl(var(--gold))] text-black hover:bg-[hsl(var(--gold))]/90 rounded-full py-6 text-sm font-bold uppercase tracking-widest"
+              >
+                {loading
+                  ? "Loading..."
+                  : isSignUp
+                    ? "Create Account"
+                    : "Sign In"}
+              </Button>
+
+              <Button
+                onClick={() => {
+                  setIsSignUp(!isSignUp);
+                  setMessage("");
+                }}
                 variant="outline"
                 className="w-full border-white/10 hover:bg-white/5 hover:text-white rounded-full py-6 text-sm font-bold uppercase tracking-widest"
               >
-                Sign In
+                {isSignUp
+                  ? "Already have an account? Sign In"
+                  : "Need an account? Sign Up"}
               </Button>
             </div>
+
             <p className="text-xs text-muted-foreground text-center mt-6">
-              Already have an account? Click "Sign In" above
+              Your data is secured with Supabase authentication
             </p>
           </div>
         </div>
