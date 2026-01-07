@@ -81,10 +81,26 @@ const InfoPage = () => {
                 Our Story
               </h3>
               <p className="text-muted-foreground">
-                3LIXIR MUSIC is a premium beat store dedicated to empowering
-                artists with high-quality, professionally crafted instrumentals.
-                We believe every artist deserves access to beats that elevate
-                their sound and bring their vision to life.
+                3LIXIR Music was born from a simple belief: great music deserves
+                intention, not shortcuts. What started as late nights,
+                headphones on, and melodies built from instinct quickly became
+                something bigger. The goal was never just to make beats—it was
+                to create sound with purpose, tracks that artists could feel,
+                build on, and turn into something timeless. Every drum hit,
+                every chord, every texture was treated like an ingredient in a
+                formula meant to elevate the final record. As the catalog grew,
+                so did the vision. 3LIXIR Music evolved into a platform for
+                artists who want more than generic production—artists who want
+                identity, quality, and control. From carefully crafted beats to
+                clear rights management and hands-on production services,
+                everything we offer is designed to remove friction and let
+                creativity flow. The name 3LIXIR represents refinement: taking
+                raw ideas and distilling them into something powerful. That same
+                philosophy guides everything we do today. We’re building more
+                than a beat store—we’re building a creative ecosystem where
+                artists can find their sound, protect their work, and scale
+                their careers. This is just the beginning. And the next record
+                could be yours.
               </p>
             </div>
 
@@ -93,9 +109,27 @@ const InfoPage = () => {
                 Our Mission
               </h3>
               <p className="text-muted-foreground">
-                To provide artists of all levels with exceptional beats and a
-                seamless licensing experience, fostering creativity and helping
-                musicians create their best work.
+                At 3LIXIR Music, our mission is to put artists first—always. We
+                are unapologetically pro-artist and anti-AI exploitation. We
+                believe music should be created by people, not harvested from
+                them. In an industry increasingly driven by shortcuts,
+                automation, and faceless systems, we stand for human creativity,
+                originality, and earned expression. Art is not data. Sound is
+                not disposable. And artists are not replaceable. 3LIXIR Music
+                exists to create real change in the music industry by giving
+                independent artists access to high-quality production,
+                transparent rights management, and a platform built on
+                respect—not extraction. We aim to remove barriers, not create
+                new ones. Every beat, service, and collaboration is designed to
+                empower artists to own their work, define their sound, and move
+                on their own terms. We are building more than a beat store. We
+                are building a home for independent creators—a space where
+                individuality is protected, talent is nurtured, and creativity
+                is treated as currency. Whether you’re just starting out or
+                refining your legacy, 3LIXIR Music is here to support artists
+                who value authenticity over trends and craftsmanship over
+                convenience. The future of music should be fair, human, and
+                artist-driven. That’s the future we’re committed to creating.
               </p>
             </div>
 
