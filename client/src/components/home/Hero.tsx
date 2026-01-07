@@ -14,8 +14,8 @@ export function Hero() {
           alt="Abstract Audio Waveform"
           className="w-full h-full object-cover opacity-60"
         />
-        <div className="absolute inset-0 bg-linear-to-b from-background/80 via-background/20 to-background" />
-        <div className="absolute inset-0 bg-radial-[circle_at_center,_var(--tw-gradient-stops)] from-transparent via-background/50 to-background" />
+        <div className="absolute inset-0 bg-gradient-to-b from-black/80 via-black/20 to-black" />
+        <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,_transparent,_black_50%,_black)]" />
       </div>
       <div className="container relative z-10 px-6 text-center">
         <motion.div
@@ -28,7 +28,7 @@ export function Hero() {
           </span>
           <h1 className="text-5xl md:text-7xl lg:text-9xl font-display font-bold tracking-tighter mb-6 text-white leading-[0.9]">
             Curated <br />
-            <span className="text-transparent bg-clip-text bg-linear-to-r from-white via-neutral-400 to-neutral-600">
+            <span className="text-transparent bg-clip-text bg-gradient-to-r from-white via-neutral-400 to-neutral-600">
               Production
             </span>
           </h1>
@@ -63,7 +63,7 @@ export function Hero() {
         </motion.div>
       </div>
       {/* Decorative Elements */}
-      <div className="absolute bottom-0 left-0 right-0 h-32 bg-linear-to-t from-background to-transparent z-10 pointer-events-none" />
+      <div className="absolute bottom-0 left-0 right-0 h-32 bg-gradient-to-t from-black to-transparent z-10 pointer-events-none" />
     </section>
   );
 }

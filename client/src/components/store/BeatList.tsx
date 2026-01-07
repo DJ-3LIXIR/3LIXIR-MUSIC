@@ -5,7 +5,7 @@ import { Link } from "wouter";
 
 export function BeatList() {
   return (
-    <section id="beatlist" className="py-24 bg-background relative">
+    <section id="beatlist" className="py-24 bg-black relative">
       <div className="container px-6 mx-auto">
         <div className="flex flex-col md:flex-row justify-between items-end mb-12 gap-6">
           <div>

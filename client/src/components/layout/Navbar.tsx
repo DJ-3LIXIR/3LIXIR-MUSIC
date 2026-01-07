@@ -13,7 +13,7 @@ export function Navbar() {
 
   return (
     <>
-      <nav className="fixed top-0 left-0 right-0 z-50 h-20 border-b border-white/5 bg-background/50 backdrop-blur-xl">
+      <nav className="fixed top-0 left-0 right-0 z-50 h-20 border-b border-white/5 bg-black/50 backdrop-blur-xl">
         <div className="container mx-auto px-6 h-full flex items-center justify-between">
           <div className="flex items-center gap-12">
             <Link
@@ -109,7 +109,7 @@ export function Navbar() {
             className="fixed inset-0 bg-black/80 backdrop-blur-sm"
             onClick={() => setMobileMenuOpen(false)}
           />
-          <div className="fixed top-20 left-0 right-0 bg-background border-b border-white/5 backdrop-blur-xl">
+          <div className="fixed top-20 left-0 right-0 bg-black border-b border-white/5 backdrop-blur-xl">
             <div className="container mx-auto px-6 py-8 flex flex-col gap-6">
               <Link
                 href="/info"

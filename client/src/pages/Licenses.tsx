@@ -12,7 +12,7 @@ export default function Licenses() {
       title: "Royalty Token License",
       artist: "3LIXIR",
       price: 50,
-      cover: "", // You can add a default image URL here
+      cover: "/ChatGPT%20Image%20Jan%206,%202026%20at%2009_05_34%20PM.png",
       quantity: 1,
     });
   };
@@ -23,7 +23,7 @@ export default function Licenses() {
       title: `${tier.name} Subscription`,
       artist: "3LIXIR",
       price: tier.price,
-      cover: "", // You can add a default image URL here
+      cover: "/ChatGPT%20Image%20Jan%206,%202026%20at%2009_05_34%20PM.png",
       quantity: 1,
     });
   };
@@ -91,28 +91,13 @@ export default function Licenses() {
               className="border border-white/10 rounded-2xl p-8 md:p-12 bg-gradient-to-br from-white/5 to-transparent hover:border-[hsl(var(--gold))]/50 transition-all cursor-pointer hover:scale-[1.02] active:scale-[0.98]"
             >
               <div className="grid md:grid-cols-2 gap-8 items-center">
-                {/* License Image Placeholder */}
-                <div className="aspect-square bg-white/5 rounded-xl border border-white/10 flex items-center justify-center overflow-hidden">
-                  <div className="text-center p-8">
-                    <div className="w-24 h-24 bg-[hsl(var(--gold))]/10 rounded-full flex items-center justify-center mx-auto mb-4">
-                      <svg
-                        className="w-12 h-12 text-[hsl(var(--gold))]"
-                        fill="none"
-                        viewBox="0 0 24 24"
-                        stroke="currentColor"
-                      >
-                        <path
-                          strokeLinecap="round"
-                          strokeLinejoin="round"
-                          strokeWidth={2}
-                          d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"
-                        />
-                      </svg>
-                    </div>
-                    <p className="text-sm text-muted-foreground">
-                      License Certificate Image
-                    </p>
-                  </div>
+                {/* License Image */}
+                <div className="aspect-square bg-white/5 rounded-xl border border-white/10 overflow-hidden">
+                  <img
+                    src="/ChatGPT%20Image%20Jan%206,%202026%20at%2009_05_34%20PM.png"
+                    alt="Royalty Token License"
+                    className="w-full h-full object-cover"
+                  />
                 </div>
 
                 {/* License Details */}
@@ -162,7 +147,6 @@ export default function Licenses() {
             Subscribe monthly to skip the $50 token fee and unlock additional
             perks. Keep rights forever for beats purchased while subscribed.
           </p>
-
           <div className="grid md:grid-cols-3 gap-8 max-w-6xl mx-auto">
             {subscriptionTiers.map((tier) => (
               <div
@@ -180,7 +164,6 @@ export default function Licenses() {
                     </span>
                   </div>
                 )}
-
                 <div className="text-center mb-6">
                   <h3 className="text-2xl font-display font-bold mb-2">
                     {tier.name}
@@ -192,7 +175,6 @@ export default function Licenses() {
                     <span className="text-muted-foreground">/month</span>
                   </div>
                 </div>
-
                 <ul className="space-y-4 mb-8">
                   {tier.perks.map((perk, index) => (
                     <li key={index} className="flex items-start gap-3">
@@ -201,7 +183,6 @@ export default function Licenses() {
                     </li>
                   ))}
                 </ul>
-
                 <Button
                   onClick={() => handleSubscribe(tier)}
                   className={`w-full rounded-full py-6 text-sm font-bold uppercase tracking-widest ${
