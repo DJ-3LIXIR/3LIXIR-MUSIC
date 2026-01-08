@@ -86,6 +86,7 @@ export default function Shop() {
               } = await supabase.auth.getUser();
 
               if (user) {
+                // Save the order
                 const { error } = await supabase.from("orders").insert({
                   user_id: user.id,
                   paypal_order_id: order.id,
@@ -98,6 +99,42 @@ export default function Shop() {
 
                 if (error) {
                   console.error("Error saving order:", error);
+                }
+
+                // Check if order contains a subscription and update user's tier
+                const subscriptionItem = items.find((item) =>
+                  item.id.startsWith("subscription-"),
+                );
+
+                if (subscriptionItem) {
+                  let newTier = "tier_zero";
+
+                  // Map subscription names to tier values
+                  if (subscriptionItem.id === "subscription-gold") {
+                    newTier = "gold";
+                  } else if (subscriptionItem.id === "subscription-diamond") {
+                    newTier = "diamond";
+                  } else if (subscriptionItem.id === "subscription-platinum") {
+                    newTier = "platinum";
+                  }
+
+                  // Update user's subscription tier in profiles table
+                  const { error: updateError } = await supabase
+                    .from("profiles")
+                    .update({
+                      subscription_tier: newTier,
+                      updated_at: new Date().toISOString(),
+                    })
+                    .eq("id", user.id);
+
+                  if (updateError) {
+                    console.error(
+                      "Error updating subscription tier:",
+                      updateError,
+                    );
+                  } else {
+                    console.log("Subscription tier updated to:", newTier);
+                  }
                 }
               }
             } catch (error) {
@@ -112,14 +149,6 @@ export default function Shop() {
 
             // Redirect to profile purchases section
             setLocation("/profile?section=purchases");
-          },
-          onError: (err: any) => {
-            console.error("PayPal error:", err);
-            alert("Payment failed. Please try again.");
-          },
-          onCancel: () => {
-            console.log("Payment cancelled");
-            setShowPayPal(false);
           },
         })
         .render(paypalRef.current);

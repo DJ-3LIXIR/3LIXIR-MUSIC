@@ -11,6 +11,7 @@ import Info from "@/pages/Info";
 import Licenses from "@/pages/Licenses";
 import Shop from "@/pages/Shop";
 import Downloads from "@/pages/Downloads";
+import VIPPage from "@/pages/VIPPage";
 import NotFound from "@/pages/not-found";
 import ProfileManager from "@/components/ProfileManager";
 import AdminDashboard from "@/components/AdminDashboard";
@@ -24,6 +25,7 @@ function Router() {
       <Route path="/licenses" component={Licenses} />
       <Route path="/shop" component={Shop} />
       <Route path="/downloads" component={Downloads} />
+      <Route path="/vip" component={VIPPage} />
       {/* Authentication Routes */}
       <Route path="/profile" component={ProfileManager} />
       <Route path="/admin" component={AdminDashboard} />

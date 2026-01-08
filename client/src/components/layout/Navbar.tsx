@@ -1,5 +1,5 @@
 import { Link, useLocation } from "wouter";
-import { ShoppingBag, Search, Menu, X, User } from "lucide-react";
+import { ShoppingBag, Search, Menu, X, User, Crown } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useState } from "react";
 import { useCart } from "@/contexts/CartContext";
@@ -49,6 +49,14 @@ export function Navbar() {
                 className="text-sm font-medium text-muted-foreground hover:text-white transition-colors"
               >
                 Downloads
+              </Link>
+              <span className="text-white/20">|</span>
+              <Link
+                href="/vip"
+                className="text-sm font-medium text-[hsl(var(--gold))] hover:text-[hsl(var(--gold))]/80 transition-colors flex items-center gap-1.5"
+              >
+                <Crown className="w-4 h-4" />
+                VIP
               </Link>
             </div>
           </div>
@@ -138,6 +146,14 @@ export function Navbar() {
                 className="text-lg font-medium text-muted-foreground hover:text-white transition-colors"
               >
                 Downloads
+              </Link>
+              <Link
+                href="/vip"
+                onClick={() => setMobileMenuOpen(false)}
+                className="text-lg font-medium text-[hsl(var(--gold))] hover:text-[hsl(var(--gold))]/80 transition-colors flex items-center gap-2"
+              >
+                <Crown className="w-5 h-5" />
+                VIP
               </Link>
               {user ? (
                 <>

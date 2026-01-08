@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import { supabase, Profile } from "../supabaseClient";
 import { Navbar } from "@/components/layout/Navbar";
+import ManageSubscription from "@/components/Profile/ManageSubscription";
 import {
   User,
   Lock,
@@ -9,11 +10,17 @@ import {
   LogOut,
   Camera,
   Download,
+  Crown,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useLocation } from "wouter";
 
-type Section = "personal" | "security" | "purchases" | "settings";
+type Section =
+  | "personal"
+  | "security"
+  | "purchases"
+  | "subscription"
+  | "settings";
 
 interface Order {
   id: string;
@@ -79,7 +86,13 @@ export default function ProfileManager() {
     const section = params.get("section");
     if (
       section &&
-      ["personal", "security", "purchases", "settings"].includes(section)
+      [
+        "personal",
+        "security",
+        "purchases",
+        "subscription",
+        "settings",
+      ].includes(section)
     ) {
       setActiveSection(section as Section);
     }
@@ -296,6 +309,11 @@ export default function ProfileManager() {
     { id: "personal" as Section, label: "Personal info", icon: User },
     { id: "security" as Section, label: "Security", icon: Lock },
     { id: "purchases" as Section, label: "Purchases", icon: ShoppingBag },
+    {
+      id: "subscription" as Section,
+      label: "Manage Subscription",
+      icon: Crown,
+    },
     { id: "settings" as Section, label: "Settings", icon: Settings },
   ];
 
@@ -657,6 +675,17 @@ export default function ProfileManager() {
                       ))}
                     </div>
                   )}
+                </div>
+              )}
+
+              {/* Manage Subscription Section */}
+              {activeSection === "subscription" && (
+                <div className="border border-white/10 rounded-2xl p-8">
+                  <h2 className="text-4xl font-display font-bold mb-2 text-center">
+                    Manage Your Subscriptions
+                  </h2>
+                  <ManageSubscription />
+                  {/* Component will go here */}
                 </div>
               )}
 

@@ -20,7 +20,7 @@ export default function Licenses() {
   const handleSubscribe = (tier: { name: string; price: number }) => {
     addToCart({
       id: `subscription-${tier.name.toLowerCase()}`,
-      title: `${tier.name} Subscription`,
+      title: `${tier.name} License Subscription`,
       artist: "3LIXIR",
       price: tier.price,
       cover: "/ChatGPT%20Image%20Jan%206,%202026%20at%2009_05_34%20PM.png",
@@ -30,7 +30,7 @@ export default function Licenses() {
 
   const subscriptionTiers = [
     {
-      name: "Basic",
+      name: "Gold",
       price: 10,
       perks: [
         "Skip the $50 licensing fee",
@@ -41,7 +41,7 @@ export default function Licenses() {
       ],
     },
     {
-      name: "Plus",
+      name: "Diamond",
       price: 15,
       popular: true,
       perks: [
@@ -55,7 +55,7 @@ export default function Licenses() {
       ],
     },
     {
-      name: "Premium",
+      name: "Platinum",
       price: 20,
       perks: [
         "Skip the $50 licensing fee",
@@ -108,7 +108,7 @@ export default function Licenses() {
                 {/* License Details */}
                 <div>
                   <h3 className="text-3xl font-display font-bold mb-4">
-                    Royalty Token License
+                    The Black License
                   </h3>
                   <div className="flex items-baseline gap-2 mb-6">
                     <span className="text-5xl font-bold text-[hsl(var(--gold))]">
@@ -172,7 +172,7 @@ export default function Licenses() {
                 )}
                 <div className="text-center mb-6">
                   <h3 className="text-2xl font-display font-bold mb-2">
-                    {tier.name}
+                    The {tier.name} License
                   </h3>
                   <div className="flex items-baseline justify-center gap-2">
                     <span className="text-4xl font-bold text-[hsl(var(--gold))]">
