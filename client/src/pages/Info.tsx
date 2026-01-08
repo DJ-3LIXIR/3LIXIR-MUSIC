@@ -2235,8 +2235,8 @@ const InfoPage = () => {
                 Business Inquiries
               </h3>
               <p className="text-muted-foreground text-center">
-                For custom beats, exclusive deals, or partnerships, reach out via
-                email with "Business Inquiry" in the subject line.
+                For custom beats, exclusive deals, or partnerships, reach out
+                via email with "Business Inquiry" in the subject line.
               </p>
             </section>
 
@@ -2283,11 +2283,11 @@ const InfoPage = () => {
               {/* Intro Section */}
               <section className="max-w-3xl mx-auto">
                 <p className="text-lg leading-relaxed text-muted-foreground text-center">
-                  DJ 3LIXIR offers custom production services designed to bring your
-                  musical vision to life. Whether you need a beat tailored to your
-                  unique style, full instrumental composition, or collaborative
-                  production work, we provide hands-on, artist-focused solutions that
-                  go beyond the catalog.
+                  DJ 3LIXIR offers custom production services designed to bring
+                  your musical vision to life. Whether you need a beat tailored
+                  to your unique style, full instrumental composition, or
+                  collaborative production work, we provide hands-on,
+                  artist-focused solutions that go beyond the catalog.
                 </p>
               </section>
 
@@ -2304,9 +2304,10 @@ const InfoPage = () => {
                         Custom Beat Production
                       </h3>
                       <p className="text-muted-foreground text-sm">
-                        Get a beat made specifically for you. Describe your vision,
-                        share references, and receive a professionally produced
-                        instrumental crafted to match your artistic direction.
+                        Get a beat made specifically for you. Describe your
+                        vision, share references, and receive a professionally
+                        produced instrumental crafted to match your artistic
+                        direction.
                       </p>
                     </div>
                   </div>
@@ -2337,9 +2338,10 @@ const InfoPage = () => {
                         Full Production Services
                       </h3>
                       <p className="text-muted-foreground text-sm">
-                        From concept to completion. Comprehensive production including
-                        composition, arrangement, mixing, and mastering. Perfect for
-                        artists working on albums, EPs, or flagship singles.
+                        From concept to completion. Comprehensive production
+                        including composition, arrangement, mixing, and
+                        mastering. Perfect for artists working on albums, EPs,
+                        or flagship singles.
                       </p>
                     </div>
                   </div>
@@ -2371,9 +2373,9 @@ const InfoPage = () => {
                       </h3>
                       <p className="text-muted-foreground text-sm">
                         Work side-by-side with DJ 3LIXIR to develop your sound.
-                        Collaborative sessions where your ideas meet professional
-                        execution, perfect for artists who want creative input
-                        throughout the process.
+                        Collaborative sessions where your ideas meet
+                        professional execution, perfect for artists who want
+                        creative input throughout the process.
                       </p>
                     </div>
                   </div>
@@ -2404,9 +2406,10 @@ const InfoPage = () => {
                         Remix & Rework Services
                       </h3>
                       <p className="text-muted-foreground text-sm">
-                        Breathe new life into existing tracks. Transform your music
-                        with fresh production, updated arrangements, or complete genre
-                        reimagining while maintaining the core essence of your work.
+                        Breathe new life into existing tracks. Transform your
+                        music with fresh production, updated arrangements, or
+                        complete genre reimagining while maintaining the core
+                        essence of your work.
                       </p>
                     </div>
                   </div>
@@ -2490,11 +2493,14 @@ const InfoPage = () => {
                     <strong className="text-foreground">
                       Multi-Genre Expertise:
                     </strong>{" "}
-                    From EDM to Hip Hop, Lo-Fi to House, experience across diverse
-                    styles means your sound gets the attention it deserves.
+                    From EDM to Hip Hop, Lo-Fi to House, experience across
+                    diverse styles means your sound gets the attention it
+                    deserves.
                   </p>
                   <p className="text-muted-foreground">
-                    <strong className="text-foreground">Artist-First Mindset:</strong>{" "}
+                    <strong className="text-foreground">
+                      Artist-First Mindset:
+                    </strong>{" "}
                     This isn't factory production. Every project is treated as a
                     unique creative endeavor with your success as the priority.
                   </p>
@@ -2502,15 +2508,15 @@ const InfoPage = () => {
                     <strong className="text-foreground">
                       Real Instrumentation:
                     </strong>{" "}
-                    Live piano and saxophone integration available for authentic,
-                    organic textures that set your music apart.
+                    Live piano and saxophone integration available for
+                    authentic, organic textures that set your music apart.
                   </p>
                   <p className="text-muted-foreground">
                     <strong className="text-foreground">
                       Clear Rights Management:
                     </strong>{" "}
-                    No confusion, no hidden clauses. You know exactly what you own and
-                    what you can do with it.
+                    No confusion, no hidden clauses. You know exactly what you
+                    own and what you can do with it.
                   </p>
                 </div>
               </section>
@@ -2521,9 +2527,9 @@ const InfoPage = () => {
                   Ready to Create Something Unique?
                 </h3>
                 <p className="text-muted-foreground mb-6">
-                  Whether you have a clear vision or just a spark of an idea, let's
-                  talk about how we can bring your music to life. Custom production
-                  starts with a conversation.
+                  Whether you have a clear vision or just a spark of an idea,
+                  let's talk about how we can bring your music to life. Custom
+                  production starts with a conversation.
                 </p>
                 <a
                   href="mailto:contact@3lixirmusic.com?subject=Custom Production Inquiry"
@@ -2548,8 +2554,8 @@ const InfoPage = () => {
               {/* Intro Section */}
               <section className="max-w-3xl mx-auto text-center">
                 <p className="text-lg leading-relaxed text-muted-foreground">
-                  Having technical issues? We're here to help. Browse common solutions
-                  below or contact our support team directly.
+                  Having technical issues? We're here to help. Browse common
+                  solutions below or contact our support team directly.
                 </p>
               </section>
 
@@ -2566,7 +2572,8 @@ const InfoPage = () => {
                         Download Issues
                       </h3>
                       <p className="text-muted-foreground text-sm mb-4">
-                        Can't download your purchased beats? Try these solutions:
+                        Can't download your purchased beats? Try these
+                        solutions:
                       </p>
                       <ul className="space-y-2">
                         <li className="flex items-start gap-2 text-sm text-muted-foreground">
@@ -2607,29 +2614,31 @@ const InfoPage = () => {
                         <li className="flex items-start gap-2 text-sm text-muted-foreground">
                           <CheckCircle className="w-4 h-4 text-[hsl(var(--gold))] flex-shrink-0 mt-0.5" />
                           <span>
-                            <strong className="text-foreground">MP3:</strong> Standard
-                            format for all license tiers
+                            <strong className="text-foreground">MP3:</strong>{" "}
+                            Standard format for all license tiers
                           </span>
                         </li>
                         <li className="flex items-start gap-2 text-sm text-muted-foreground">
                           <CheckCircle className="w-4 h-4 text-[hsl(var(--gold))] flex-shrink-0 mt-0.5" />
                           <span>
-                            <strong className="text-foreground">WAV:</strong> High-quality
-                            uncompressed audio (Premium/Exclusive)
+                            <strong className="text-foreground">WAV:</strong>{" "}
+                            High-quality uncompressed audio (Premium/Exclusive)
                           </span>
                         </li>
                         <li className="flex items-start gap-2 text-sm text-muted-foreground">
                           <CheckCircle className="w-4 h-4 text-[hsl(var(--gold))] flex-shrink-0 mt-0.5" />
                           <span>
-                            <strong className="text-foreground">Stems:</strong> Individual
-                            instrument tracks for mixing
+                            <strong className="text-foreground">Stems:</strong>{" "}
+                            Individual instrument tracks for mixing
                           </span>
                         </li>
                         <li className="flex items-start gap-2 text-sm text-muted-foreground">
                           <CheckCircle className="w-4 h-4 text-[hsl(var(--gold))] flex-shrink-0 mt-0.5" />
                           <span>
-                            <strong className="text-foreground">Trackouts:</strong> Full
-                            separated tracks for maximum control
+                            <strong className="text-foreground">
+                              Trackouts:
+                            </strong>{" "}
+                            Full separated tracks for maximum control
                           </span>
                         </li>
                       </ul>
@@ -2720,7 +2729,8 @@ const InfoPage = () => {
                     </div>
                     <h4 className="font-semibold mb-2">Clear Cache</h4>
                     <p className="text-sm text-muted-foreground">
-                      Clear your browser cache and cookies, then refresh the page
+                      Clear your browser cache and cookies, then refresh the
+                      page
                     </p>
                   </div>
                   <div className="text-center">
@@ -2729,7 +2739,8 @@ const InfoPage = () => {
                     </div>
                     <h4 className="font-semibold mb-2">Try Another Browser</h4>
                     <p className="text-sm text-muted-foreground">
-                      Switch to Chrome, Firefox, or Safari if experiencing issues
+                      Switch to Chrome, Firefox, or Safari if experiencing
+                      issues
                     </p>
                   </div>
                   <div className="text-center">
@@ -2762,7 +2773,9 @@ const InfoPage = () => {
                   <div className="flex items-start gap-3">
                     <CheckCircle className="w-5 h-5 text-[hsl(var(--gold))] flex-shrink-0 mt-0.5" />
                     <div>
-                      <p className="font-semibold text-sm">Email Address Used</p>
+                      <p className="font-semibold text-sm">
+                        Email Address Used
+                      </p>
                       <p className="text-xs text-muted-foreground">
                         The email you used for purchase
                       </p>
@@ -2780,7 +2793,9 @@ const InfoPage = () => {
                   <div className="flex items-start gap-3">
                     <CheckCircle className="w-5 h-5 text-[hsl(var(--gold))] flex-shrink-0 mt-0.5" />
                     <div>
-                      <p className="font-semibold text-sm">Detailed Description</p>
+                      <p className="font-semibold text-sm">
+                        Detailed Description
+                      </p>
                       <p className="text-xs text-muted-foreground">
                         What happened and what you expected
                       </p>
@@ -2798,7 +2813,9 @@ const InfoPage = () => {
                   <div className="flex items-start gap-3">
                     <CheckCircle className="w-5 h-5 text-[hsl(var(--gold))] flex-shrink-0 mt-0.5" />
                     <div>
-                      <p className="font-semibold text-sm">Screenshots (if applicable)</p>
+                      <p className="font-semibold text-sm">
+                        Screenshots (if applicable)
+                      </p>
                       <p className="text-xs text-muted-foreground">
                         Helps us diagnose the issue faster
                       </p>
@@ -2809,7 +2826,9 @@ const InfoPage = () => {
 
               {/* Response Time */}
               <section className="text-center bg-white/5 rounded-xl p-6 border border-white/10">
-                <h3 className="text-xl font-semibold mb-2">Expected Response Time</h3>
+                <h3 className="text-xl font-semibold mb-2">
+                  Expected Response Time
+                </h3>
                 <p className="text-muted-foreground">
                   Our support team typically responds within{" "}
                   <span className="text-[hsl(var(--gold))] font-semibold">
@@ -2826,8 +2845,8 @@ const InfoPage = () => {
                   Still Need Help?
                 </h3>
                 <p className="text-muted-foreground mb-6">
-                  Can't find a solution to your issue? Our support team is ready to
-                  assist you.
+                  Can't find a solution to your issue? Our support team is ready
+                  to assist you.
                 </p>
                 <a
                   href="mailto:contact@3lixirmusic.com?subject=Technical Support Request"
@@ -2848,8 +2867,8 @@ const InfoPage = () => {
                     </h3>
                   </div>
                   <p className="text-muted-foreground mb-4">
-                    Check out our comprehensive FAQ section for answers to common
-                    questions about licensing, usage rights, and more.
+                    Check out our comprehensive FAQ section for answers to
+                    common questions about licensing, usage rights, and more.
                   </p>
                   <button className="text-[hsl(var(--gold))] hover:text-[hsl(var(--gold))]/80 font-semibold text-sm flex items-center gap-2 transition-colors">
                     View FAQ Section
@@ -2861,7 +2880,7 @@ const InfoPage = () => {
           </div>
         </div>
       </div>
-    )
+    ),
   };
 
   return (
