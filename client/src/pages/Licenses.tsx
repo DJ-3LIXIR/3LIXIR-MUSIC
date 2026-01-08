@@ -33,10 +33,11 @@ export default function Licenses() {
       name: "Basic",
       price: 10,
       perks: [
-        "Skip $50 royalty token on all purchases",
-        "Standard beat quality",
-        "Email support",
-        "Download history",
+        "Skip the $50 licensing fee",
+        "Gain early access to drops",
+        "Exclusive beat drops",
+        "Discounts on future merchandise",
+        "Discounts on future events",
       ],
     },
     {
@@ -44,23 +45,27 @@ export default function Licenses() {
       price: 15,
       popular: true,
       perks: [
-        "Skip $50 royalty token on all purchases",
+        "Skip the $50 licensing fee",
+        "Gain early access to drops",
+        "Exclusive beat drops",
+        "Discounts on future merchandise",
+        "Discounts on future events",
         "10% discount on all beats",
         "Priority email support",
-        "Early access to new releases",
-        "Exclusive monthly beat drops",
       ],
     },
     {
       name: "Premium",
       price: 20,
       perks: [
-        "Skip $50 royalty token on all purchases",
+        "Skip the $50 licensing fee",
+        "Gain early access to drops",
+        "Exclusive beat drops",
+        "Discounts on future merchandise",
+        "Discounts on future events",
         "20% discount on all beats",
         "Production service discounts",
-        "Merchandise discounts",
         "Priority support",
-        "Exclusive content & stems",
         "Higher royalty splits",
       ],
     },
@@ -145,13 +150,14 @@ export default function Licenses() {
           </h2>
           <p className="text-muted-foreground text-center mb-12 max-w-2xl mx-auto">
             Subscribe monthly to skip the $50 token fee and unlock additional
-            perks. Keep rights forever for beats purchased while subscribed.
+            perks. Keep rights forever for beats purchased and Published while
+            subscribed.
           </p>
           <div className="grid md:grid-cols-3 gap-8 max-w-6xl mx-auto">
             {subscriptionTiers.map((tier) => (
               <div
                 key={tier.name}
-                className={`border rounded-2xl p-8 relative ${
+                className={`border rounded-2xl p-8 relative flex flex-col ${
                   tier.popular
                     ? "border-[hsl(var(--gold))] bg-[hsl(var(--gold))]/5"
                     : "border-white/10 bg-white/5"
@@ -175,7 +181,7 @@ export default function Licenses() {
                     <span className="text-muted-foreground">/month</span>
                   </div>
                 </div>
-                <ul className="space-y-4 mb-8">
+                <ul className="space-y-4 mb-8 flex-grow">
                   {tier.perks.map((perk, index) => (
                     <li key={index} className="flex items-start gap-3">
                       <Check className="w-5 h-5 text-[hsl(var(--gold))] flex-shrink-0 mt-0.5" />
@@ -217,9 +223,9 @@ export default function Licenses() {
                 What if I cancel my subscription?
               </h3>
               <p className="text-muted-foreground text-sm">
-                You keep the royalty rights for all beats purchased while
-                subscribed. However, new beat purchases will require the $50
-                token fee per song unless you resubscribe.
+                You keep the royalty rights for all beats purchased and
+                Published while subscribed. However, new beat purchases will
+                require the $50 token fee per song unless you resubscribe.
               </p>
             </div>
             <div className="border border-white/10 rounded-xl p-6 bg-white/5">

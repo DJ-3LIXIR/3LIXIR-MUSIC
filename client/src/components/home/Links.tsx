@@ -1,11 +1,39 @@
 import React from "react";
 import { Link, useLocation } from "wouter";
-
 export function Links() {
   const [, setLocation] = useLocation();
 
   const scrollToTop = () => {
+    // First, smoothly scroll to top
     window.scrollTo({ top: 0, behavior: "smooth" });
+
+    // Wait for smooth scroll to complete, then trigger the auto-scroll animation
+    setTimeout(() => {
+      const targetScroll = 1600;
+      const duration = 2000; // 2 seconds
+      const startTime = Date.now();
+      const startScroll = 0;
+
+      const scroll = () => {
+        const elapsed = Date.now() - startTime;
+        const progress = Math.min(elapsed / duration, 1);
+
+        // Easing function for smooth deceleration
+        const easeOutCubic = (t) => 1 - Math.pow(1 - t, 3);
+        const easedProgress = easeOutCubic(progress);
+
+        window.scrollTo(
+          0,
+          startScroll + (targetScroll - startScroll) * easedProgress,
+        );
+
+        if (progress < 1) {
+          requestAnimationFrame(scroll);
+        }
+      };
+
+      requestAnimationFrame(scroll);
+    }, 2000); // Wait 2 seconds for smooth scroll to finish, then start animation
   };
 
   const handleSupportClick = (e) => {

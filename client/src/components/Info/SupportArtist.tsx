@@ -6,7 +6,7 @@ export function SupportArtist() {
       <div className="text-center mb-8">
         <h3 className="text-3xl md:text-4xl font-display font-bold tracking-tight mb-3 flex items-center justify-center gap-3 text-gray-900">
           <DollarSign className="w-8 h-8 text-yellow-700" />
-          Support the Artist
+          Support Us!
         </h3>
         <p className="text-gray-800 text-lg">
           Love the music? Show your support directly!
