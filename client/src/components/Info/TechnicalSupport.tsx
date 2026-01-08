@@ -1,3 +1,4 @@
+// File: src/components/Info/TechnicalSupport.tsx
 import React from "react";
 import {
   Download,
@@ -12,7 +13,7 @@ import {
   RefreshCw,
 } from "lucide-react";
 
-const TechnicalSupport = () => {
+export const TechnicalSupport = () => {
   return (
     <div className="space-y-6">
       <h2 className="text-4xl md:text-5xl font-display font-bold tracking-tighter mb-6 text-center">
@@ -89,22 +90,22 @@ const TechnicalSupport = () => {
                   <li className="flex items-start gap-2 text-sm text-muted-foreground">
                     <CheckCircle className="w-4 h-4 text-[hsl(var(--gold))] flex-shrink-0 mt-0.5" />
                     <span>
-                      <strong className="text-foreground">WAV:</strong>{" "}
-                      High-quality uncompressed audio (Premium/Exclusive)
+                      <strong className="text-foreground">WAV:</strong> High-quality
+                      uncompressed audio (Premium/Exclusive)
                     </span>
                   </li>
                   <li className="flex items-start gap-2 text-sm text-muted-foreground">
                     <CheckCircle className="w-4 h-4 text-[hsl(var(--gold))] flex-shrink-0 mt-0.5" />
                     <span>
-                      <strong className="text-foreground">Stems:</strong>{" "}
-                      Individual instrument tracks for mixing
+                      <strong className="text-foreground">Stems:</strong> Individual
+                      instrument tracks for mixing
                     </span>
                   </li>
                   <li className="flex items-start gap-2 text-sm text-muted-foreground">
                     <CheckCircle className="w-4 h-4 text-[hsl(var(--gold))] flex-shrink-0 mt-0.5" />
                     <span>
-                      <strong className="text-foreground">Trackouts:</strong>{" "}
-                      Full separated tracks for maximum control
+                      <strong className="text-foreground">Trackouts:</strong> Full
+                      separated tracks for maximum control
                     </span>
                   </li>
                 </ul>
@@ -273,9 +274,7 @@ const TechnicalSupport = () => {
             <div className="flex items-start gap-3">
               <CheckCircle className="w-5 h-5 text-[hsl(var(--gold))] flex-shrink-0 mt-0.5" />
               <div>
-                <p className="font-semibold text-sm">
-                  Screenshots (if applicable)
-                </p>
+                <p className="font-semibold text-sm">Screenshots (if applicable)</p>
                 <p className="text-xs text-muted-foreground">
                   Helps us diagnose the issue faster
                 </p>
@@ -339,4 +338,31 @@ const TechnicalSupport = () => {
   );
 };
 
-export default TechnicalSupport;
+// ========================================
+// HOW TO USE IN YOUR InfoPage.tsx:
+// ========================================
+
+// 1. Add this import at the top of InfoPage.tsx:
+// import { TechnicalSupport } from "@/components/Info/TechnicalSupport";
+
+// 2. In your contact content section, replace the inline technical support code with:
+/*
+contact: (
+  <div className="space-y-12">
+    {/* Contact Section *\/}
+    <div className="space-y-6 max-w-3xl mx-auto">
+      ... your existing contact section code ...
+    </div>
+
+    {/* Production Opportunities Section *\/}
+    <div className="border-t border-white/10 pt-12">
+      ... your existing production opportunities code ...
+    </div>
+
+    {/* Technical Support Section - NOW IMPORTED *\/}
+    <div className="border-t border-white/10 pt-12">
+      <TechnicalSupport />
+    </div>
+  </div>
+)
+*/

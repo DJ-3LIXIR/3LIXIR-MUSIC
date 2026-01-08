@@ -20,6 +20,8 @@ import { useEffect } from "react";
 import { Navbar } from "@/components/layout/Navbar";
 import { SupportArtist } from "@/components/Info/SupportArtist";
 import MeetTheArtistBanner from "@/components/Info/MeetTheArtistBanner";
+import { TechnicalSupport } from "@/components/Info/TechnicalSupport";
+import { SocialMedia } from "@/components/Info/SocialMedia";
 
 const InfoPage = () => {
   const [activeSection, setActiveSection] = useState("about");
@@ -2229,46 +2231,6 @@ const InfoPage = () => {
                 </div>
               </div>
             </section>
-
-            <section>
-              <h3 className="text-2xl font-display font-semibold tracking-tight mb-3 text-center">
-                Business Inquiries
-              </h3>
-              <p className="text-muted-foreground text-center">
-                For custom beats, exclusive deals, or partnerships, reach out
-                via email with "Business Inquiry" in the subject line.
-              </p>
-            </section>
-
-            <section>
-              <h3 className="text-2xl font-display font-semibold tracking-tight mb-3 text-center">
-                Technical Support
-              </h3>
-              <p className="text-muted-foreground text-center">
-                Experiencing issues with downloads or licensing? Contact us with
-                your order number for fastest assistance.
-              </p>
-            </section>
-
-            <section>
-              <h3 className="text-2xl font-display font-semibold tracking-tight mb-3 text-center">
-                Social Media
-              </h3>
-              <p className="text-muted-foreground mb-4 text-center">
-                Follow us for new releases, promotions, and updates:
-              </p>
-              <div className="flex gap-4 justify-center">
-                <button className="px-6 py-2 bg-white/10 hover:bg-white/20 rounded-full transition-colors text-sm font-medium">
-                  Instagram
-                </button>
-                <button className="px-6 py-2 bg-white/10 hover:bg-white/20 rounded-full transition-colors text-sm font-medium">
-                  Twitter
-                </button>
-                <button className="px-6 py-2 bg-white/10 hover:bg-white/20 rounded-full transition-colors text-sm font-medium">
-                  YouTube
-                </button>
-              </div>
-            </section>
           </div>
         </div>
 
@@ -2541,6 +2503,12 @@ const InfoPage = () => {
               </section>
             </div>
           </div>
+          <TechnicalSupport />
+        </div>
+
+        {/* Add Social Media Section Here */}
+        <div className="border-t border-white/10 pt-12">
+          <SocialMedia />
         </div>
       </div>
     ),
