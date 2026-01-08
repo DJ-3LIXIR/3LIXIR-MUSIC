@@ -10,6 +10,10 @@ import {
   AlertCircle,
   Copyright,
   Music,
+  Sparkles, // Add these
+  Headphones, // Add these
+  Zap, // Add these
+  CheckCircle, // Add these
 } from "lucide-react";
 import { useLocation } from "wouter";
 import { useEffect } from "react";
@@ -526,10 +530,18 @@ const InfoPage = () => {
             {activePolicySection === "terms" && (
               <div className="space-y-6">
                 <h2 className="text-4xl md:text-5xl font-display font-bold tracking-tighter mb-6">
-                  Terms of Service
+                  3LIXIR MUSIC TERMS OF SERVICE
                 </h2>
                 <p className="text-sm text-muted-foreground mb-8">
                   Last Updated: January 2026
+                </p>
+
+                <p className="text-muted-foreground mb-8">
+                  These Terms of Service ("Terms") govern your access to and use
+                  of the 3LIXIR Music website, platform, products,
+                  subscriptions, digital downloads, and related services
+                  (collectively, the "Services"). By accessing or using the
+                  Services, you agree to be bound by these Terms.
                 </p>
 
                 <div className="space-y-8">
@@ -538,202 +550,730 @@ const InfoPage = () => {
                       1. Acceptance of Terms
                     </h3>
                     <p className="text-muted-foreground">
-                      By accessing and using 3LIXIR MUSIC ("the Site"), you
-                      accept and agree to be bound by these Terms of Service. If
-                      you do not agree, please do not use our services.
+                      By accessing, browsing, registering for an account,
+                      purchasing beats, subscribing to any plan, or downloading
+                      any content from the Services, you acknowledge that you
+                      have read, understood, and agree to be bound by these
+                      Terms. If you do not agree, you must not use the Services.
+                    </p>
+                    <p className="text-muted-foreground mt-2">
+                      We may update these Terms from time to time. Continued use
+                      of the Services after changes become effective constitutes
+                      acceptance of the revised Terms.
                     </p>
                   </section>
 
                   <section>
                     <h3 className="text-2xl font-display font-semibold tracking-tight mb-3">
-                      2. Services Provided
+                      2. Definitions
                     </h3>
-                    <p className="text-muted-foreground">
-                      3LIXIR MUSIC provides instrumental beats for license and
-                      purchase. All beats remain the intellectual property of
-                      3LIXIR MUSIC or its producers until properly licensed.
+                    <p className="text-muted-foreground mb-2">
+                      For purposes of these Terms:
                     </p>
-                  </section>
-
-                  <section>
-                    <h3 className="text-2xl font-display font-semibold tracking-tight mb-3">
-                      3. Account Responsibilities
-                    </h3>
-                    <ul className="list-disc list-inside space-y-2 text-muted-foreground">
+                    <ul className="space-y-2 text-muted-foreground ml-4">
                       <li>
-                        You are responsible for maintaining the confidentiality
-                        of your account
+                        <strong className="text-foreground">"Company"</strong>{" "}
+                        means 3LIXIR Music, including its affiliates and
+                        licensors.
                       </li>
                       <li>
-                        You must provide accurate and complete information
+                        <strong className="text-foreground">"Platform"</strong>{" "}
+                        means the 3LIXIR Music website, user dashboards,
+                        subscription systems, and digital delivery
+                        infrastructure.
                       </li>
                       <li>
-                        You must be at least 18 years old or have parental
-                        consent
+                        <strong className="text-foreground">"User"</strong>{" "}
+                        means any individual or entity accessing or using the
+                        Services.
                       </li>
                       <li>
-                        One person per account; accounts are non-transferable
+                        <strong className="text-foreground">"Beat(s)"</strong>{" "}
+                        means musical compositions, instrumentals, or audio
+                        works made available through the Platform.
+                      </li>
+                      <li>
+                        <strong className="text-foreground">"License"</strong>{" "}
+                        means the limited, non-exclusive, non-transferable right
+                        to use a Beat as expressly granted under these Terms or
+                        a separate license agreement.
+                      </li>
+                      <li>
+                        <strong className="text-foreground">"Token"</strong>{" "}
+                        means a royalty clearance token that satisfies the
+                        royalty fee requirement for a specific Beat.
+                      </li>
+                      <li>
+                        <strong className="text-foreground">
+                          "Subscription"
+                        </strong>{" "}
+                        means a recurring paid plan providing access to certain
+                        benefits while active.
+                      </li>
+                      <li>
+                        <strong className="text-foreground">"Published"</strong>{" "}
+                        means publicly released or distributed to the public via
+                        streaming platforms, digital stores, broadcast, or other
+                        public-facing distribution channels.
+                      </li>
+                      <li>
+                        <strong className="text-foreground">
+                          "Royalty Rights"
+                        </strong>{" "}
+                        means the right to commercially exploit a Beat without
+                        additional royalty payment obligations, subject to the
+                        limitations of the applicable License.
                       </li>
                     </ul>
                   </section>
 
                   <section>
                     <h3 className="text-2xl font-display font-semibold tracking-tight mb-3">
-                      4. Purchasing and Payments
-                    </h3>
-                    <ul className="list-disc list-inside space-y-2 text-muted-foreground">
-                      <li>
-                        All purchases are processed securely through PayPal
-                      </li>
-                      <li>Prices are listed in USD unless otherwise stated</li>
-                      <li>
-                        You are responsible for any transaction fees imposed by
-                        your payment method
-                      </li>
-                      <li>
-                        Promotional codes and discounts cannot be combined
-                        unless explicitly stated
-                      </li>
-                    </ul>
-                  </section>
-
-                  <section>
-                    <h3 className="text-2xl font-display font-semibold tracking-tight mb-3">
-                      5. Prohibited Uses
-                    </h3>
-                    <p className="text-muted-foreground mb-2">You may NOT:</p>
-                    <ul className="list-disc list-inside space-y-2 text-muted-foreground">
-                      <li>Resell, redistribute, or share the beat files</li>
-                      <li>Claim ownership or authorship of the beat</li>
-                      <li>Use the beat for unlawful purposes</li>
-                      <li>
-                        Remove or alter producer tags on unleased versions
-                      </li>
-                      <li>Exceed the usage limits of your license tier</li>
-                    </ul>
-                  </section>
-
-                  <section>
-                    <h3 className="text-2xl font-display font-semibold tracking-tight mb-3">
-                      6. Limitation of Liability
+                      3. Eligibility and Accounts
                     </h3>
                     <p className="text-muted-foreground">
-                      3LIXIR MUSIC is not liable for any indirect, incidental,
-                      or consequential damages arising from use of our services.
+                      You must be at least eighteen (18) years old to use the
+                      Services. By using the Services, you represent that you
+                      meet this requirement.
+                    </p>
+                    <p className="text-muted-foreground mt-2">
+                      You are responsible for maintaining the confidentiality of
+                      your account credentials and for all activity conducted
+                      through your account. You agree to provide accurate and
+                      complete information and to keep your account information
+                      up to date.
                     </p>
                   </section>
 
                   <section>
                     <h3 className="text-2xl font-display font-semibold tracking-tight mb-3">
-                      7. Governing Law
+                      4. Description of Services
                     </h3>
-                    <p className="text-muted-foreground">
-                      These terms are governed by the laws of the United States,
-                      without regard to conflict of law provisions.
+                    <p className="text-muted-foreground mb-2">
+                      3LIXIR Music provides digital music-related services,
+                      including but not limited to:
+                    </p>
+                    <ul className="list-disc list-inside space-y-2 text-muted-foreground ml-4">
+                      <li>Licensing and sale of Beats</li>
+                      <li>Subscription-based access and benefits</li>
+                      <li>Token-based royalty clearance</li>
+                      <li>Music production and rights-related services</li>
+                    </ul>
+                    <p className="text-muted-foreground mt-4">
+                      We reserve the right to modify, suspend, or discontinue
+                      any aspect of the Services at any time without notice.
                     </p>
                   </section>
+
+                  <section>
+                    <h3 className="text-2xl font-display font-semibold tracking-tight mb-3">
+                      5. Subscriptions
+                    </h3>
+                    <p className="text-muted-foreground">
+                      Subscriptions are billed on a recurring basis as disclosed
+                      at the time of purchase. Subscription benefits apply only
+                      while the Subscription is active and in good standing.
+                    </p>
+                    <p className="text-muted-foreground mt-2">
+                      Subscriptions do not grant ownership of any Beat or
+                      intellectual property. Subscription pricing, features, and
+                      benefits may change at any time. Cancellation of a
+                      Subscription stops future billing but does not
+                      retroactively revoke rights properly granted while the
+                      Subscription was active, subject to these Terms.
+                    </p>
+                  </section>
+
+                  <section>
+                    <h3 className="text-2xl font-display font-semibold tracking-tight mb-3">
+                      6. Tokens and Royalty Clearance
+                    </h3>
+                    <p className="text-muted-foreground mb-2">
+                      Certain Beats require the use of a Token to satisfy the
+                      royalty clearance fee. Tokens:
+                    </p>
+                    <ul className="list-disc list-inside space-y-2 text-muted-foreground ml-4">
+                      <li>Apply on a per-Beat basis</li>
+                      <li>Are non-refundable</li>
+                      <li>Do not transfer ownership of any copyright</li>
+                      <li>
+                        Remove only the royalty clearance requirement for the
+                        applicable Beat
+                      </li>
+                    </ul>
+                    <p className="text-muted-foreground mt-4">
+                      Tokens have no cash value and may not be resold,
+                      transferred, or exchanged.
+                    </p>
+                  </section>
+
+                  <section>
+                    <h3 className="text-2xl font-display font-semibold tracking-tight mb-3">
+                      7. Beat Licensing and Usage Rights
+                    </h3>
+                    <p className="text-muted-foreground">
+                      All Beats are owned by 3LIXIR Music or its licensors.
+                      Unless expressly stated in a separate written agreement,{" "}
+                      <strong className="text-foreground">
+                        all licenses granted are non-exclusive
+                      </strong>
+                      , non-transferable, and non-sublicensable.
+                    </p>
+                    <p className="text-muted-foreground mt-2">
+                      Users are granted a limited License to use Beats solely as
+                      permitted under the applicable license terms. Ownership of
+                      the Beat, master recording, and underlying composition{" "}
+                      <strong className="text-foreground">
+                        remains with 3LIXIR Music at all times
+                      </strong>
+                      .
+                    </p>
+                    <p className="text-muted-foreground mt-2 mb-2">
+                      Unless expressly authorized in writing, Users may not:
+                    </p>
+                    <ul className="list-disc list-inside space-y-2 text-muted-foreground ml-4">
+                      <li>
+                        Resell, sublicense, share, or redistribute Beats in
+                        isolation or as part of any competing product
+                      </li>
+                      <li>Claim authorship or ownership of any Beat</li>
+                      <li>
+                        Register Beats or derivative works with any content
+                        identification, fingerprinting, or monetization system
+                        (including Content ID) without prior written consent
+                      </li>
+                    </ul>
+                    <p className="text-muted-foreground mt-4">
+                      Any use outside the scope of the granted License
+                      constitutes a material breach of these Terms and may
+                      result in immediate termination and legal action.
+                    </p>
+                  </section>
+
+                  <section>
+                    <h3 className="text-2xl font-display font-semibold tracking-tight mb-3">
+                      8. Cancellation and Post-Cancellation Rights
+                    </h3>
+                    <p className="text-muted-foreground mb-2">
+                      If you cancel your Subscription:
+                    </p>
+                    <ul className="list-disc list-inside space-y-2 text-muted-foreground ml-4">
+                      <li>
+                        You retain Royalty Rights for Beats that were properly
+                        purchased, cleared, and Published while your
+                        Subscription was active
+                      </li>
+                      <li>
+                        New Beat purchases after cancellation require Token
+                        payment unless you resubscribe
+                      </li>
+                      <li>
+                        Access to Subscription-only features may terminate
+                        immediately
+                      </li>
+                    </ul>
+                    <p className="text-muted-foreground mt-4">
+                      Unpublished Beats at the time of cancellation are not
+                      guaranteed royalty clearance without Token payment.
+                    </p>
+                  </section>
+
+                  <section>
+                    <h3 className="text-2xl font-display font-semibold tracking-tight mb-3">
+                      9. Payments, Refunds, and Chargebacks
+                    </h3>
+                    <p className="text-muted-foreground">
+                      All payments are processed through third-party payment
+                      providers. Prices are subject to change without notice.
+                    </p>
+                    <p className="text-muted-foreground mt-2">
+                      All sales of digital goods, Subscriptions, and Tokens are
+                      final except where required by law. Chargebacks or payment
+                      disputes may result in suspension or termination of your
+                      account.
+                    </p>
+                    <p className="text-muted-foreground mt-2">
+                      You are responsible for all applicable taxes.
+                    </p>
+                  </section>
+
+                  <section>
+                    <h3 className="text-2xl font-display font-semibold tracking-tight mb-3">
+                      10. User Conduct
+                    </h3>
+                    <p className="text-muted-foreground mb-2">
+                      You agree not to:
+                    </p>
+                    <ul className="list-disc list-inside space-y-2 text-muted-foreground ml-4">
+                      <li>
+                        Use the Services for illegal or infringing purposes
+                      </li>
+                      <li>Violate intellectual property rights</li>
+                      <li>Abuse, exploit, or reverse engineer the Platform</li>
+                      <li>Misrepresent ownership or rights</li>
+                    </ul>
+                    <p className="text-muted-foreground mt-4">
+                      We reserve the right to investigate violations and take
+                      appropriate action, including suspension or termination.
+                    </p>
+                  </section>
+
+                  <section>
+                    <h3 className="text-2xl font-display font-semibold tracking-tight mb-3">
+                      11. Intellectual Property
+                    </h3>
+                    <p className="text-muted-foreground">
+                      All content, branding, trademarks, and software on the
+                      Platform are the exclusive property of 3LIXIR Music or its
+                      licensors. No rights are granted except as expressly
+                      stated.
+                    </p>
+                  </section>
+
+                  <section>
+                    <h3 className="text-2xl font-display font-semibold tracking-tight mb-3">
+                      12. Third-Party Services
+                    </h3>
+                    <p className="text-muted-foreground">
+                      The Services may integrate with third-party platforms. We
+                      are not responsible for the availability, functionality,
+                      or content of third-party services.
+                    </p>
+                  </section>
+
+                  <section>
+                    <h3 className="text-2xl font-display font-semibold tracking-tight mb-3">
+                      13. Disclaimers
+                    </h3>
+                    <p className="text-muted-foreground">
+                      The Services are provided on an "AS IS" and "AS AVAILABLE"
+                      basis without warranties of any kind. We do not guarantee
+                      uninterrupted access, error-free operation, or any
+                      specific results.
+                    </p>
+                  </section>
+
+                  <section>
+                    <h3 className="text-2xl font-display font-semibold tracking-tight mb-3">
+                      14. Limitation of Liability
+                    </h3>
+                    <p className="text-muted-foreground">
+                      To the maximum extent permitted by law, 3LIXIR Music shall
+                      not be liable for indirect, incidental, consequential, or
+                      punitive damages. Our total liability shall not exceed the
+                      amount paid by you to the Company in the twelve (12)
+                      months preceding the claim.
+                    </p>
+                  </section>
+
+                  <section>
+                    <h3 className="text-2xl font-display font-semibold tracking-tight mb-3">
+                      15. Indemnification
+                    </h3>
+                    <p className="text-muted-foreground">
+                      You agree to indemnify and hold harmless 3LIXIR Music from
+                      any claims, damages, losses, or expenses arising from your
+                      use of the Services or violation of these Terms.
+                    </p>
+                  </section>
+
+                  <section>
+                    <h3 className="text-2xl font-display font-semibold tracking-tight mb-3">
+                      16. Termination
+                    </h3>
+                    <p className="text-muted-foreground">
+                      We may terminate or suspend your access to the Services at
+                      any time, with or without cause. Sections relating to
+                      intellectual property, payment obligations, disclaimers,
+                      limitation of liability, indemnification, and dispute
+                      resolution survive termination.
+                    </p>
+                  </section>
+
+                  <section>
+                    <h3 className="text-2xl font-display font-semibold tracking-tight mb-3">
+                      17. Governing Law; Arbitration; Class Action Waiver
+                    </h3>
+                    <p className="text-muted-foreground mb-4">
+                      These Terms are governed by the laws of the State of
+                      California, without regard to conflict-of-law principles.
+                    </p>
+                    <p className="text-muted-foreground mb-2">
+                      <strong className="text-foreground">
+                        Mandatory Arbitration:
+                      </strong>{" "}
+                      Any dispute, claim, or controversy arising out of or
+                      relating to these Terms or the Services shall be resolved
+                      by binding arbitration administered by a recognized
+                      arbitration provider, rather than in court, except that
+                      either party may seek injunctive or equitable relief in a
+                      court of competent jurisdiction.
+                    </p>
+                    <p className="text-muted-foreground">
+                      <strong className="text-foreground">
+                        Class Action Waiver:
+                      </strong>{" "}
+                      You agree that any dispute resolution proceedings will be
+                      conducted only on an individual basis and not in a class,
+                      consolidated, or representative action, to the fullest
+                      extent permitted by law.
+                    </p>
+                  </section>
+
+                  <section>
+                    <h3 className="text-2xl font-display font-semibold tracking-tight mb-3">
+                      18. License Agreement
+                    </h3>
+                    <p className="text-muted-foreground">
+                      Use of any Beat is also subject to the applicable{" "}
+                      <strong className="text-foreground">
+                        3LIXIR Music License Agreement
+                      </strong>
+                      , which is incorporated into these Terms by reference. In
+                      the event of a conflict between these Terms and a License
+                      Agreement, the License Agreement shall control with
+                      respect to Beat usage and rights.
+                    </p>
+                  </section>
+
+                  <section>
+                    <h3 className="text-2xl font-display font-semibold tracking-tight mb-3">
+                      19. Privacy Policy
+                    </h3>
+                    <p className="text-muted-foreground">
+                      Our Privacy Policy is incorporated into these Terms by
+                      reference and governs how we collect and use personal
+                      information.
+                    </p>
+                  </section>
+
+                  <section>
+                    <h3 className="text-2xl font-display font-semibold tracking-tight mb-3">
+                      20. International Users and EU Compliance
+                    </h3>
+                    <p className="text-muted-foreground">
+                      If you access the Services from outside the United States,
+                      you do so at your own initiative and are responsible for
+                      compliance with local laws. We make no representations
+                      that the Services are appropriate or available for use in
+                      all locations.
+                    </p>
+                    <p className="text-muted-foreground mt-2">
+                      For users located in the European Union or United Kingdom,
+                      you may have additional rights under applicable consumer
+                      protection and data protection laws. Nothing in these
+                      Terms limits rights that cannot be waived under applicable
+                      law.
+                    </p>
+                  </section>
+
+                  <section>
+                    <h3 className="text-2xl font-display font-semibold tracking-tight mb-3">
+                      21. Changes to Terms
+                    </h3>
+                    <p className="text-muted-foreground">
+                      We may revise these Terms at any time. Updates become
+                      effective upon posting. Continued use of the Services
+                      constitutes acceptance.
+                    </p>
+                  </section>
+
+                  <section>
+                    <h3 className="text-2xl font-display font-semibold tracking-tight mb-3">
+                      22. Contact Information
+                    </h3>
+                    <div className="border border-white/10 rounded-xl p-6 bg-white/5 space-y-2">
+                      <p className="text-muted-foreground">
+                        <strong className="text-foreground">
+                          3LIXIR Music
+                        </strong>
+                      </p>
+                      <p className="text-muted-foreground">
+                        <strong className="text-foreground">Email:</strong>{" "}
+                        <span className="text-[hsl(var(--gold))]">
+                          contact@3lixirmusic.com
+                        </span>
+                      </p>
+                    </div>
+                  </section>
+
+                  <div className="mt-12 pt-8 border-t border-white/10 text-center">
+                    <p className="text-muted-foreground font-semibold">
+                      END OF TERMS OF SERVICE
+                    </p>
+                  </div>
                 </div>
               </div>
             )}
 
             {activePolicySection === "privacy" && (
               <div className="space-y-6">
-                <h2 className="text-4xl md:text-5xl font-display font-bold tracking-tighter mb-6">
-                  Privacy Policy
-                </h2>
+                <h1 className="text-4xl md:text-5xl font-display font-bold tracking-tighter mb-6">
+                  3LIXIR MUSIC PRIVACY POLICY
+                </h1>
                 <p className="text-sm text-muted-foreground mb-8">
                   Last Updated: January 2026
+                </p>
+
+                <p className="text-muted-foreground mb-8">
+                  This Privacy Policy describes how{" "}
+                  <strong className="text-foreground">3LIXIR Music</strong>{" "}
+                  ("Company," "we," "us") collects, uses, discloses, and
+                  protects personal information when you access or use our
+                  website, platform, subscriptions, digital products, and
+                  related services (collectively, the "Services"). This Privacy
+                  Policy is incorporated by reference into our Terms of Service.
                 </p>
 
                 <div className="space-y-8">
                   <section>
                     <h3 className="text-2xl font-display font-semibold tracking-tight mb-3">
-                      Information We Collect
+                      1. Information We Collect
                     </h3>
-                    <div className="space-y-4">
-                      <div>
-                        <h4 className="text-xl font-medium mb-2">
-                          Personal Information:
-                        </h4>
-                        <ul className="list-disc list-inside space-y-1 text-muted-foreground">
-                          <li>Name and email address</li>
-                          <li>PayPal transaction information</li>
-                          <li>IP address and browser information</li>
-                          <li>Purchase history and download records</li>
-                        </ul>
-                      </div>
-                      <div>
-                        <h4 className="text-xl font-medium mb-2">
-                          Automatically Collected:
-                        </h4>
-                        <ul className="list-disc list-inside space-y-1 text-muted-foreground">
-                          <li>Cookies and tracking technologies</li>
-                          <li>Website usage data and analytics</li>
-                          <li>Device and browser type</li>
-                        </ul>
-                      </div>
+                    <p className="text-muted-foreground mb-4">
+                      We collect the following categories of information:
+                    </p>
+
+                    <h4 className="text-xl font-medium mb-3 mt-6">
+                      1.1 Information You Provide Directly
+                    </h4>
+                    <ul className="list-disc list-inside space-y-2 text-muted-foreground ml-4">
+                      <li>
+                        Name, username, and contact information (email address)
+                      </li>
+                      <li>Account credentials</li>
+                      <li>
+                        Billing and payment information (processed by
+                        third-party payment processors)
+                      </li>
+                      <li>Communications with us (support requests, emails)</li>
+                    </ul>
+
+                    <h4 className="text-xl font-medium mb-3 mt-6">
+                      1.2 Information Collected Automatically
+                    </h4>
+                    <ul className="list-disc list-inside space-y-2 text-muted-foreground ml-4">
+                      <li>IP address</li>
+                      <li>Device type, browser type, and operating system</li>
+                      <li>Pages visited, referring URLs, and usage activity</li>
+                      <li>Cookies and similar tracking technologies</li>
+                    </ul>
+
+                    <h4 className="text-xl font-medium mb-3 mt-6">
+                      1.3 Payment Information
+                    </h4>
+                    <p className="text-muted-foreground">
+                      We do not store full payment card information. Payments
+                      are processed by third-party payment processors who handle
+                      your payment data in accordance with their own privacy
+                      policies.
+                    </p>
+                  </section>
+
+                  <section>
+                    <h3 className="text-2xl font-display font-semibold tracking-tight mb-3">
+                      2. How We Use Information
+                    </h3>
+                    <p className="text-muted-foreground mb-2">
+                      We use personal information to:
+                    </p>
+                    <ul className="list-disc list-inside space-y-2 text-muted-foreground ml-4">
+                      <li>Provide, operate, and maintain the Services</li>
+                      <li>Process transactions and subscriptions</li>
+                      <li>Manage user accounts</li>
+                      <li>
+                        Communicate with users about updates, support, or
+                        service-related notices
+                      </li>
+                      <li>
+                        Enforce our Terms of Service and License Agreements
+                      </li>
+                      <li>
+                        Detect, prevent, and address fraud, abuse, or technical
+                        issues
+                      </li>
+                      <li>Comply with legal obligations</li>
+                    </ul>
+                  </section>
+
+                  <section>
+                    <h3 className="text-2xl font-display font-semibold tracking-tight mb-3">
+                      3. Cookies and Tracking Technologies
+                    </h3>
+                    <p className="text-muted-foreground mb-2">
+                      We use cookies and similar technologies to:
+                    </p>
+                    <ul className="list-disc list-inside space-y-2 text-muted-foreground ml-4">
+                      <li>Authenticate users</li>
+                      <li>Remember preferences</li>
+                      <li>Analyze usage and improve the Services</li>
+                    </ul>
+                    <p className="text-muted-foreground mt-4">
+                      You may control cookie settings through your browser, but
+                      disabling cookies may affect functionality.
+                    </p>
+                  </section>
+
+                  <section>
+                    <h3 className="text-2xl font-display font-semibold tracking-tight mb-3">
+                      4. How We Share Information
+                    </h3>
+                    <p className="text-muted-foreground mb-2">
+                      We may share personal information with:
+                    </p>
+                    <ul className="list-disc list-inside space-y-2 text-muted-foreground ml-4">
+                      <li>
+                        Service providers (hosting, analytics, payment
+                        processing)
+                      </li>
+                      <li>
+                        Legal authorities when required by law or to protect our
+                        rights
+                      </li>
+                      <li>
+                        Business partners strictly as necessary to provide
+                        Services
+                      </li>
+                    </ul>
+                    <p className="text-muted-foreground mt-4">
+                      We do not sell personal information.
+                    </p>
+                  </section>
+
+                  <section>
+                    <h3 className="text-2xl font-display font-semibold tracking-tight mb-3">
+                      5. Data Retention
+                    </h3>
+                    <p className="text-muted-foreground">
+                      We retain personal information for as long as necessary to
+                      provide the Services, comply with legal obligations,
+                      resolve disputes, and enforce agreements.
+                    </p>
+                  </section>
+
+                  <section>
+                    <h3 className="text-2xl font-display font-semibold tracking-tight mb-3">
+                      6. Data Security
+                    </h3>
+                    <p className="text-muted-foreground">
+                      We implement reasonable administrative, technical, and
+                      physical safeguards to protect personal information.
+                      However, no system is completely secure, and we cannot
+                      guarantee absolute security.
+                    </p>
+                  </section>
+
+                  <section>
+                    <h3 className="text-2xl font-display font-semibold tracking-tight mb-3">
+                      7. Your Rights and Choices
+                    </h3>
+                    <p className="text-muted-foreground mb-2">
+                      Depending on your location, you may have the right to:
+                    </p>
+                    <ul className="list-disc list-inside space-y-2 text-muted-foreground ml-4">
+                      <li>
+                        Access, correct, or delete your personal information
+                      </li>
+                      <li>Object to or restrict certain processing</li>
+                      <li>Withdraw consent where applicable</li>
+                    </ul>
+                    <p className="text-muted-foreground mt-4">
+                      Requests may be submitted by contacting us using the
+                      information below.
+                    </p>
+                  </section>
+
+                  <section>
+                    <h3 className="text-2xl font-display font-semibold tracking-tight mb-3">
+                      8. California Privacy Rights (CCPA/CPRA)
+                    </h3>
+                    <p className="text-muted-foreground">
+                      If you are a California resident, you may have additional
+                      rights under the California Consumer Privacy Act (CCPA)
+                      and California Privacy Rights Act (CPRA), including the
+                      right to request disclosure of collected personal
+                      information and the right to request deletion, subject to
+                      legal exceptions.
+                    </p>
+                    <p className="text-muted-foreground mt-2">
+                      We do not discriminate against users who exercise privacy
+                      rights.
+                    </p>
+                  </section>
+
+                  <section>
+                    <h3 className="text-2xl font-display font-semibold tracking-tight mb-3">
+                      9. International Users
+                    </h3>
+                    <p className="text-muted-foreground">
+                      If you access the Services from outside the United States,
+                      your information may be transferred to and processed in
+                      the United States, where data protection laws may differ
+                      from those in your jurisdiction.
+                    </p>
+                  </section>
+
+                  <section>
+                    <h3 className="text-2xl font-display font-semibold tracking-tight mb-3">
+                      10. Children's Privacy
+                    </h3>
+                    <p className="text-muted-foreground">
+                      The Services are not intended for individuals under the
+                      age of 18. We do not knowingly collect personal
+                      information from children.
+                    </p>
+                  </section>
+
+                  <section>
+                    <h3 className="text-2xl font-display font-semibold tracking-tight mb-3">
+                      11. Third-Party Links
+                    </h3>
+                    <p className="text-muted-foreground">
+                      The Services may contain links to third-party websites. We
+                      are not responsible for the privacy practices of third
+                      parties.
+                    </p>
+                  </section>
+
+                  <section>
+                    <h3 className="text-2xl font-display font-semibold tracking-tight mb-3">
+                      12. Changes to This Privacy Policy
+                    </h3>
+                    <p className="text-muted-foreground">
+                      We may update this Privacy Policy from time to time.
+                      Changes become effective upon posting to the Platform.
+                      Continued use of the Services constitutes acceptance of
+                      the revised policy.
+                    </p>
+                  </section>
+
+                  <section>
+                    <h3 className="text-2xl font-display font-semibold tracking-tight mb-3">
+                      13. Contact Information
+                    </h3>
+                    <p className="text-muted-foreground mb-2">
+                      If you have questions or privacy requests, contact:
+                    </p>
+                    <div className="border border-white/10 rounded-xl p-6 bg-white/5 space-y-2">
+                      <p className="text-muted-foreground">
+                        <strong className="text-foreground">
+                          3LIXIR Music
+                        </strong>
+                      </p>
+                      <p className="text-muted-foreground">
+                        <strong className="text-foreground">Email:</strong>{" "}
+                        <span className="text-[hsl(var(--gold))]">
+                          contact@3lixirmusic.com
+                        </span>
+                      </p>
                     </div>
                   </section>
 
-                  <section>
-                    <h3 className="text-2xl font-display font-semibold tracking-tight mb-3">
-                      How We Use Your Information
-                    </h3>
-                    <ul className="list-disc list-inside space-y-2 text-muted-foreground">
-                      <li>Process orders and deliver purchased beats</li>
-                      <li>
-                        Send purchase confirmations and license agreements
-                      </li>
-                      <li>Provide customer support</li>
-                      <li>Send promotional emails (you can opt-out anytime)</li>
-                      <li>Improve our website and services</li>
-                      <li>Prevent fraud and ensure security</li>
-                    </ul>
-                  </section>
-
-                  <section>
-                    <h3 className="text-2xl font-display font-semibold tracking-tight mb-3">
-                      Information Sharing
-                    </h3>
-                    <p className="text-muted-foreground mb-2">
-                      We do NOT sell your personal information. We may share
-                      data with:
+                  <div className="mt-12 pt-8 border-t border-white/10 text-center">
+                    <p className="text-muted-foreground font-semibold">
+                      END OF PRIVACY POLICY
                     </p>
-                    <ul className="list-disc list-inside space-y-2 text-muted-foreground">
-                      <li>
-                        Payment processors (PayPal) to complete transactions
-                      </li>
-                      <li>Email service providers for communications</li>
-                      <li>Analytics services to improve our site</li>
-                      <li>Law enforcement if legally required</li>
-                    </ul>
-                  </section>
-
-                  <section>
-                    <h3 className="text-2xl font-display font-semibold tracking-tight mb-3">
-                      Your Rights
-                    </h3>
-                    <p className="text-muted-foreground mb-2">
-                      You have the right to:
-                    </p>
-                    <ul className="list-disc list-inside space-y-2 text-muted-foreground">
-                      <li>Access your personal data</li>
-                      <li>Request correction of inaccurate data</li>
-                      <li>Request deletion of your data</li>
-                      <li>Opt-out of marketing communications</li>
-                    </ul>
-                  </section>
-
-                  <section>
-                    <h3 className="text-2xl font-display font-semibold tracking-tight mb-3">
-                      Data Security
-                    </h3>
-                    <p className="text-muted-foreground">
-                      We implement industry-standard security measures to
-                      protect your information. However, no method of
-                      transmission over the internet is 100% secure.
-                    </p>
-                  </section>
+                  </div>
                 </div>
               </div>
             )}
@@ -1070,7 +1610,11 @@ const InfoPage = () => {
                 </p>
 
                 <p className="text-muted-foreground mb-8">
-                  This Refund & Cancellation Policy explains how refunds, cancellations, and billing disputes are handled for purchases made through the 3LIXIR Music platform. This policy is incorporated by reference into the 3LIXIR Music Terms of Service and Beat License Agreement.
+                  This Refund & Cancellation Policy explains how refunds,
+                  cancellations, and billing disputes are handled for purchases
+                  made through the 3LIXIR Music platform. This policy is
+                  incorporated by reference into the 3LIXIR Music Terms of
+                  Service and Beat License Agreement.
                 </p>
 
                 <div className="space-y-8">
@@ -1079,7 +1623,13 @@ const InfoPage = () => {
                       1. General Policy
                     </h3>
                     <p className="text-muted-foreground">
-                      Due to the digital nature of our products and services, <strong className="text-foreground">all sales are final</strong>, except where refunds are required by applicable law. By purchasing or subscribing to any 3LIXIR Music product or service, you acknowledge and agree to this policy.
+                      Due to the digital nature of our products and services,{" "}
+                      <strong className="text-foreground">
+                        all sales are final
+                      </strong>
+                      , except where refunds are required by applicable law. By
+                      purchasing or subscribing to any 3LIXIR Music product or
+                      service, you acknowledge and agree to this policy.
                     </p>
                   </section>
 
@@ -1094,11 +1644,14 @@ const InfoPage = () => {
                       <li>Digital Beat purchases or licenses</li>
                       <li>Royalty clearance Tokens</li>
                       <li>Downloaded or accessed digital content</li>
-                      <li>Subscription fees (partial or unused billing periods)</li>
+                      <li>
+                        Subscription fees (partial or unused billing periods)
+                      </li>
                       <li>Production services once work has begun</li>
                     </ul>
                     <p className="text-muted-foreground mt-4">
-                      Once a Beat has been delivered, downloaded, accessed, or licensed, it is considered used and ineligible for refund.
+                      Once a Beat has been delivered, downloaded, accessed, or
+                      licensed, it is considered used and ineligible for refund.
                     </p>
                   </section>
 
@@ -1107,22 +1660,34 @@ const InfoPage = () => {
                       3. Subscriptions and Cancellations
                     </h3>
 
-                    <h4 className="text-xl font-medium mb-3 mt-6">3.1 Subscription Billing</h4>
+                    <h4 className="text-xl font-medium mb-3 mt-6">
+                      3.1 Subscription Billing
+                    </h4>
                     <p className="text-muted-foreground">
-                      Subscriptions are billed on a recurring basis as disclosed at checkout.
+                      Subscriptions are billed on a recurring basis as disclosed
+                      at checkout.
                     </p>
 
-                    <h4 className="text-xl font-medium mb-3 mt-6">3.2 Cancellation</h4>
+                    <h4 className="text-xl font-medium mb-3 mt-6">
+                      3.2 Cancellation
+                    </h4>
                     <p className="text-muted-foreground mb-2">
-                      You may cancel your Subscription at any time through your account dashboard or by contacting support. Cancellation:
+                      You may cancel your Subscription at any time through your
+                      account dashboard or by contacting support. Cancellation:
                     </p>
                     <ul className="list-disc list-inside space-y-2 text-muted-foreground ml-4">
                       <li>Stops future billing</li>
                       <li>Does not refund the current billing period</li>
-                      <li>Does not revoke rights properly granted under an active Subscription, as defined in the Terms of Service and License Agreement</li>
+                      <li>
+                        Does not revoke rights properly granted under an active
+                        Subscription, as defined in the Terms of Service and
+                        License Agreement
+                      </li>
                     </ul>
                     <p className="text-muted-foreground mt-4">
-                      Access to Subscription-only features may terminate immediately upon cancellation or at the end of the billing cycle, depending on the plan.
+                      Access to Subscription-only features may terminate
+                      immediately upon cancellation or at the end of the billing
+                      cycle, depending on the plan.
                     </p>
                   </section>
 
@@ -1140,7 +1705,9 @@ const InfoPage = () => {
                       <li>Are forfeited if unused</li>
                     </ul>
                     <p className="text-muted-foreground mt-4">
-                      Applying a Token permanently satisfies the royalty clearance requirement for the applicable Beat and cannot be reversed.
+                      Applying a Token permanently satisfies the royalty
+                      clearance requirement for the applicable Beat and cannot
+                      be reversed.
                     </p>
                   </section>
 
@@ -1149,14 +1716,16 @@ const InfoPage = () => {
                       5. Exceptional Circumstances
                     </h3>
                     <p className="text-muted-foreground mb-2">
-                      Refunds may be considered solely at the discretion of 3LIXIR Music in limited circumstances, such as:
+                      Refunds may be considered solely at the discretion of
+                      3LIXIR Music in limited circumstances, such as:
                     </p>
                     <ul className="list-disc list-inside space-y-2 text-muted-foreground ml-4">
                       <li>Duplicate charges due to technical error</li>
                       <li>Billing errors confirmed by our payment processor</li>
                     </ul>
                     <p className="text-muted-foreground mt-4">
-                      No refunds will be issued for dissatisfaction, change of mind, lack of use, or misunderstanding of license terms.
+                      No refunds will be issued for dissatisfaction, change of
+                      mind, lack of use, or misunderstanding of license terms.
                     </p>
                   </section>
 
@@ -1165,15 +1734,19 @@ const InfoPage = () => {
                       6. Chargebacks and Payment Disputes
                     </h3>
                     <p className="text-muted-foreground mb-2">
-                      Initiating a chargeback or payment dispute without first contacting 3LIXIR Music may result in:
+                      Initiating a chargeback or payment dispute without first
+                      contacting 3LIXIR Music may result in:
                     </p>
                     <ul className="list-disc list-inside space-y-2 text-muted-foreground ml-4">
-                      <li>Immediate suspension or termination of your account</li>
+                      <li>
+                        Immediate suspension or termination of your account
+                      </li>
                       <li>Revocation of access to the Services</li>
                       <li>Loss of any granted licenses or benefits</li>
                     </ul>
                     <p className="text-muted-foreground mt-4">
-                      We reserve the right to dispute chargebacks and provide documentation to payment processors.
+                      We reserve the right to dispute chargebacks and provide
+                      documentation to payment processors.
                     </p>
                   </section>
 
@@ -1182,7 +1755,10 @@ const InfoPage = () => {
                       7. Legal Compliance
                     </h3>
                     <p className="text-muted-foreground">
-                      Nothing in this policy limits any rights you may have under applicable consumer protection laws that cannot be waived. If local law requires a refund, we will comply to the extent required.
+                      Nothing in this policy limits any rights you may have
+                      under applicable consumer protection laws that cannot be
+                      waived. If local law requires a refund, we will comply to
+                      the extent required.
                     </p>
                   </section>
 
@@ -1191,7 +1767,9 @@ const InfoPage = () => {
                       8. Changes to This Policy
                     </h3>
                     <p className="text-muted-foreground">
-                      We reserve the right to update or modify this Refund & Cancellation Policy at any time. Changes become effective upon posting to the Platform.
+                      We reserve the right to update or modify this Refund &
+                      Cancellation Policy at any time. Changes become effective
+                      upon posting to the Platform.
                     </p>
                   </section>
 
@@ -1204,10 +1782,15 @@ const InfoPage = () => {
                     </p>
                     <div className="border border-white/10 rounded-xl p-6 bg-white/5 space-y-2">
                       <p className="text-muted-foreground">
-                        <strong className="text-foreground">3LIXIR Music</strong>
+                        <strong className="text-foreground">
+                          3LIXIR Music
+                        </strong>
                       </p>
                       <p className="text-muted-foreground">
-                        <strong className="text-foreground">Email:</strong> <span className="text-[hsl(var(--gold))]">contact@3lixirmusic.com</span>
+                        <strong className="text-foreground">Email:</strong>{" "}
+                        <span className="text-[hsl(var(--gold))]">
+                          contact@3lixirmusic.com
+                        </span>
                       </p>
                     </div>
                   </section>
@@ -1400,219 +1983,905 @@ const InfoPage = () => {
                 </div>
               </div>
             )}
-    {activePolicySection === "copyright" && (
-      <div className="space-y-6">
-        <h1 className="text-4xl md:text-5xl font-display font-bold tracking-tighter mb-6">
-          3LIXIR MUSIC DMCA COPYRIGHT INFRINGEMENT POLICY
-        </h1>
-        <p className="text-sm text-muted-foreground mb-8">
-          Last Updated: January 2026
-        </p>
+            {activePolicySection === "copyright" && (
+              <div className="space-y-6">
+                <h1 className="text-4xl md:text-5xl font-display font-bold tracking-tighter mb-6">
+                  3LIXIR MUSIC DMCA COPYRIGHT INFRINGEMENT POLICY
+                </h1>
+                <p className="text-sm text-muted-foreground mb-8">
+                  Last Updated: January 2026
+                </p>
 
-        <p className="text-muted-foreground mb-8">
-          3LIXIR Music respects the intellectual property rights of others and expects users of our services to do the same. This Digital Millennium Copyright Act ("DMCA") Copyright Infringement Policy outlines our procedures for responding to claims of copyright infringement in compliance with the DMCA (17 U.S.C. § 512).
-        </p>
+                <p className="text-muted-foreground mb-8">
+                  3LIXIR Music respects the intellectual property rights of
+                  others and expects users of our services to do the same. This
+                  Digital Millennium Copyright Act ("DMCA") Copyright
+                  Infringement Policy outlines our procedures for responding to
+                  claims of copyright infringement in compliance with the DMCA
+                  (17 U.S.C. § 512).
+                </p>
 
-        <div className="space-y-8">
-          <section>
-            <h3 className="text-2xl font-display font-semibold tracking-tight mb-3">
-              1. Designated DMCA Agent
-            </h3>
-            <p className="text-muted-foreground mb-4">
-              Pursuant to the DMCA, 3LIXIR Music has designated the following agent to receive notifications of claimed infringement:
-            </p>
-            <div className="border border-white/10 rounded-xl p-6 bg-white/5 space-y-2">
-              <p className="text-muted-foreground">
-                <strong className="text-foreground">DMCA Agent:</strong> 3LIXIR Music
-              </p>
-              <p className="text-muted-foreground">
-                <strong className="text-foreground">Email:</strong> <span className="text-[hsl(var(--gold))]">dmca@3lixirmusic.com</span>
-              </p>
-              <p className="text-muted-foreground">
-                <strong className="text-foreground">Address:</strong> [Business Address]
-              </p>
-            </div>
-          </section>
-
-          <section>
-            <h3 className="text-2xl font-display font-semibold tracking-tight mb-3">
-              2. Filing a DMCA Takedown Notice
-            </h3>
-            <p className="text-muted-foreground mb-4">
-              If you believe that your copyrighted work has been copied or used in a way that constitutes copyright infringement, you may submit a written notification to our DMCA Agent that includes all of the following:
-            </p>
-            <ol className="list-decimal list-inside space-y-3 text-muted-foreground ml-4">
-              <li>A physical or electronic signature of the copyright owner or a person authorized to act on their behalf</li>
-              <li>Identification of the copyrighted work claimed to have been infringed</li>
-              <li>Identification of the infringing material and information reasonably sufficient to permit us to locate the material</li>
-              <li>Your contact information, including name, address, telephone number, and email address</li>
-              <li>A statement that you have a good faith belief that use of the material is not authorized by the copyright owner, its agent, or the law</li>
-              <li>A statement, under penalty of perjury, that the information in the notification is accurate and that you are authorized to act on behalf of the copyright owner</li>
-            </ol>
-            <p className="text-muted-foreground mt-4 italic">
-              Incomplete notices may not be processed.
-            </p>
-          </section>
-
-          <section>
-            <h3 className="text-2xl font-display font-semibold tracking-tight mb-3">
-              3. Our Response to Valid Notices
-            </h3>
-            <p className="text-muted-foreground mb-2">
-              Upon receipt of a valid DMCA takedown notice, 3LIXIR Music may:
-            </p>
-            <ul className="list-disc list-inside space-y-2 text-muted-foreground ml-4">
-              <li>Remove or disable access to the allegedly infringing material</li>
-              <li>Notify the affected user of the takedown</li>
-              <li>Take additional action consistent with applicable law</li>
-            </ul>
-            <p className="text-muted-foreground mt-4">
-              We reserve the right to remove content at our sole discretion.
-            </p>
-          </section>
-
-          <section>
-            <h3 className="text-2xl font-display font-semibold tracking-tight mb-3">
-              4. Counter-Notification Procedure
-            </h3>
-            <p className="text-muted-foreground mb-4">
-              If you believe that material removed or disabled pursuant to a DMCA notice was removed due to mistake or misidentification, you may submit a counter-notification that includes:
-            </p>
-            <ol className="list-decimal list-inside space-y-3 text-muted-foreground ml-4">
-              <li>Your physical or electronic signature</li>
-              <li>Identification of the material that has been removed and its prior location</li>
-              <li>A statement under penalty of perjury that you have a good faith belief the material was removed due to mistake or misidentification</li>
-              <li>Your name, address, telephone number, and email address</li>
-              <li>A statement consenting to the jurisdiction of the federal court located in your judicial district (or California if outside the United States)</li>
-            </ol>
-            <p className="text-muted-foreground mt-4">
-              Counter-notifications should be sent to the DMCA Agent listed above.
-            </p>
-          </section>
-
-          <section>
-            <h3 className="text-2xl font-display font-semibold tracking-tight mb-3">
-              5. Repeat Infringer Policy
-            </h3>
-            <p className="text-muted-foreground">
-              In accordance with the DMCA, 3LIXIR Music maintains a policy to terminate, in appropriate circumstances and at our sole discretion, users who are deemed to be repeat infringers.
-            </p>
-          </section>
-
-          <section>
-            <h3 className="text-2xl font-display font-semibold tracking-tight mb-3">
-              6. Misrepresentations
-            </h3>
-            <p className="text-muted-foreground">
-              Any person who knowingly materially misrepresents that material or activity is infringing, or that material was removed or disabled by mistake or misidentification, may be subject to liability under 17 U.S.C. § 512(f).
-            </p>
-          </section>
-
-          <section>
-            <h3 className="text-2xl font-display font-semibold tracking-tight mb-3">
-              7. No Legal Advice
-            </h3>
-            <p className="text-muted-foreground">
-              This DMCA Policy is provided for informational purposes only and does not constitute legal advice. We encourage copyright owners and users to consult legal counsel before submitting a notice or counter-notice.
-            </p>
-          </section>
-
-          <section>
-            <h3 className="text-2xl font-display font-semibold tracking-tight mb-3">
-              8. Changes to This Policy
-            </h3>
-            <p className="text-muted-foreground">
-              We reserve the right to update this DMCA Policy at any time. Changes become effective upon posting.
-            </p>
-          </section>
-
-          <div className="mt-12 pt-8 border-t border-white/10 text-center">
-            <p className="text-muted-foreground font-semibold">
-              END OF DMCA COPYRIGHT POLICY
-            </p>
-          </div>
-        </div>
-      ),
-
-      contact: (
-                <div className="space-y-6">
-                  <h2 className="text-4xl md:text-5xl font-display font-bold tracking-tighter mb-6">
-                    Contact Us
-                  </h2>
-
-                  <div className="space-y-8">
-                    <section>
-                      <h3 className="text-2xl font-display font-semibold tracking-tight mb-3">
-                        Get In Touch
-                      </h3>
-                      <p className="text-muted-foreground mb-6">
-                        Have questions, need support, or want to discuss custom work?
-                        We're here to help.
-                      </p>
-
-                      <div className="border border-white/10 rounded-xl p-6 bg-white/5 space-y-4">
-                        <div className="flex items-center gap-3">
-                          <Mail className="w-5 h-5 text-[hsl(var(--gold))]" />
-                          <div>
-                            <p className="font-semibold">Email</p>
-                            <p className="text-muted-foreground">
-                              contact@3lixirmusic.com
-                            </p>
-                          </div>
-                        </div>
-                        <div className="flex items-center gap-3">
-                          <Phone className="w-5 h-5 text-[hsl(var(--gold))]" />
-                          <div>
-                            <p className="font-semibold">Response Time</p>
-                            <p className="text-muted-foreground">Within 24-48 hours</p>
-                          </div>
-                        </div>
-                      </div>
-                    </section>
-
-                    <section>
-                      <h3 className="text-2xl font-display font-semibold tracking-tight mb-3">
-                        Business Inquiries
-                      </h3>
+                <div className="space-y-8">
+                  <section>
+                    <h3 className="text-2xl font-display font-semibold tracking-tight mb-3">
+                      1. Designated DMCA Agent
+                    </h3>
+                    <p className="text-muted-foreground mb-4">
+                      Pursuant to the DMCA, 3LIXIR Music has designated the
+                      following agent to receive notifications of claimed
+                      infringement:
+                    </p>
+                    <div className="border border-white/10 rounded-xl p-6 bg-white/5 space-y-2">
                       <p className="text-muted-foreground">
-                        For custom beats, exclusive deals, or partnerships, reach out via
-                        email with "Business Inquiry" in the subject line.
+                        <strong className="text-foreground">DMCA Agent:</strong>{" "}
+                        3LIXIR Music
                       </p>
-                    </section>
-
-                    <section>
-                      <h3 className="text-2xl font-display font-semibold tracking-tight mb-3">
-                        Technical Support
-                      </h3>
                       <p className="text-muted-foreground">
-                        Experiencing issues with downloads or licensing? Contact us with
-                        your order number for fastest assistance.
+                        <strong className="text-foreground">Email:</strong>{" "}
+                        <span className="text-[hsl(var(--gold))]">
+                          dmca@3lixirmusic.com
+                        </span>
                       </p>
-                    </section>
+                      <p className="text-muted-foreground">
+                        <strong className="text-foreground">Address:</strong>{" "}
+                        [Business Address]
+                      </p>
+                    </div>
+                  </section>
 
-                    <section>
-                      <h3 className="text-2xl font-display font-semibold tracking-tight mb-3">
-                        Social Media
-                      </h3>
-                      <p className="text-muted-foreground mb-4">
-                        Follow us for new releases, promotions, and updates:
-                      </p>
-                      <div className="flex gap-4">
-                        <button className="px-6 py-2 bg-white/10 hover:bg-white/20 rounded-full transition-colors text-sm font-medium">
-                          Instagram
-                        </button>
-                        <button className="px-6 py-2 bg-white/10 hover:bg-white/20 rounded-full transition-colors text-sm font-medium">
-                          Twitter
-                        </button>
-                        <button className="px-6 py-2 bg-white/10 hover:bg-white/20 rounded-full transition-colors text-sm font-medium">
-                          YouTube
-                        </button>
-                      </div>
-                    </section>
+                  <section>
+                    <h3 className="text-2xl font-display font-semibold tracking-tight mb-3">
+                      2. Filing a DMCA Takedown Notice
+                    </h3>
+                    <p className="text-muted-foreground mb-4">
+                      If you believe that your copyrighted work has been copied
+                      or used in a way that constitutes copyright infringement,
+                      you may submit a written notification to our DMCA Agent
+                      that includes all of the following:
+                    </p>
+                    <ol className="list-decimal list-inside space-y-3 text-muted-foreground ml-4">
+                      <li>
+                        A physical or electronic signature of the copyright
+                        owner or a person authorized to act on their behalf
+                      </li>
+                      <li>
+                        Identification of the copyrighted work claimed to have
+                        been infringed
+                      </li>
+                      <li>
+                        Identification of the infringing material and
+                        information reasonably sufficient to permit us to locate
+                        the material
+                      </li>
+                      <li>
+                        Your contact information, including name, address,
+                        telephone number, and email address
+                      </li>
+                      <li>
+                        A statement that you have a good faith belief that use
+                        of the material is not authorized by the copyright
+                        owner, its agent, or the law
+                      </li>
+                      <li>
+                        A statement, under penalty of perjury, that the
+                        information in the notification is accurate and that you
+                        are authorized to act on behalf of the copyright owner
+                      </li>
+                    </ol>
+                    <p className="text-muted-foreground mt-4 italic">
+                      Incomplete notices may not be processed.
+                    </p>
+                  </section>
+
+                  <section>
+                    <h3 className="text-2xl font-display font-semibold tracking-tight mb-3">
+                      3. Our Response to Valid Notices
+                    </h3>
+                    <p className="text-muted-foreground mb-2">
+                      Upon receipt of a valid DMCA takedown notice, 3LIXIR Music
+                      may:
+                    </p>
+                    <ul className="list-disc list-inside space-y-2 text-muted-foreground ml-4">
+                      <li>
+                        Remove or disable access to the allegedly infringing
+                        material
+                      </li>
+                      <li>Notify the affected user of the takedown</li>
+                      <li>
+                        Take additional action consistent with applicable law
+                      </li>
+                    </ul>
+                    <p className="text-muted-foreground mt-4">
+                      We reserve the right to remove content at our sole
+                      discretion.
+                    </p>
+                  </section>
+
+                  <section>
+                    <h3 className="text-2xl font-display font-semibold tracking-tight mb-3">
+                      4. Counter-Notification Procedure
+                    </h3>
+                    <p className="text-muted-foreground mb-4">
+                      If you believe that material removed or disabled pursuant
+                      to a DMCA notice was removed due to mistake or
+                      misidentification, you may submit a counter-notification
+                      that includes:
+                    </p>
+                    <ol className="list-decimal list-inside space-y-3 text-muted-foreground ml-4">
+                      <li>Your physical or electronic signature</li>
+                      <li>
+                        Identification of the material that has been removed and
+                        its prior location
+                      </li>
+                      <li>
+                        A statement under penalty of perjury that you have a
+                        good faith belief the material was removed due to
+                        mistake or misidentification
+                      </li>
+                      <li>
+                        Your name, address, telephone number, and email address
+                      </li>
+                      <li>
+                        A statement consenting to the jurisdiction of the
+                        federal court located in your judicial district (or
+                        California if outside the United States)
+                      </li>
+                    </ol>
+                    <p className="text-muted-foreground mt-4">
+                      Counter-notifications should be sent to the DMCA Agent
+                      listed above.
+                    </p>
+                  </section>
+
+                  <section>
+                    <h3 className="text-2xl font-display font-semibold tracking-tight mb-3">
+                      5. Repeat Infringer Policy
+                    </h3>
+                    <p className="text-muted-foreground">
+                      In accordance with the DMCA, 3LIXIR Music maintains a
+                      policy to terminate, in appropriate circumstances and at
+                      our sole discretion, users who are deemed to be repeat
+                      infringers.
+                    </p>
+                  </section>
+
+                  <section>
+                    <h3 className="text-2xl font-display font-semibold tracking-tight mb-3">
+                      6. Misrepresentations
+                    </h3>
+                    <p className="text-muted-foreground">
+                      Any person who knowingly materially misrepresents that
+                      material or activity is infringing, or that material was
+                      removed or disabled by mistake or misidentification, may
+                      be subject to liability under 17 U.S.C. § 512(f).
+                    </p>
+                  </section>
+
+                  <section>
+                    <h3 className="text-2xl font-display font-semibold tracking-tight mb-3">
+                      7. No Legal Advice
+                    </h3>
+                    <p className="text-muted-foreground">
+                      This DMCA Policy is provided for informational purposes
+                      only and does not constitute legal advice. We encourage
+                      copyright owners and users to consult legal counsel before
+                      submitting a notice or counter-notice.
+                    </p>
+                  </section>
+
+                  <section>
+                    <h3 className="text-2xl font-display font-semibold tracking-tight mb-3">
+                      8. Changes to This Policy
+                    </h3>
+                    <p className="text-muted-foreground">
+                      We reserve the right to update this DMCA Policy at any
+                      time. Changes become effective upon posting.
+                    </p>
+                  </section>
+
+                  <div className="mt-12 pt-8 border-t border-white/10 text-center">
+                    <p className="text-muted-foreground font-semibold">
+                      END OF DMCA COPYRIGHT POLICY
+                    </p>
                   </div>
                 </div>
-              ),
-            };
+              </div>
+            )}
+          </div>
+        </div>
+      </div>
+    ),
+
+    contact: (
+      <div className="space-y-12">
+        {/* Contact Section */}
+        <div className="space-y-6 max-w-3xl mx-auto">
+          <h2 className="text-4xl md:text-5xl font-display font-bold tracking-tighter mb-6 text-center">
+            Contact Us
+          </h2>
+
+          <div className="space-y-8">
+            <section>
+              <h3 className="text-2xl font-display font-semibold tracking-tight mb-3 text-center">
+                Get In Touch
+              </h3>
+              <p className="text-muted-foreground mb-6 text-center">
+                Have questions, need support, or want to discuss custom work?
+                We're here to help.
+              </p>
+
+              <div className="border border-white/10 rounded-xl p-6 bg-white/5 space-y-4">
+                <div className="flex items-center justify-center gap-3">
+                  <Mail className="w-5 h-5 text-[hsl(var(--gold))]" />
+                  <div className="text-center">
+                    <p className="font-semibold">Email</p>
+                    <p className="text-muted-foreground">
+                      contact@3lixirmusic.com
+                    </p>
+                  </div>
+                </div>
+                <div className="flex items-center justify-center gap-3">
+                  <Phone className="w-5 h-5 text-[hsl(var(--gold))]" />
+                  <div className="text-center">
+                    <p className="font-semibold">Response Time</p>
+                    <p className="text-muted-foreground">Within 24-48 hours</p>
+                  </div>
+                </div>
+              </div>
+            </section>
+
+            <section>
+              <h3 className="text-2xl font-display font-semibold tracking-tight mb-3 text-center">
+                Business Inquiries
+              </h3>
+              <p className="text-muted-foreground text-center">
+                For custom beats, exclusive deals, or partnerships, reach out
+                via email with "Business Inquiry" in the subject line.
+              </p>
+            </section>
+
+            <section>
+              <h3 className="text-2xl font-display font-semibold tracking-tight mb-3 text-center">
+                Technical Support
+              </h3>
+              <p className="text-muted-foreground text-center">
+                Experiencing issues with downloads or licensing? Contact us with
+                your order number for fastest assistance.
+              </p>
+            </section>
+
+            <section>
+              <h3 className="text-2xl font-display font-semibold tracking-tight mb-3 text-center">
+                Social Media
+              </h3>
+              <p className="text-muted-foreground mb-4 text-center">
+                Follow us for new releases, promotions, and updates:
+              </p>
+              <div className="flex gap-4 justify-center">
+                <button className="px-6 py-2 bg-white/10 hover:bg-white/20 rounded-full transition-colors text-sm font-medium">
+                  Instagram
+                </button>
+                <button className="px-6 py-2 bg-white/10 hover:bg-white/20 rounded-full transition-colors text-sm font-medium">
+                  Twitter
+                </button>
+                <button className="px-6 py-2 bg-white/10 hover:bg-white/20 rounded-full transition-colors text-sm font-medium">
+                  YouTube
+                </button>
+              </div>
+            </section>
+          </div>
+        </div>
+
+        {/* Production Opportunities Section */}
+        <div className="border-t border-white/10 pt-12">
+          <div className="space-y-6">
+            <h2 className="text-4xl md:text-5xl font-display font-bold tracking-tighter mb-6 text-center">
+              Production Opportunities
+            </h2>
+
+            <div className="space-y-8">
+              {/* Intro Section */}
+              <section className="max-w-3xl mx-auto">
+                <p className="text-lg leading-relaxed text-muted-foreground text-center">
+                  DJ 3LIXIR offers custom production services designed to bring
+                  your musical vision to life. Whether you need a beat tailored
+                  to your unique style, full instrumental composition, or
+                  collaborative production work, we provide hands-on,
+                  artist-focused solutions that go beyond the catalog.
+                </p>
+              </section>
+
+              {/* Services Grid */}
+              <div className="grid md:grid-cols-2 gap-6 mt-8">
+                {/* Custom Beat Production */}
+                <div className="border border-white/10 rounded-xl p-6 bg-gradient-to-br from-[hsl(var(--gold))]/10 to-transparent hover:border-[hsl(var(--gold))]/30 transition-all">
+                  <div className="flex items-start gap-4 mb-4">
+                    <div className="p-3 bg-[hsl(var(--gold))]/20 rounded-lg">
+                      <Music className="w-6 h-6 text-[hsl(var(--gold))]" />
+                    </div>
+                    <div>
+                      <h3 className="text-xl font-display font-semibold tracking-tight mb-2">
+                        Custom Beat Production
+                      </h3>
+                      <p className="text-muted-foreground text-sm">
+                        Get a beat made specifically for you. Describe your
+                        vision, share references, and receive a professionally
+                        produced instrumental crafted to match your artistic
+                        direction.
+                      </p>
+                    </div>
+                  </div>
+                  <ul className="space-y-2 ml-2">
+                    <li className="flex items-center gap-2 text-sm text-muted-foreground">
+                      <CheckCircle className="w-4 h-4 text-[hsl(var(--gold))]" />
+                      Tailored to your style and genre
+                    </li>
+                    <li className="flex items-center gap-2 text-sm text-muted-foreground">
+                      <CheckCircle className="w-4 h-4 text-[hsl(var(--gold))]" />
+                      Unlimited revisions until satisfied
+                    </li>
+                    <li className="flex items-center gap-2 text-sm text-muted-foreground">
+                      <CheckCircle className="w-4 h-4 text-[hsl(var(--gold))]" />
+                      Full stems and project files included
+                    </li>
+                  </ul>
+                </div>
+
+                {/* Full Production Services */}
+                <div className="border border-white/10 rounded-xl p-6 bg-gradient-to-br from-[hsl(var(--gold))]/10 to-transparent hover:border-[hsl(var(--gold))]/30 transition-all">
+                  <div className="flex items-start gap-4 mb-4">
+                    <div className="p-3 bg-[hsl(var(--gold))]/20 rounded-lg">
+                      <Sparkles className="w-6 h-6 text-[hsl(var(--gold))]" />
+                    </div>
+                    <div>
+                      <h3 className="text-xl font-display font-semibold tracking-tight mb-2">
+                        Full Production Services
+                      </h3>
+                      <p className="text-muted-foreground text-sm">
+                        From concept to completion. Comprehensive production
+                        including composition, arrangement, mixing, and
+                        mastering. Perfect for artists working on albums, EPs,
+                        or flagship singles.
+                      </p>
+                    </div>
+                  </div>
+                  <ul className="space-y-2 ml-2">
+                    <li className="flex items-center gap-2 text-sm text-muted-foreground">
+                      <CheckCircle className="w-4 h-4 text-[hsl(var(--gold))]" />
+                      End-to-end production workflow
+                    </li>
+                    <li className="flex items-center gap-2 text-sm text-muted-foreground">
+                      <CheckCircle className="w-4 h-4 text-[hsl(var(--gold))]" />
+                      Professional mixing and mastering
+                    </li>
+                    <li className="flex items-center gap-2 text-sm text-muted-foreground">
+                      <CheckCircle className="w-4 h-4 text-[hsl(var(--gold))]" />
+                      Industry-standard quality output
+                    </li>
+                  </ul>
+                </div>
+
+                {/* Collaboration & Co-Production */}
+                <div className="border border-white/10 rounded-xl p-6 bg-gradient-to-br from-[hsl(var(--gold))]/10 to-transparent hover:border-[hsl(var(--gold))]/30 transition-all">
+                  <div className="flex items-start gap-4 mb-4">
+                    <div className="p-3 bg-[hsl(var(--gold))]/20 rounded-lg">
+                      <Headphones className="w-6 h-6 text-[hsl(var(--gold))]" />
+                    </div>
+                    <div>
+                      <h3 className="text-xl font-display font-semibold tracking-tight mb-2">
+                        Collaboration & Co-Production
+                      </h3>
+                      <p className="text-muted-foreground text-sm">
+                        Work side-by-side with DJ 3LIXIR to develop your sound.
+                        Collaborative sessions where your ideas meet
+                        professional execution, perfect for artists who want
+                        creative input throughout the process.
+                      </p>
+                    </div>
+                  </div>
+                  <ul className="space-y-2 ml-2">
+                    <li className="flex items-center gap-2 text-sm text-muted-foreground">
+                      <CheckCircle className="w-4 h-4 text-[hsl(var(--gold))]" />
+                      Real-time creative collaboration
+                    </li>
+                    <li className="flex items-center gap-2 text-sm text-muted-foreground">
+                      <CheckCircle className="w-4 h-4 text-[hsl(var(--gold))]" />
+                      Flexible workflow to match your process
+                    </li>
+                    <li className="flex items-center gap-2 text-sm text-muted-foreground">
+                      <CheckCircle className="w-4 h-4 text-[hsl(var(--gold))]" />
+                      Shared creative ownership options
+                    </li>
+                  </ul>
+                </div>
+
+                {/* Remix & Rework Services */}
+                <div className="border border-white/10 rounded-xl p-6 bg-gradient-to-br from-[hsl(var(--gold))]/10 to-transparent hover:border-[hsl(var(--gold))]/30 transition-all">
+                  <div className="flex items-start gap-4 mb-4">
+                    <div className="p-3 bg-[hsl(var(--gold))]/20 rounded-lg">
+                      <Zap className="w-6 h-6 text-[hsl(var(--gold))]" />
+                    </div>
+                    <div>
+                      <h3 className="text-xl font-display font-semibold tracking-tight mb-2">
+                        Remix & Rework Services
+                      </h3>
+                      <p className="text-muted-foreground text-sm">
+                        Breathe new life into existing tracks. Transform your
+                        music with fresh production, updated arrangements, or
+                        complete genre reimagining while maintaining the core
+                        essence of your work.
+                      </p>
+                    </div>
+                  </div>
+                  <ul className="space-y-2 ml-2">
+                    <li className="flex items-center gap-2 text-sm text-muted-foreground">
+                      <CheckCircle className="w-4 h-4 text-[hsl(var(--gold))]" />
+                      Genre transformation and crossover
+                    </li>
+                    <li className="flex items-center gap-2 text-sm text-muted-foreground">
+                      <CheckCircle className="w-4 h-4 text-[hsl(var(--gold))]" />
+                      Modernization of older tracks
+                    </li>
+                    <li className="flex items-center gap-2 text-sm text-muted-foreground">
+                      <CheckCircle className="w-4 h-4 text-[hsl(var(--gold))]" />
+                      Alternative versions for releases
+                    </li>
+                  </ul>
+                </div>
+              </div>
+
+              {/* Process Section */}
+              <section className="mt-12">
+                <h3 className="text-2xl font-display font-semibold tracking-tight mb-6 text-center">
+                  How It Works
+                </h3>
+                <div className="grid md:grid-cols-4 gap-6">
+                  <div className="text-center">
+                    <div className="w-12 h-12 rounded-full bg-[hsl(var(--gold))]/20 flex items-center justify-center mx-auto mb-3">
+                      <span className="text-xl font-bold text-[hsl(var(--gold))]">
+                        1
+                      </span>
+                    </div>
+                    <h4 className="font-semibold mb-2">Consultation</h4>
+                    <p className="text-sm text-muted-foreground">
+                      Discuss your vision, goals, and creative direction
+                    </p>
+                  </div>
+                  <div className="text-center">
+                    <div className="w-12 h-12 rounded-full bg-[hsl(var(--gold))]/20 flex items-center justify-center mx-auto mb-3">
+                      <span className="text-xl font-bold text-[hsl(var(--gold))]">
+                        2
+                      </span>
+                    </div>
+                    <h4 className="font-semibold mb-2">Production</h4>
+                    <p className="text-sm text-muted-foreground">
+                      DJ 3LIXIR creates your custom track with precision
+                    </p>
+                  </div>
+                  <div className="text-center">
+                    <div className="w-12 h-12 rounded-full bg-[hsl(var(--gold))]/20 flex items-center justify-center mx-auto mb-3">
+                      <span className="text-xl font-bold text-[hsl(var(--gold))]">
+                        3
+                      </span>
+                    </div>
+                    <h4 className="font-semibold mb-2">Revision</h4>
+                    <p className="text-sm text-muted-foreground">
+                      Refine and adjust until it matches your vision
+                    </p>
+                  </div>
+                  <div className="text-center">
+                    <div className="w-12 h-12 rounded-full bg-[hsl(var(--gold))]/20 flex items-center justify-center mx-auto mb-3">
+                      <span className="text-xl font-bold text-[hsl(var(--gold))]">
+                        4
+                      </span>
+                    </div>
+                    <h4 className="font-semibold mb-2">Delivery</h4>
+                    <p className="text-sm text-muted-foreground">
+                      Receive your completed track with all files and rights
+                    </p>
+                  </div>
+                </div>
+              </section>
+
+              {/* Why Choose Section */}
+              <section className="mt-12 border border-white/10 rounded-xl p-8 bg-white/5 max-w-3xl mx-auto">
+                <h3 className="text-2xl font-display font-semibold tracking-tight mb-4">
+                  Why Work With DJ 3LIXIR?
+                </h3>
+                <div className="space-y-3">
+                  <p className="text-muted-foreground">
+                    <strong className="text-foreground">
+                      Multi-Genre Expertise:
+                    </strong>{" "}
+                    From EDM to Hip Hop, Lo-Fi to House, experience across
+                    diverse styles means your sound gets the attention it
+                    deserves.
+                  </p>
+                  <p className="text-muted-foreground">
+                    <strong className="text-foreground">
+                      Artist-First Mindset:
+                    </strong>{" "}
+                    This isn't factory production. Every project is treated as a
+                    unique creative endeavor with your success as the priority.
+                  </p>
+                  <p className="text-muted-foreground">
+                    <strong className="text-foreground">
+                      Real Instrumentation:
+                    </strong>{" "}
+                    Live piano and saxophone integration available for
+                    authentic, organic textures that set your music apart.
+                  </p>
+                  <p className="text-muted-foreground">
+                    <strong className="text-foreground">
+                      Clear Rights Management:
+                    </strong>{" "}
+                    No confusion, no hidden clauses. You know exactly what you
+                    own and what you can do with it.
+                  </p>
+                </div>
+              </section>
+
+              {/* CTA Section */}
+              <section className="mt-12 bg-gradient-to-r from-[hsl(var(--gold))]/10 to-transparent border border-[hsl(var(--gold))]/20 rounded-xl p-8 text-center max-w-3xl mx-auto">
+                <h3 className="text-2xl font-display font-semibold tracking-tight mb-3">
+                  Ready to Create Something Unique?
+                </h3>
+                <p className="text-muted-foreground mb-6">
+                  Whether you have a clear vision or just a spark of an idea,
+                  let's talk about how we can bring your music to life. Custom
+                  production starts with a conversation.
+                </p>
+                <a
+                  href="mailto:contact@3lixirmusic.com?subject=Custom Production Inquiry"
+                  className="inline-flex items-center gap-2 bg-[hsl(var(--gold))] text-black px-8 py-3 rounded-full font-semibold hover:bg-[hsl(var(--gold))]/90 transition-colors"
+                >
+                  <Music className="w-5 h-5" />
+                  Get In Touch
+                </a>
+              </section>
+            </div>
+          </div>
+        </div>
+
+        {/* Technical Support Section */}
+        <div className="border-t border-white/10 pt-12">
+          <div className="space-y-6">
+            <h2 className="text-4xl md:text-5xl font-display font-bold tracking-tighter mb-6 text-center">
+              Technical Support
+            </h2>
+
+            <div className="space-y-8">
+              {/* Intro Section */}
+              <section className="max-w-3xl mx-auto text-center">
+                <p className="text-lg leading-relaxed text-muted-foreground">
+                  Having technical issues? We're here to help. Browse common
+                  solutions below or contact our support team directly.
+                </p>
+              </section>
+
+              {/* Common Issues Grid */}
+              <div className="grid md:grid-cols-2 gap-6 mt-8">
+                {/* Download Issues */}
+                <div className="border border-white/10 rounded-xl p-6 bg-white/5 hover:bg-white/10 transition-all">
+                  <div className="flex items-start gap-4 mb-4">
+                    <div className="p-3 bg-[hsl(var(--gold))]/20 rounded-lg">
+                      <Download className="w-6 h-6 text-[hsl(var(--gold))]" />
+                    </div>
+                    <div>
+                      <h3 className="text-xl font-display font-semibold tracking-tight mb-2">
+                        Download Issues
+                      </h3>
+                      <p className="text-muted-foreground text-sm mb-4">
+                        Can't download your purchased beats? Try these
+                        solutions:
+                      </p>
+                      <ul className="space-y-2">
+                        <li className="flex items-start gap-2 text-sm text-muted-foreground">
+                          <CheckCircle className="w-4 h-4 text-[hsl(var(--gold))] flex-shrink-0 mt-0.5" />
+                          Check your spam/junk folder for the download email
+                        </li>
+                        <li className="flex items-start gap-2 text-sm text-muted-foreground">
+                          <CheckCircle className="w-4 h-4 text-[hsl(var(--gold))] flex-shrink-0 mt-0.5" />
+                          Try a different browser (Chrome, Firefox, Safari)
+                        </li>
+                        <li className="flex items-start gap-2 text-sm text-muted-foreground">
+                          <CheckCircle className="w-4 h-4 text-[hsl(var(--gold))] flex-shrink-0 mt-0.5" />
+                          Disable browser extensions or ad blockers temporarily
+                        </li>
+                        <li className="flex items-start gap-2 text-sm text-muted-foreground">
+                          <CheckCircle className="w-4 h-4 text-[hsl(var(--gold))] flex-shrink-0 mt-0.5" />
+                          Clear your browser cache and cookies
+                        </li>
+                      </ul>
+                    </div>
+                  </div>
+                </div>
+
+                {/* File Format Issues */}
+                <div className="border border-white/10 rounded-xl p-6 bg-white/5 hover:bg-white/10 transition-all">
+                  <div className="flex items-start gap-4 mb-4">
+                    <div className="p-3 bg-[hsl(var(--gold))]/20 rounded-lg">
+                      <FileQuestion className="w-6 h-6 text-[hsl(var(--gold))]" />
+                    </div>
+                    <div>
+                      <h3 className="text-xl font-display font-semibold tracking-tight mb-2">
+                        File Format Questions
+                      </h3>
+                      <p className="text-muted-foreground text-sm mb-4">
+                        Understanding your files and how to use them:
+                      </p>
+                      <ul className="space-y-2">
+                        <li className="flex items-start gap-2 text-sm text-muted-foreground">
+                          <CheckCircle className="w-4 h-4 text-[hsl(var(--gold))] flex-shrink-0 mt-0.5" />
+                          <span>
+                            <strong className="text-foreground">MP3:</strong>{" "}
+                            Standard format for all license tiers
+                          </span>
+                        </li>
+                        <li className="flex items-start gap-2 text-sm text-muted-foreground">
+                          <CheckCircle className="w-4 h-4 text-[hsl(var(--gold))] flex-shrink-0 mt-0.5" />
+                          <span>
+                            <strong className="text-foreground">WAV:</strong>{" "}
+                            High-quality uncompressed audio (Premium/Exclusive)
+                          </span>
+                        </li>
+                        <li className="flex items-start gap-2 text-sm text-muted-foreground">
+                          <CheckCircle className="w-4 h-4 text-[hsl(var(--gold))] flex-shrink-0 mt-0.5" />
+                          <span>
+                            <strong className="text-foreground">Stems:</strong>{" "}
+                            Individual instrument tracks for mixing
+                          </span>
+                        </li>
+                        <li className="flex items-start gap-2 text-sm text-muted-foreground">
+                          <CheckCircle className="w-4 h-4 text-[hsl(var(--gold))] flex-shrink-0 mt-0.5" />
+                          <span>
+                            <strong className="text-foreground">
+                              Trackouts:
+                            </strong>{" "}
+                            Full separated tracks for maximum control
+                          </span>
+                        </li>
+                      </ul>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Payment Issues */}
+                <div className="border border-white/10 rounded-xl p-6 bg-white/5 hover:bg-white/10 transition-all">
+                  <div className="flex items-start gap-4 mb-4">
+                    <div className="p-3 bg-[hsl(var(--gold))]/20 rounded-lg">
+                      <CreditCard className="w-6 h-6 text-[hsl(var(--gold))]" />
+                    </div>
+                    <div>
+                      <h3 className="text-xl font-display font-semibold tracking-tight mb-2">
+                        Payment & Billing Issues
+                      </h3>
+                      <p className="text-muted-foreground text-sm mb-4">
+                        Having trouble with payments or seeing charges?
+                      </p>
+                      <ul className="space-y-2">
+                        <li className="flex items-start gap-2 text-sm text-muted-foreground">
+                          <CheckCircle className="w-4 h-4 text-[hsl(var(--gold))] flex-shrink-0 mt-0.5" />
+                          Verify your PayPal account is active and has funds
+                        </li>
+                        <li className="flex items-start gap-2 text-sm text-muted-foreground">
+                          <CheckCircle className="w-4 h-4 text-[hsl(var(--gold))] flex-shrink-0 mt-0.5" />
+                          Check for payment confirmation email
+                        </li>
+                        <li className="flex items-start gap-2 text-sm text-muted-foreground">
+                          <CheckCircle className="w-4 h-4 text-[hsl(var(--gold))] flex-shrink-0 mt-0.5" />
+                          Contact PayPal support for transaction issues
+                        </li>
+                        <li className="flex items-start gap-2 text-sm text-muted-foreground">
+                          <CheckCircle className="w-4 h-4 text-[hsl(var(--gold))] flex-shrink-0 mt-0.5" />
+                          Allow 24-48 hours for payment processing
+                        </li>
+                      </ul>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Account Issues */}
+                <div className="border border-white/10 rounded-xl p-6 bg-white/5 hover:bg-white/10 transition-all">
+                  <div className="flex items-start gap-4 mb-4">
+                    <div className="p-3 bg-[hsl(var(--gold))]/20 rounded-lg">
+                      <Lock className="w-6 h-6 text-[hsl(var(--gold))]" />
+                    </div>
+                    <div>
+                      <h3 className="text-xl font-display font-semibold tracking-tight mb-2">
+                        Account Access
+                      </h3>
+                      <p className="text-muted-foreground text-sm mb-4">
+                        Can't access your account or purchase history?
+                      </p>
+                      <ul className="space-y-2">
+                        <li className="flex items-start gap-2 text-sm text-muted-foreground">
+                          <CheckCircle className="w-4 h-4 text-[hsl(var(--gold))] flex-shrink-0 mt-0.5" />
+                          Use password reset if you forgot your login
+                        </li>
+                        <li className="flex items-start gap-2 text-sm text-muted-foreground">
+                          <CheckCircle className="w-4 h-4 text-[hsl(var(--gold))] flex-shrink-0 mt-0.5" />
+                          Check you're using the correct email address
+                        </li>
+                        <li className="flex items-start gap-2 text-sm text-muted-foreground">
+                          <CheckCircle className="w-4 h-4 text-[hsl(var(--gold))] flex-shrink-0 mt-0.5" />
+                          Clear browser cookies and try again
+                        </li>
+                        <li className="flex items-start gap-2 text-sm text-muted-foreground">
+                          <CheckCircle className="w-4 h-4 text-[hsl(var(--gold))] flex-shrink-0 mt-0.5" />
+                          Contact support with your order number
+                        </li>
+                      </ul>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              {/* Troubleshooting Steps */}
+              <section className="mt-12 border border-white/10 rounded-xl p-8 bg-white/5">
+                <h3 className="text-2xl font-display font-semibold tracking-tight mb-6 text-center">
+                  General Troubleshooting Steps
+                </h3>
+                <div className="grid md:grid-cols-3 gap-6">
+                  <div className="text-center">
+                    <div className="w-12 h-12 rounded-full bg-[hsl(var(--gold))]/20 flex items-center justify-center mx-auto mb-3">
+                      <RefreshCw className="w-6 h-6 text-[hsl(var(--gold))]" />
+                    </div>
+                    <h4 className="font-semibold mb-2">Clear Cache</h4>
+                    <p className="text-sm text-muted-foreground">
+                      Clear your browser cache and cookies, then refresh the
+                      page
+                    </p>
+                  </div>
+                  <div className="text-center">
+                    <div className="w-12 h-12 rounded-full bg-[hsl(var(--gold))]/20 flex items-center justify-center mx-auto mb-3">
+                      <AlertCircle className="w-6 h-6 text-[hsl(var(--gold))]" />
+                    </div>
+                    <h4 className="font-semibold mb-2">Try Another Browser</h4>
+                    <p className="text-sm text-muted-foreground">
+                      Switch to Chrome, Firefox, or Safari if experiencing
+                      issues
+                    </p>
+                  </div>
+                  <div className="text-center">
+                    <div className="w-12 h-12 rounded-full bg-[hsl(var(--gold))]/20 flex items-center justify-center mx-auto mb-3">
+                      <XCircle className="w-6 h-6 text-[hsl(var(--gold))]" />
+                    </div>
+                    <h4 className="font-semibold mb-2">Disable Extensions</h4>
+                    <p className="text-sm text-muted-foreground">
+                      Temporarily disable ad blockers and browser extensions
+                    </p>
+                  </div>
+                </div>
+              </section>
+
+              {/* What to Include in Support Request */}
+              <section className="mt-12 border border-white/10 rounded-xl p-8 bg-gradient-to-br from-[hsl(var(--gold))]/10 to-transparent">
+                <h3 className="text-2xl font-display font-semibold tracking-tight mb-4">
+                  When Contacting Support, Include:
+                </h3>
+                <div className="grid md:grid-cols-2 gap-4">
+                  <div className="flex items-start gap-3">
+                    <CheckCircle className="w-5 h-5 text-[hsl(var(--gold))] flex-shrink-0 mt-0.5" />
+                    <div>
+                      <p className="font-semibold text-sm">Order Number</p>
+                      <p className="text-xs text-muted-foreground">
+                        Found in your confirmation email
+                      </p>
+                    </div>
+                  </div>
+                  <div className="flex items-start gap-3">
+                    <CheckCircle className="w-5 h-5 text-[hsl(var(--gold))] flex-shrink-0 mt-0.5" />
+                    <div>
+                      <p className="font-semibold text-sm">
+                        Email Address Used
+                      </p>
+                      <p className="text-xs text-muted-foreground">
+                        The email you used for purchase
+                      </p>
+                    </div>
+                  </div>
+                  <div className="flex items-start gap-3">
+                    <CheckCircle className="w-5 h-5 text-[hsl(var(--gold))] flex-shrink-0 mt-0.5" />
+                    <div>
+                      <p className="font-semibold text-sm">Beat Name/Title</p>
+                      <p className="text-xs text-muted-foreground">
+                        Specific beat you're having issues with
+                      </p>
+                    </div>
+                  </div>
+                  <div className="flex items-start gap-3">
+                    <CheckCircle className="w-5 h-5 text-[hsl(var(--gold))] flex-shrink-0 mt-0.5" />
+                    <div>
+                      <p className="font-semibold text-sm">
+                        Detailed Description
+                      </p>
+                      <p className="text-xs text-muted-foreground">
+                        What happened and what you expected
+                      </p>
+                    </div>
+                  </div>
+                  <div className="flex items-start gap-3">
+                    <CheckCircle className="w-5 h-5 text-[hsl(var(--gold))] flex-shrink-0 mt-0.5" />
+                    <div>
+                      <p className="font-semibold text-sm">Browser & Device</p>
+                      <p className="text-xs text-muted-foreground">
+                        What you're using to access the site
+                      </p>
+                    </div>
+                  </div>
+                  <div className="flex items-start gap-3">
+                    <CheckCircle className="w-5 h-5 text-[hsl(var(--gold))] flex-shrink-0 mt-0.5" />
+                    <div>
+                      <p className="font-semibold text-sm">
+                        Screenshots (if applicable)
+                      </p>
+                      <p className="text-xs text-muted-foreground">
+                        Helps us diagnose the issue faster
+                      </p>
+                    </div>
+                  </div>
+                </div>
+              </section>
+
+              {/* Response Time */}
+              <section className="text-center bg-white/5 rounded-xl p-6 border border-white/10">
+                <h3 className="text-xl font-semibold mb-2">
+                  Expected Response Time
+                </h3>
+                <p className="text-muted-foreground">
+                  Our support team typically responds within{" "}
+                  <span className="text-[hsl(var(--gold))] font-semibold">
+                    24-48 hours
+                  </span>
+                  . For urgent issues, please mark your email as "URGENT" in the
+                  subject line.
+                </p>
+              </section>
+
+              {/* Contact CTA */}
+              <section className="mt-12 bg-gradient-to-r from-[hsl(var(--gold))]/10 to-transparent border border-[hsl(var(--gold))]/20 rounded-xl p-8 text-center max-w-2xl mx-auto">
+                <h3 className="text-2xl font-display font-semibold tracking-tight mb-3">
+                  Still Need Help?
+                </h3>
+                <p className="text-muted-foreground mb-6">
+                  Can't find a solution to your issue? Our support team is ready
+                  to assist you.
+                </p>
+                <a
+                  href="mailto:contact@3lixirmusic.com?subject=Technical Support Request"
+                  className="inline-flex items-center gap-2 bg-[hsl(var(--gold))] text-black px-8 py-3 rounded-full font-semibold hover:bg-[hsl(var(--gold))]/90 transition-colors"
+                >
+                  <Mail className="w-5 h-5" />
+                  Contact Technical Support
+                </a>
+              </section>
+
+              {/* FAQ Quick Links */}
+              <section className="mt-12">
+                <div className="border border-white/10 rounded-xl p-6 bg-white/5">
+                  <div className="flex items-center gap-3 mb-4">
+                    <HelpCircle className="w-6 h-6 text-[hsl(var(--gold))]" />
+                    <h3 className="text-xl font-display font-semibold tracking-tight">
+                      More Questions?
+                    </h3>
+                  </div>
+                  <p className="text-muted-foreground mb-4">
+                    Check out our comprehensive FAQ section for answers to
+                    common questions about licensing, usage rights, and more.
+                  </p>
+                  <button className="text-[hsl(var(--gold))] hover:text-[hsl(var(--gold))]/80 font-semibold text-sm flex items-center gap-2 transition-colors">
+                    View FAQ Section
+                    <span>→</span>
+                  </button>
+                </div>
+              </section>
+            </div>
+          </div>
+        </div>
+      </div>
+    ),
+  };
 
   return (
     <div className="min-h-screen bg-background text-foreground">
