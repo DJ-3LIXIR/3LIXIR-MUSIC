@@ -18,6 +18,7 @@ import {
 import { useLocation } from "wouter";
 import { useEffect } from "react";
 import { Navbar } from "@/components/layout/Navbar";
+import { Background } from "@/components/layout/Background";
 import { SupportArtist } from "@/components/Info/SupportArtist";
 import MeetTheArtistBanner from "@/components/Info/MeetTheArtistBanner";
 import { TechnicalSupport } from "@/components/Info/TechnicalSupport";
@@ -2515,7 +2516,8 @@ const InfoPage = () => {
   };
 
   return (
-    <div className="min-h-screen bg-background text-foreground">
+    <div className="min-h-screen text-foreground">
+      <Background opacity={0.00015} />
       <Navbar />
 
       <div className="container mx-auto px-6 pt-32 pb-20">

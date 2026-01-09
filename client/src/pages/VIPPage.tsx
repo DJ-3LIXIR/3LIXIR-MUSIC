@@ -4,7 +4,7 @@ import VIPLicensesimg from "@/components/vip-page/VIPLicensesimg";
 
 export default function VIPPage() {
   return (
-    <div className="min-h-screen bg-background text-foreground">
+    <div className="min-h-screen text-foreground">
       <Navbar />
       <div className="pt-20">
         <VIPLicensesimg />

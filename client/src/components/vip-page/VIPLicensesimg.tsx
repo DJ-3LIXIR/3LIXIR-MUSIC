@@ -68,7 +68,7 @@ export default function VIPLicensesimg() {
   // VIP Content for Gold, Diamond, and Platinum members
   if (subscriptionTier !== "tier_zero") {
     return (
-      <div className="min-h-screen bg-background text-foreground">
+      <div className="min-h-screen text-foreground">
         <section className="pt-12 pb-20 px-6">
           <div className="container mx-auto max-w-7xl">
             {/* License Card Display */}
@@ -135,7 +135,7 @@ export default function VIPLicensesimg() {
                   {[1, 2, 3].map((i) => (
                     <div
                       key={i}
-                      className="border border-white/10 rounded-xl p-6 bg-white/5 backdrop-blur-sm hover:border-[hsl(var(--gold))]/50 transition-colors cursor-pointer"
+                      className="border border-white/10 rounded-xl p-6 bg-black/80 backdrop-blur-sm hover:border-[hsl(var(--gold))]/50 transition-colors cursor-pointer"
                     >
                       <div className="w-full aspect-square bg-gradient-to-br from-[hsl(var(--gold))]/20 to-purple-600/20 rounded-lg mb-4 flex items-center justify-center">
                         <Music className="w-16 h-16 text-[hsl(var(--gold))]" />
@@ -167,7 +167,7 @@ export default function VIPLicensesimg() {
                   {[1, 2].map((i) => (
                     <div
                       key={i}
-                      className="border border-white/10 rounded-xl p-6 bg-white/5 backdrop-blur-sm hover:border-[hsl(var(--gold))]/50 transition-colors"
+                      className="border border-white/10 rounded-xl p-6 bg-black/80 backdrop-blur-sm hover:border-[hsl(var(--gold))]/50 transition-colors"
                     >
                       <div className="flex gap-4">
                         <div className="w-24 h-24 bg-gradient-to-br from-[hsl(var(--gold))]/20 to-blue-600/20 rounded-lg flex items-center justify-center flex-shrink-0">
@@ -204,7 +204,7 @@ export default function VIPLicensesimg() {
                     <Crown className="w-6 h-6 text-[hsl(var(--gold))]" />
                   </div>
 
-                  <div className="border border-white/10 rounded-xl p-8 bg-white/5 backdrop-blur-sm">
+                  <div className="border border-white/10 rounded-xl p-8 bg-black/80 backdrop-blur-sm">
                     <div className="flex flex-col md:flex-row gap-6 items-center">
                       <div className="flex-grow">
                         <h3 className="text-2xl font-bold mb-2">
@@ -234,7 +234,7 @@ export default function VIPLicensesimg() {
 
   // Default view for tier_zero (Black License) - Show Bouncer
   return (
-    <div className="min-h-screen bg-background text-foreground">
+    <div className="min-h-screen text-foreground">
       <section className="pt-12 pb-20 px-6">
         <div className="container mx-auto max-w-4xl text-center">
           {/* License Card */}
@@ -277,7 +277,7 @@ export default function VIPLicensesimg() {
           </div>
 
           {/* What You're Missing */}
-          <div className="border border-white/10 rounded-2xl p-8 md:p-12 bg-white/5 backdrop-blur-sm mb-12">
+          <div className="border border-white/10 rounded-2xl p-8 md:p-12 bg-black/80 backdrop-blur-sm mb-12">
             <div className="flex items-center justify-center gap-2 mb-8">
               <Star className="w-6 h-6 text-[hsl(var(--gold))]" />
               <h3 className="text-3xl font-display font-bold">

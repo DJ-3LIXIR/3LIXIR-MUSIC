@@ -5,6 +5,7 @@ import { Toaster } from "@/components/ui/toaster";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { CartProvider } from "@/contexts/CartContext";
 import { AuthProvider } from "@/contexts/AuthContext";
+import { Background } from "@/components/layout/Background"; // ADD THIS
 import Home from "@/pages/Home";
 import Beats from "@/pages/Beats";
 import Info from "@/pages/Info";
@@ -26,7 +27,6 @@ function Router() {
       <Route path="/shop" component={Shop} />
       <Route path="/downloads" component={Downloads} />
       <Route path="/vip" component={VIPPage} />
-      {/* Authentication Routes */}
       <Route path="/profile" component={ProfileManager} />
       <Route path="/admin" component={AdminDashboard} />
       <Route component={NotFound} />
@@ -40,13 +40,17 @@ function App() {
       <AuthProvider>
         <CartProvider>
           <TooltipProvider>
-            <Toaster />
-            <Router />
+            <div className="relative min-h-screen">
+              <Background />
+              <div className="relative z-10">
+                <Toaster />
+                <Router />
+              </div>
+            </div>
           </TooltipProvider>
         </CartProvider>
       </AuthProvider>
     </QueryClientProvider>
   );
 }
-
 export default App;

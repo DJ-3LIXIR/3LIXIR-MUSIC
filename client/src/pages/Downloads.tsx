@@ -67,12 +67,12 @@ export default function Downloads() {
 
   if (!user) {
     return (
-      <div className="min-h-screen bg-background text-foreground">
+      <div className="min-h-screen text-foreground">
         <Navbar />
         <main className="pt-20">
           <div className="container mx-auto px-6 py-20">
             <div className="flex flex-col items-center justify-center py-20">
-              <div className="w-24 h-24 rounded-full bg-white/5 flex items-center justify-center mb-6">
+              <div className="w-24 h-24 rounded-full bg-white/10 flex items-center justify-center mb-6">
                 <Download className="w-12 h-12 text-[hsl(var(--gold))]" />
               </div>
               <h1 className="text-4xl font-bold mb-4">Sign In Required</h1>
@@ -94,7 +94,7 @@ export default function Downloads() {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-background text-foreground">
+      <div className="min-h-screen text-foreground">
         <Navbar />
         <main className="pt-20">
           <div className="container mx-auto px-6 py-20">
@@ -122,7 +122,7 @@ export default function Downloads() {
   );
 
   return (
-    <div className="min-h-screen bg-background text-foreground">
+    <div className="min-h-screen text-foreground">
       <Navbar />
       <main className="pt-20">
         <div className="container mx-auto px-6 py-12">
@@ -137,7 +137,7 @@ export default function Downloads() {
 
           {allPurchasedBeats.length === 0 ? (
             <div className="flex flex-col items-center justify-center py-20">
-              <div className="w-24 h-24 rounded-full bg-white/5 flex items-center justify-center mb-6">
+              <div className="w-24 h-24 rounded-full bg-white/10 flex items-center justify-center mb-6">
                 <Music className="w-12 h-12 text-muted-foreground" />
               </div>
               <h2 className="text-2xl font-bold mb-2">No purchases yet</h2>
@@ -156,10 +156,10 @@ export default function Downloads() {
               {allPurchasedBeats.map((beat, index) => (
                 <div
                   key={`${beat.orderId}-${beat.id}-${index}`}
-                  className="border border-white/10 rounded-lg p-6 hover:border-white/20 transition-all hover:shadow-lg hover:shadow-[hsl(var(--gold))]/10"
+                  className="border border-white/10 rounded-lg p-6 bg-black/80 hover:border-white/20 transition-all hover:shadow-lg hover:shadow-[hsl(var(--gold))]/10"
                 >
                   <div className="flex items-start gap-4 mb-4">
-                    <div className="w-16 h-16 bg-white/5 rounded-lg flex-shrink-0 overflow-hidden">
+                    <div className="w-16 h-16 bg-white/10 rounded-lg flex-shrink-0 overflow-hidden">
                       {beat.cover ? (
                         <img
                           src={beat.cover}
@@ -207,7 +207,7 @@ export default function Downloads() {
           )}
 
           {allPurchasedBeats.length > 0 && (
-            <div className="mt-12 p-6 border border-white/10 rounded-lg bg-white/5">
+            <div className="mt-12 p-6 border border-white/10 rounded-lg bg-black/80">
               <h3 className="text-lg font-bold mb-2">Download Instructions</h3>
               <ul className="text-sm text-muted-foreground space-y-2">
                 <li>
