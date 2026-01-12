@@ -2517,7 +2517,7 @@ const InfoPage = () => {
 
   return (
     <div className="min-h-screen text-foreground">
-      <Background opacity={0.00015} />
+      <Background opacity={0.5} />
       <Navbar />
 
       <div className="container mx-auto px-6 pt-32 pb-20">

@@ -76,7 +76,7 @@ export const beats: Beat[] = [
       "https://images.unsplash.com/photo-1614149162883-504ce4d13909?q=80&w=1000&auto=format&fit=crop",
     tags: ["EDM", "LOFI", "Boom Bap"],
     releaseDate: "2026-01-03",
-    youtubeUrl: "https://youtu.be/-xkH1cUp9bY", // Replace with actual video ID
+    youtubeUrl: "https://youtu.be/1FewK3a-3l4", // Replace with actual video ID
   },
   {
     id: "6",

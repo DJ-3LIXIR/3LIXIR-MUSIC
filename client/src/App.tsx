@@ -5,9 +5,10 @@ import { Toaster } from "@/components/ui/toaster";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { CartProvider } from "@/contexts/CartContext";
 import { AuthProvider } from "@/contexts/AuthContext";
-import { Background } from "@/components/layout/Background"; // ADD THIS
+import { Background } from "@/components/layout/Background";
 import Home from "@/pages/Home";
 import Beats from "@/pages/Beats";
+import BeatsLanding from "@/pages/BeatsLanding"; // NEW
 import Info from "@/pages/Info";
 import Licenses from "@/pages/Licenses";
 import Shop from "@/pages/Shop";
@@ -22,7 +23,8 @@ function Router() {
     <Switch>
       <Route path="/" component={Home} />
       <Route path="/info" component={Info} />
-      <Route path="/beats" component={Beats} />
+      <Route path="/beats" component={BeatsLanding} /> {/* Landing page */}
+      <Route path="/beats/catalog" component={Beats} /> {/* Catalog grid */}
       <Route path="/licenses" component={Licenses} />
       <Route path="/shop" component={Shop} />
       <Route path="/downloads" component={Downloads} />
@@ -53,4 +55,5 @@ function App() {
     </QueryClientProvider>
   );
 }
+
 export default App;
