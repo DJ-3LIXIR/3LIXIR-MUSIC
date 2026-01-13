@@ -102,12 +102,12 @@ export function BeatsGrid() {
 
               {/* Genre filters */}
               <div className="flex gap-4 flex-wrap justify-end">
-                {["All", "Trap", "R&B", "EDM", "Lofi", "Boom Bap"].map(
+                {["All", "Trap", "Techno", "EDM", "LOFI", "Boom Bap"].map(
                   (filter) => (
                     <button
                       key={filter}
                       onClick={() => setSelectedGenre(filter)}
-                      className={`px-4 py-2 rounded-full text-xs font-bold uppercase tracking-widest transition-all ${
+                      className={`px-3 py-1.5 rounded-full text-xs font-bold uppercase tracking-widest transition-all ${
                         selectedGenre === filter
                           ? "bg-white text-black"
                           : "bg-white/5 text-muted-foreground hover:bg-white/10 hover:text-white"

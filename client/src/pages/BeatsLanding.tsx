@@ -6,32 +6,263 @@ import { Search, Music, Zap, TrendingUp } from "lucide-react";
 export default function BeatsLanding() {
   const [searchQuery, setSearchQuery] = useState("");
   const [, setLocation] = useLocation();
+  const [isAnimating, setIsAnimating] = useState(false);
+
+  const handleTransition = (destination: string) => {
+    setIsAnimating(true);
+    setTimeout(() => {
+      setLocation(destination);
+    }, 2500);
+  };
 
   const handleSearch = (e: React.FormEvent) => {
     e.preventDefault();
     if (searchQuery.trim()) {
-      setLocation(`/beats/catalog?search=${encodeURIComponent(searchQuery)}`);
+      handleTransition(
+        `/beats/catalog?search=${encodeURIComponent(searchQuery)}`,
+      );
     } else {
-      setLocation("/beats/catalog");
+      handleTransition("/beats/catalog");
     }
   };
 
   return (
-    <div className="min-h-screen bg-background text-foreground relative">
-      {/* Brick Wall Background */}
+    <div className="min-h-screen bg-background text-foreground relative overflow-hidden">
+      {/* Wrapper for zoom/rotate animation */}
       <div
-        className="fixed inset-0 pointer-events-none z-0"
-        style={{
-          backgroundImage: 'url("/black_gold_brick_texture.png")',
-          backgroundSize: "cover",
-          backgroundPosition: "center",
-          backgroundRepeat: "no-repeat",
-          backgroundAttachment: "scroll",
-          opacity: 0.4,
-        }}
-      />
+        className={`fixed inset-0 pointer-events-none z-0 ${
+          isAnimating ? "animate-zoom-rotate" : ""
+        }`}
+      >
+        {/* Left Side - Far Top */}
+        <div
+          className={`absolute bottom-[200vh] left-0 h-screen w-1/2 ${
+            isAnimating ? "animate-split-left" : ""
+          }`}
+          style={{
+            backgroundImage: 'url("/black_gold_brick_texture.png")',
+            backgroundSize: "200% 100%",
+            backgroundPosition: "left center",
+            backgroundRepeat: "no-repeat",
+            backgroundAttachment: "scroll",
+            opacity: 0.4,
+          }}
+        />
 
-      <div className="relative z-10">
+        {/* Left Side - Top */}
+        <div
+          className={`absolute bottom-full left-0 h-screen w-1/2 ${
+            isAnimating ? "animate-split-left" : ""
+          }`}
+          style={{
+            backgroundImage: 'url("/black_gold_brick_texture.png")',
+            backgroundSize: "200% 100%",
+            backgroundPosition: "left center",
+            backgroundRepeat: "no-repeat",
+            backgroundAttachment: "scroll",
+            opacity: 0.4,
+          }}
+        />
+
+        {/* Left Side - Middle */}
+        <div
+          className={`absolute top-0 left-0 bottom-0 w-1/2 ${
+            isAnimating ? "animate-split-left" : ""
+          }`}
+          style={{
+            backgroundImage: 'url("/black_gold_brick_texture.png")',
+            backgroundSize: "200% 100%",
+            backgroundPosition: "left center",
+            backgroundRepeat: "no-repeat",
+            backgroundAttachment: "scroll",
+            opacity: 0.4,
+          }}
+        />
+
+        {/* Left Side - Bottom */}
+        <div
+          className={`absolute top-full left-0 h-screen w-1/2 ${
+            isAnimating ? "animate-split-left" : ""
+          }`}
+          style={{
+            backgroundImage: 'url("/black_gold_brick_texture.png")',
+            backgroundSize: "200% 100%",
+            backgroundPosition: "left center",
+            backgroundRepeat: "no-repeat",
+            backgroundAttachment: "scroll",
+            opacity: 0.4,
+          }}
+        />
+
+        {/* Left Side - Far Bottom */}
+        <div
+          className={`absolute top-[200vh] left-0 h-screen w-1/2 ${
+            isAnimating ? "animate-split-left" : ""
+          }`}
+          style={{
+            backgroundImage: 'url("/black_gold_brick_texture.png")',
+            backgroundSize: "200% 100%",
+            backgroundPosition: "left center",
+            backgroundRepeat: "no-repeat",
+            backgroundAttachment: "scroll",
+            opacity: 0.4,
+          }}
+        />
+
+        {/* Left Side - Far Left Extension */}
+        <div
+          className={`absolute top-0 bottom-0 right-full w-screen ${
+            isAnimating ? "animate-split-left" : ""
+          }`}
+          style={{
+            backgroundImage: 'url("/black_gold_brick_texture.png")',
+            backgroundSize: "200% 100%",
+            backgroundPosition: "left center",
+            backgroundRepeat: "no-repeat",
+            backgroundAttachment: "scroll",
+            opacity: 0.4,
+          }}
+        />
+
+        {/* Right Side - Far Top */}
+        <div
+          className={`absolute bottom-[200vh] right-0 h-screen w-1/2 ${
+            isAnimating ? "animate-split-right" : ""
+          }`}
+          style={{
+            backgroundImage: 'url("/black_gold_brick_texture.png")',
+            backgroundSize: "200% 100%",
+            backgroundPosition: "right center",
+            backgroundRepeat: "no-repeat",
+            backgroundAttachment: "scroll",
+            opacity: 0.4,
+          }}
+        />
+
+        {/* Right Side - Top */}
+        <div
+          className={`absolute bottom-full right-0 h-screen w-1/2 ${
+            isAnimating ? "animate-split-right" : ""
+          }`}
+          style={{
+            backgroundImage: 'url("/black_gold_brick_texture.png")',
+            backgroundSize: "200% 100%",
+            backgroundPosition: "right center",
+            backgroundRepeat: "no-repeat",
+            backgroundAttachment: "scroll",
+            opacity: 0.4,
+          }}
+        />
+
+        {/* Right Side - Middle */}
+        <div
+          className={`absolute top-0 right-0 bottom-0 w-1/2 ${
+            isAnimating ? "animate-split-right" : ""
+          }`}
+          style={{
+            backgroundImage: 'url("/black_gold_brick_texture.png")',
+            backgroundSize: "200% 100%",
+            backgroundPosition: "right center",
+            backgroundRepeat: "no-repeat",
+            backgroundAttachment: "scroll",
+            opacity: 0.4,
+          }}
+        />
+
+        {/* Right Side - Bottom */}
+        <div
+          className={`absolute top-full right-0 h-screen w-1/2 ${
+            isAnimating ? "animate-split-right" : ""
+          }`}
+          style={{
+            backgroundImage: 'url("/black_gold_brick_texture.png")',
+            backgroundSize: "200% 100%",
+            backgroundPosition: "right center",
+            backgroundRepeat: "no-repeat",
+            backgroundAttachment: "scroll",
+            opacity: 0.4,
+          }}
+        />
+
+        {/* Right Side - Far Bottom */}
+        <div
+          className={`absolute top-[200vh] right-0 h-screen w-1/2 ${
+            isAnimating ? "animate-split-right" : ""
+          }`}
+          style={{
+            backgroundImage: 'url("/black_gold_brick_texture.png")',
+            backgroundSize: "200% 100%",
+            backgroundPosition: "right center",
+            backgroundRepeat: "no-repeat",
+            backgroundAttachment: "scroll",
+            opacity: 0.4,
+          }}
+        />
+
+        {/* Right Side - Far Right Extension */}
+        <div
+          className={`absolute top-0 bottom-0 left-full w-screen ${
+            isAnimating ? "animate-split-right" : ""
+          }`}
+          style={{
+            backgroundImage: 'url("/black_gold_brick_texture.png")',
+            backgroundSize: "200% 100%",
+            backgroundPosition: "right center",
+            backgroundRepeat: "no-repeat",
+            backgroundAttachment: "scroll",
+            opacity: 0.4,
+          }}
+        />
+      </div>
+
+      <style>{`
+        @keyframes zoomRotate {
+          0% {
+            transform: scale(1) rotate(0deg);
+          }
+          50% {
+            transform: scale(1.5) rotate(-90deg);
+          }
+          100% {
+            transform: scale(1.5) rotate(-90deg);
+          }
+        }
+
+        @keyframes splitLeft {
+          0%, 50% {
+            transform: translateX(0);
+          }
+          100% {
+            transform: translateX(-100vw);
+          }
+        }
+
+        @keyframes splitRight {
+          0%, 50% {
+            transform: translateX(0);
+          }
+          100% {
+            transform: translateX(100vw);
+          }
+        }
+
+        .animate-zoom-rotate {
+          animation: zoomRotate 4s ease-in-out forwards;
+          transform-origin: center center;
+        }
+
+        .animate-split-left {
+          animation: splitLeft 4s ease-in-out forwards;
+        }
+
+        .animate-split-right {
+          animation: splitRight 4s ease-in-out forwards;
+        }
+      `}</style>
+
+      <div
+        className={`relative z-10 transition-opacity duration-300 ${isAnimating ? "opacity-0" : "opacity-100"}`}
+      >
         <Navbar />
 
         {/* Hero Section */}
@@ -47,7 +278,7 @@ export default function BeatsLanding() {
             </p>
 
             {/* Search Bar */}
-            <form onSubmit={handleSearch} className="mb-16">
+            <div className="mb-16">
               <div className="relative max-w-2xl mx-auto">
                 <Search className="absolute left-6 top-1/2 transform -translate-y-1/2 text-muted-foreground w-6 h-6" />
                 <input
@@ -55,20 +286,25 @@ export default function BeatsLanding() {
                   placeholder="Search for trap, lo-fi, 140 BPM..."
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
+                  onKeyDown={(e) => {
+                    if (e.key === "Enter") {
+                      handleSearch(e);
+                    }
+                  }}
                   className="w-full pl-16 pr-6 py-6 text-lg bg-white/5 border-2 border-white/10 rounded-2xl text-foreground placeholder:text-muted-foreground focus:outline-none focus:border-[hsl(var(--gold))]/50 focus:ring-4 focus:ring-[hsl(var(--gold))]/20 transition-all"
                 />
                 <button
-                  type="submit"
+                  onClick={handleSearch}
                   className="absolute right-3 top-1/2 transform -translate-y-1/2 bg-[hsl(var(--gold))] text-black px-8 py-3 rounded-xl font-bold hover:bg-[hsl(var(--gold))]/90 transition-all"
                 >
                   Search
                 </button>
               </div>
-            </form>
+            </div>
 
             {/* Browse Button */}
             <button
-              onClick={() => setLocation("/beats/catalog")}
+              onClick={() => handleTransition("/beats/catalog")}
               className="inline-flex items-center gap-2 bg-white/5 border border-white/10 text-foreground px-8 py-4 rounded-xl font-semibold hover:bg-white/10 transition-all"
             >
               <Music className="w-5 h-5" />
@@ -79,7 +315,7 @@ export default function BeatsLanding() {
           {/* Quick Categories */}
           <div className="mt-20 grid md:grid-cols-3 gap-6 max-w-5xl mx-auto">
             <button
-              onClick={() => setLocation("/beats/catalog?genre=Trap")}
+              onClick={() => handleTransition("/beats/catalog?genre=Trap")}
               className="group p-8 bg-white/5 border border-white/10 rounded-xl hover:border-[hsl(var(--gold))]/50 hover:bg-white/10 transition-all text-left"
             >
               <Zap className="w-8 h-8 text-[hsl(var(--gold))] mb-4 group-hover:scale-110 transition-transform" />
@@ -90,7 +326,7 @@ export default function BeatsLanding() {
             </button>
 
             <button
-              onClick={() => setLocation("/beats/catalog?genre=Lofi")}
+              onClick={() => handleTransition("/beats/catalog?genre=LOFI")}
               className="group p-8 bg-white/5 border border-white/10 rounded-xl hover:border-[hsl(var(--gold))]/50 hover:bg-white/10 transition-all text-left"
             >
               <Music className="w-8 h-8 text-[hsl(var(--gold))] mb-4 group-hover:scale-110 transition-transform" />
@@ -101,7 +337,7 @@ export default function BeatsLanding() {
             </button>
 
             <button
-              onClick={() => setLocation("/beats/catalog?genre=EDM")}
+              onClick={() => handleTransition("/beats/catalog?genre=EDM")}
               className="group p-8 bg-white/5 border border-white/10 rounded-xl hover:border-[hsl(var(--gold))]/50 hover:bg-white/10 transition-all text-left"
             >
               <TrendingUp className="w-8 h-8 text-[hsl(var(--gold))] mb-4 group-hover:scale-110 transition-transform" />
