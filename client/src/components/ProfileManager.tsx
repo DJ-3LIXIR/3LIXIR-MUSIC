@@ -38,7 +38,7 @@ export default function ProfileManager() {
   const [profile, setProfile] = useState<Profile | null>(null);
   const [loading, setLoading] = useState(true);
   const [editing, setEditing] = useState(false);
-  const [activeSection, setActiveSection] = useState<Section>("personal");
+  const [activeSection, setActiveSection] = useState<Section>("settings");
   const [fullName, setFullName] = useState("");
   const [bio, setBio] = useState("");
   const [message, setMessage] = useState("");
@@ -306,6 +306,7 @@ export default function ProfileManager() {
   }
 
   const menuItems = [
+    { id: "settings" as Section, label: "Settings", icon: Settings },
     { id: "personal" as Section, label: "Personal info", icon: User },
     { id: "security" as Section, label: "Security", icon: Lock },
     { id: "purchases" as Section, label: "Purchases", icon: ShoppingBag },
@@ -314,7 +315,6 @@ export default function ProfileManager() {
       label: "Manage Subscription",
       icon: Crown,
     },
-    { id: "settings" as Section, label: "Settings", icon: Settings },
   ];
 
   const getProfileGradient = () => {
@@ -685,7 +685,6 @@ export default function ProfileManager() {
                     Manage Your Subscriptions
                   </h2>
                   <ManageSubscription />
-                  {/* Component will go here */}
                 </div>
               )}
 
