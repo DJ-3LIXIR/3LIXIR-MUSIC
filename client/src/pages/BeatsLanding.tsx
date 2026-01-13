@@ -58,8 +58,8 @@ export default function BeatsLanding() {
           }`}
           style={{
             backgroundImage: 'url("/black_gold_brick_texture.png")',
-            backgroundSize: "200% 100%",
-            backgroundPosition: "left center",
+            backgroundSize: "cover",
+            backgroundPosition: "center",
             backgroundRepeat: "no-repeat",
             backgroundAttachment: "scroll",
             opacity: 0.4,
@@ -73,8 +73,8 @@ export default function BeatsLanding() {
           }`}
           style={{
             backgroundImage: 'url("/black_gold_brick_texture.png")',
-            backgroundSize: "200% 100%",
-            backgroundPosition: "left center",
+            backgroundSize: "cover",
+            backgroundPosition: "center",
             backgroundRepeat: "no-repeat",
             backgroundAttachment: "scroll",
             opacity: 0.4,
@@ -88,8 +88,8 @@ export default function BeatsLanding() {
           }`}
           style={{
             backgroundImage: 'url("/black_gold_brick_texture.png")',
-            backgroundSize: "200% 100%",
-            backgroundPosition: "left center",
+            backgroundSize: "cover",
+            backgroundPosition: "center",
             backgroundRepeat: "no-repeat",
             backgroundAttachment: "scroll",
             opacity: 0.4,
@@ -103,8 +103,8 @@ export default function BeatsLanding() {
           }`}
           style={{
             backgroundImage: 'url("/black_gold_brick_texture.png")',
-            backgroundSize: "200% 100%",
-            backgroundPosition: "left center",
+            backgroundSize: "cover",
+            backgroundPosition: "center",
             backgroundRepeat: "no-repeat",
             backgroundAttachment: "scroll",
             opacity: 0.4,
@@ -118,8 +118,8 @@ export default function BeatsLanding() {
           }`}
           style={{
             backgroundImage: 'url("/black_gold_brick_texture.png")',
-            backgroundSize: "200% 100%",
-            backgroundPosition: "left center",
+            backgroundSize: "cover",
+            backgroundPosition: "center",
             backgroundRepeat: "no-repeat",
             backgroundAttachment: "scroll",
             opacity: 0.4,
@@ -133,8 +133,8 @@ export default function BeatsLanding() {
           }`}
           style={{
             backgroundImage: 'url("/black_gold_brick_texture.png")',
-            backgroundSize: "200% 100%",
-            backgroundPosition: "left center",
+            backgroundSize: "cover",
+            backgroundPosition: "center",
             backgroundRepeat: "no-repeat",
             backgroundAttachment: "scroll",
             opacity: 0.4,
@@ -148,11 +148,12 @@ export default function BeatsLanding() {
           }`}
           style={{
             backgroundImage: 'url("/black_gold_brick_texture.png")',
-            backgroundSize: "200% 100%",
-            backgroundPosition: "right center",
+            backgroundSize: "cover",
+            backgroundPosition: "center",
             backgroundRepeat: "no-repeat",
             backgroundAttachment: "scroll",
             opacity: 0.4,
+            transform: isAnimating ? undefined : "scaleX(-1)",
           }}
         />
 
@@ -163,11 +164,12 @@ export default function BeatsLanding() {
           }`}
           style={{
             backgroundImage: 'url("/black_gold_brick_texture.png")',
-            backgroundSize: "200% 100%",
-            backgroundPosition: "right center",
+            backgroundSize: "cover",
+            backgroundPosition: "center",
             backgroundRepeat: "no-repeat",
             backgroundAttachment: "scroll",
             opacity: 0.4,
+            transform: isAnimating ? undefined : "scaleX(-1)",
           }}
         />
 
@@ -178,11 +180,12 @@ export default function BeatsLanding() {
           }`}
           style={{
             backgroundImage: 'url("/black_gold_brick_texture.png")',
-            backgroundSize: "200% 100%",
-            backgroundPosition: "right center",
+            backgroundSize: "cover",
+            backgroundPosition: "center",
             backgroundRepeat: "no-repeat",
             backgroundAttachment: "scroll",
             opacity: 0.4,
+            transform: isAnimating ? undefined : "scaleX(-1)",
           }}
         />
 
@@ -193,11 +196,12 @@ export default function BeatsLanding() {
           }`}
           style={{
             backgroundImage: 'url("/black_gold_brick_texture.png")',
-            backgroundSize: "200% 100%",
-            backgroundPosition: "right center",
+            backgroundSize: "cover",
+            backgroundPosition: "center",
             backgroundRepeat: "no-repeat",
             backgroundAttachment: "scroll",
             opacity: 0.4,
+            transform: isAnimating ? undefined : "scaleX(-1)",
           }}
         />
 
@@ -208,11 +212,12 @@ export default function BeatsLanding() {
           }`}
           style={{
             backgroundImage: 'url("/black_gold_brick_texture.png")',
-            backgroundSize: "200% 100%",
-            backgroundPosition: "right center",
+            backgroundSize: "cover",
+            backgroundPosition: "center",
             backgroundRepeat: "no-repeat",
             backgroundAttachment: "scroll",
             opacity: 0.4,
+            transform: isAnimating ? undefined : "scaleX(-1)",
           }}
         />
 
@@ -223,11 +228,12 @@ export default function BeatsLanding() {
           }`}
           style={{
             backgroundImage: 'url("/black_gold_brick_texture.png")',
-            backgroundSize: "200% 100%",
-            backgroundPosition: "right center",
+            backgroundSize: "cover",
+            backgroundPosition: "center",
             backgroundRepeat: "no-repeat",
             backgroundAttachment: "scroll",
             opacity: 0.4,
+            transform: isAnimating ? undefined : "scaleX(-1)",
           }}
         />
       </div>
@@ -256,10 +262,10 @@ export default function BeatsLanding() {
 
         @keyframes splitRight {
           0%, 50% {
-            transform: translateX(0);
+            transform: scaleX(-1) translateX(0);
           }
           100% {
-            transform: translateX(100vw);
+            transform: scaleX(-1) translateX(-100vw);
           }
         }
 
