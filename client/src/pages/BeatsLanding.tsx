@@ -1,18 +1,23 @@
 import { useState } from "react";
 import { useLocation } from "wouter";
 import { Navbar } from "@/components/layout/Navbar";
+import { BeatsGrid } from "@/components/store/BeatsGrid";
 import { Search, Music, Zap, TrendingUp } from "lucide-react";
 
 export default function BeatsLanding() {
   const [searchQuery, setSearchQuery] = useState("");
   const [, setLocation] = useLocation();
   const [isAnimating, setIsAnimating] = useState(false);
+  const [showBeatsPage, setShowBeatsPage] = useState(false);
 
   const handleTransition = (destination: string) => {
     setIsAnimating(true);
     setTimeout(() => {
+      setShowBeatsPage(true);
+    }, 2000);
+    setTimeout(() => {
       setLocation(destination);
-    }, 2500);
+    }, 4000);
   };
 
   const handleSearch = (e: React.FormEvent) => {
@@ -28,9 +33,21 @@ export default function BeatsLanding() {
 
   return (
     <div className="min-h-screen bg-background text-foreground relative overflow-hidden">
+      {/* Beats Page Underneath - Revealed by animation */}
+      {showBeatsPage && (
+        <div className="fixed inset-0 z-0 animate-reveal-center">
+          <div className="min-h-screen bg-background text-foreground">
+            <Navbar />
+            <div className="pt-20">
+              <BeatsGrid />
+            </div>
+          </div>
+        </div>
+      )}
+
       {/* Wrapper for zoom/rotate animation */}
       <div
-        className={`fixed inset-0 pointer-events-none z-0 ${
+        className={`fixed inset-0 pointer-events-none z-10 ${
           isAnimating ? "animate-zoom-rotate" : ""
         }`}
       >
@@ -246,6 +263,15 @@ export default function BeatsLanding() {
           }
         }
 
+        @keyframes revealCenter {
+          0% {
+            clip-path: inset(50% 0 50% 0);
+          }
+          100% {
+            clip-path: inset(0 0 0 0);
+          }
+        }
+
         .animate-zoom-rotate {
           animation: zoomRotate 4s ease-in-out forwards;
           transform-origin: center center;
@@ -258,10 +284,14 @@ export default function BeatsLanding() {
         .animate-split-right {
           animation: splitRight 4s ease-in-out forwards;
         }
+
+        .animate-reveal-center {
+          animation: revealCenter 1.5s ease-in-out forwards;
+        }
       `}</style>
 
       <div
-        className={`relative z-10 transition-opacity duration-300 ${isAnimating ? "opacity-0" : "opacity-100"}`}
+        className={`relative z-20 transition-opacity duration-300 ${isAnimating ? "opacity-0" : "opacity-100"}`}
       >
         <Navbar />
 
