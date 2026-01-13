@@ -34,6 +34,20 @@ interface Order {
   created_at: string;
 }
 
+interface Subscription {
+  id: string;
+  user_id: string;
+  subscription_id: string;
+  plan_id: string;
+  plan_name: string;
+  status: string;
+  start_date: string;
+  next_billing_date: string | null;
+  cancel_at_period_end: boolean;
+  created_at: string;
+  updated_at: string;
+}
+
 export default function ProfileManager() {
   const [profile, setProfile] = useState<Profile | null>(null);
   const [loading, setLoading] = useState(true);
@@ -46,6 +60,8 @@ export default function ProfileManager() {
   const [profileColor, setProfileColor] = useState("#f59e0b");
   const [orders, setOrders] = useState<Order[]>([]);
   const [loadingOrders, setLoadingOrders] = useState(false);
+  const [subscription, setSubscription] = useState<Subscription | null>(null);
+  const [loadingSubscription, setLoadingSubscription] = useState(false);
   const [, setLocation] = useLocation();
 
   const colorOptions = [
@@ -104,6 +120,12 @@ export default function ProfileManager() {
     }
   }, [activeSection, profile]);
 
+  useEffect(() => {
+    if (activeSection === "subscription" && profile) {
+      loadSubscription();
+    }
+  }, [activeSection, profile]);
+
   const loadProfile = async () => {
     try {
       const {
@@ -154,6 +176,34 @@ export default function ProfileManager() {
       setMessage(`Error loading orders: ${error.message}`);
     } finally {
       setLoadingOrders(false);
+    }
+  };
+
+  const loadSubscription = async () => {
+    if (!profile) return;
+
+    setLoadingSubscription(true);
+    try {
+      const { data, error } = await supabase
+        .from("subscriptions")
+        .select("*")
+        .eq("user_id", profile.id)
+        .eq("status", "active")
+        .order("created_at", { ascending: false })
+        .limit(1)
+        .single();
+
+      if (error && error.code !== "PGRST116") {
+        // PGRST116 is "no rows returned"
+        throw error;
+      }
+
+      setSubscription(data || null);
+    } catch (error: any) {
+      console.error("Error loading subscription:", error);
+      setMessage(`Error loading subscription: ${error.message}`);
+    } finally {
+      setLoadingSubscription(false);
     }
   };
 
@@ -684,7 +734,12 @@ export default function ProfileManager() {
                   <h2 className="text-4xl font-display font-bold mb-2 text-center">
                     Manage Your Subscriptions
                   </h2>
-                  <ManageSubscription />
+                  <ManageSubscription
+                    subscription={subscription}
+                    loading={loadingSubscription}
+                    onRefresh={loadSubscription}
+                    userId={profile.id}
+                  />
                 </div>
               )}
 
