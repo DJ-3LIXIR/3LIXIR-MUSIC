@@ -2516,65 +2516,86 @@ const InfoPage = () => {
   };
 
   return (
-    <div className="min-h-screen text-foreground">
-      <Background opacity={0.5} />
+    <div className="min-h-screen bg-black text-white relative">
       <Navbar />
-
-      <div className="container mx-auto px-6 pt-32 pb-20">
-        <div className="text-center mb-16">
-          <h1 className="text-5xl md:text-7xl font-display font-bold tracking-tighter mb-6">
-            Information Center
-          </h1>
-          <p className="text-muted-foreground text-lg max-w-2xl mx-auto">
-            Everything you need to know about 3LIXIR MUSIC
-          </p>
-        </div>
-
-        <div className="w-full">
-          {/* Horizontal Navigation */}
-          <div className="mb-8 overflow-x-auto">
-            <div className="flex gap-2 pb-2 min-w-max justify-center">
-              {sections.map((section) => {
-                const Icon = section.icon;
-                return (
-                  <button
-                    key={section.id}
-                    onClick={() => setActiveSection(section.id)}
-                    className={`flex items-center gap-2 px-6 py-3 rounded-full transition-all whitespace-nowrap ${
-                      activeSection === section.id
-                        ? "bg-[hsl(var(--gold))] text-black font-semibold shadow-lg shadow-[hsl(var(--gold))]/20"
-                        : "bg-white/5 text-muted-foreground hover:bg-white/10 hover:text-foreground"
-                    }`}
-                  >
-                    <Icon className="w-5 h-5" />
-                    <span>{section.title}</span>
-                  </button>
-                );
-              })}
+      {/* Textured Background - Same as BeatsLanding */}
+      <div className="fixed inset-0 z-0">
+        {/* Left Side */}
+        <div
+          className="absolute top-0 left-0 bottom-0 w-1/2"
+          style={{
+            backgroundImage: 'url("/black_gold_brick_texture.png")',
+            backgroundSize: "cover",
+            backgroundPosition: "center",
+            backgroundRepeat: "no-repeat",
+            opacity: 0.4,
+          }}
+        />
+        {/* Right Side - Mirrored */}
+        <div
+          className="absolute top-0 right-0 bottom-0 w-1/2"
+          style={{
+            backgroundImage: 'url("/black_gold_brick_texture.png")',
+            backgroundSize: "cover",
+            backgroundPosition: "center",
+            backgroundRepeat: "no-repeat",
+            opacity: 0.4,
+            transform: "scaleX(-1)",
+          }}
+        />
+      </div>
+      {/* Content */}
+      <div className="relative z-10">
+        <div className="container mx-auto px-6 pt-32 pb-20">
+          <div className="text-center mb-16">
+            <h1 className="text-5xl md:text-7xl font-bold tracking-tighter mb-6">
+              Information Center
+            </h1>
+            <p className="text-gray-400 text-lg max-w-2xl mx-auto">
+              Everything you need to know about 3LIXIR MUSIC
+            </p>
+          </div>
+          <div className="w-full">
+            {/* Horizontal Navigation */}
+            <div className="mb-8 overflow-x-auto">
+              <div className="flex gap-2 pb-2 min-w-max justify-center">
+                {sections.map((section) => {
+                  const Icon = section.icon;
+                  return (
+                    <button
+                      key={section.id}
+                      onClick={() => setActiveSection(section.id)}
+                      className={`flex items-center gap-2 px-6 py-3 rounded-full transition-all whitespace-nowrap ${
+                        activeSection === section.id
+                          ? "bg-yellow-600 text-black font-semibold shadow-lg"
+                          : "bg-white/5 text-gray-400 hover:bg-white/10 hover:text-white"
+                      }`}
+                    >
+                      <Icon className="w-5 h-5" />
+                      <span>{section.title}</span>
+                    </button>
+                  );
+                })}
+              </div>
+            </div>
+            {/* White Separator Line */}
+            <div className="w-full h-px bg-white/20 mb-8"></div>
+            {/* Content Area */}
+            <div className="border border-white/10 rounded-2xl p-8 md:p-12 bg-white/5 backdrop-blur-sm">
+              {content[activeSection]}
             </div>
           </div>
-
-          {/* White Separator Line */}
-          <div className="w-full h-px bg-white/20 mb-8"></div>
-
-          {/* Content Area - Full width */}
-          <div className="border border-white/10 rounded-2xl p-8 md:p-12 bg-white/5 backdrop-blur-sm">
-            {content[activeSection]}
-          </div>
         </div>
-      </div>
-
-      {/* Footer */}
-      <div className="border-t border-white/10 mt-20">
-        <div className="container mx-auto px-6 py-8">
-          <div className="text-center text-muted-foreground">
-            <p>© 2026 3LIXIR MUSIC. All rights reserved.</p>
-            <p className="text-sm mt-2">
-              Questions? Contact us at{" "}
-              <span className="text-[hsl(var(--gold))]">
-                contact@3lixirmusic.com
-              </span>
-            </p>
+        {/* Footer */}
+        <div className="border-t border-white/10 mt-20">
+          <div className="container mx-auto px-6 py-8">
+            <div className="text-center text-gray-400">
+              <p>© 2026 3LIXIR MUSIC. All rights reserved.</p>
+              <p className="text-sm mt-2">
+                Questions? Contact us at{" "}
+                <span className="text-yellow-600">contact@3lixirmusic.com</span>
+              </p>
+            </div>
           </div>
         </div>
       </div>
