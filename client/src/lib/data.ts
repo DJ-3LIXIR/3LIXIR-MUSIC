@@ -10,6 +10,7 @@ export interface Beat {
   releaseDate: string;
   youtubeUrl?: string; // YouTube video URL
   audioUrl?: string; // Placeholder for now
+  memberOnly: boolean; // New property for member-only beats
 }
 
 export const beats: Beat[] = [
@@ -25,6 +26,7 @@ export const beats: Beat[] = [
     tags: ["EDM", "House", "Atmospheric"],
     releaseDate: "2026-01-02",
     youtubeUrl: "https://youtu.be/RamMgoQDEso",
+    memberOnly: false,
   },
   {
     id: "2",
@@ -37,7 +39,8 @@ export const beats: Beat[] = [
       "https://images.unsplash.com/photo-1470225620780-dba8ba36b745?q=80&w=1000&auto=format&fit=crop",
     tags: ["Etheral", "Boom Bap", "LOFI"],
     releaseDate: "2026-01-02",
-    youtubeUrl: "https://youtu.be/czWOFYrTASo", // Replace with actual video ID
+    youtubeUrl: "https://youtu.be/czWOFYrTASo",
+    memberOnly: false,
   },
   {
     id: "3",
@@ -50,7 +53,8 @@ export const beats: Beat[] = [
       "https://images.unsplash.com/photo-1557672172-298e090bd0f1?q=80&w=1000&auto=format&fit=crop",
     tags: ["Synthwave", "LOFI", "EDM"],
     releaseDate: "2026-01-02",
-    youtubeUrl: "https://youtu.be/URACea9_w2Q", // Replace with actual video ID
+    youtubeUrl: "https://youtu.be/URACea9_w2Q",
+    memberOnly: true,
   },
   {
     id: "4",
@@ -63,7 +67,8 @@ export const beats: Beat[] = [
       "https://images.unsplash.com/photo-1511671782779-c97d3d27a1d4?q=80&w=1000&auto=format&fit=crop",
     tags: ["Boom Bap", "EDM", "LOFI"],
     releaseDate: "2026-01-03",
-    youtubeUrl: "https://youtu.be/9HMeD5Hy_FU", // Replace with actual video ID
+    youtubeUrl: "https://youtu.be/9HMeD5Hy_FU",
+    memberOnly: false,
   },
   {
     id: "5",
@@ -76,7 +81,8 @@ export const beats: Beat[] = [
       "https://images.unsplash.com/photo-1614149162883-504ce4d13909?q=80&w=1000&auto=format&fit=crop",
     tags: ["EDM", "LOFI", "Trap"],
     releaseDate: "2026-01-03",
-    youtubeUrl: "https://youtu.be/1FewK3a-3l4", // Replace with actual video ID
+    youtubeUrl: "https://youtu.be/1FewK3a-3l4",
+    memberOnly: false,
   },
   {
     id: "6",
@@ -89,7 +95,8 @@ export const beats: Beat[] = [
       "https://images.unsplash.com/photo-1493225255756-d9584f8606e9?q=80&w=1000&auto=format&fit=crop",
     tags: ["LOFI", "Jazz", "Boombap"],
     releaseDate: "2026-01-03",
-    youtubeUrl: "https://youtu.be/7WRtUYAtOqk", // Replace with actual video ID
+    youtubeUrl: "https://youtu.be/7WRtUYAtOqk",
+    memberOnly: false,
   },
   {
     id: "7",
@@ -103,6 +110,7 @@ export const beats: Beat[] = [
     tags: ["EDM", "House", "cinematic"],
     releaseDate: "2026-01-12",
     youtubeUrl: "https://youtu.be/fBU5HTRvtPc",
+    memberOnly: false,
   },
   {
     id: "8",
@@ -115,7 +123,8 @@ export const beats: Beat[] = [
       "https://images.unsplash.com/photo-1470225620780-dba8ba36b745?q=80&w=1000&auto=format&fit=crop",
     tags: ["LOFI", "Liminal", "EDM"],
     releaseDate: "2026-01-12",
-    youtubeUrl: "https://youtu.be/q1BUr1nkRAo", // Replace with actual video ID
+    youtubeUrl: "https://youtu.be/q1BUr1nkRAo",
+    memberOnly: false,
   },
   {
     id: "9",
@@ -128,7 +137,8 @@ export const beats: Beat[] = [
       "https://images.unsplash.com/photo-1557672172-298e090bd0f1?q=80&w=1000&auto=format&fit=crop",
     tags: ["House", "EDM", "Club"],
     releaseDate: "2026-01-12",
-    youtubeUrl: "https://youtu.be/nNExA6NHn5s", // Replace with actual video ID
+    youtubeUrl: "https://youtu.be/nNExA6NHn5s",
+    memberOnly: true,
   },
   {
     id: "10",
@@ -141,7 +151,8 @@ export const beats: Beat[] = [
       "https://images.unsplash.com/photo-1511671782779-c97d3d27a1d4?q=80&w=1000&auto=format&fit=crop",
     tags: ["Dubstep", "EDM", "Boom Bap"],
     releaseDate: "2026-01-12",
-    youtubeUrl: "https://youtu.be/SNy6AtR55yM", // Replace with actual video ID
+    youtubeUrl: "https://youtu.be/SNy6AtR55yM",
+    memberOnly: true,
   },
   {
     id: "11",
@@ -154,7 +165,8 @@ export const beats: Beat[] = [
       "https://images.unsplash.com/photo-1614149162883-504ce4d13909?q=80&w=1000&auto=format&fit=crop",
     tags: ["EDM", "Techno", "House"],
     releaseDate: "2026-01-12",
-    youtubeUrl: "https://youtu.be/9C9JfqOdQNQ", // Replace with actual video ID
+    youtubeUrl: "https://youtu.be/9C9JfqOdQNQ",
+    memberOnly: false,
   },
   {
     id: "12",
@@ -167,6 +179,7 @@ export const beats: Beat[] = [
       "https://images.unsplash.com/photo-1493225255756-d9584f8606e9?q=80&w=1000&auto=format&fit=crop",
     tags: ["EDM", "Dubstep", "Techno"],
     releaseDate: "2026-01-12",
-    youtubeUrl: "https://youtu.be/9C9JfqOdQNQ", // Replace with actual video ID
+    youtubeUrl: "https://youtu.be/9C9JfqOdQNQ",
+    memberOnly: false,
   },
 ];

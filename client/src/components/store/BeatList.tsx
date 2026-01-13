@@ -4,6 +4,9 @@ import { motion } from "framer-motion";
 import { Link } from "wouter";
 
 export function BeatList() {
+  // Get only the 6 most recent beats
+  const recentBeats = beats.slice(0, 6);
+
   return (
     <section id="beatlist" className="py-24 bg-black relative">
       <div className="container px-6 mx-auto">
@@ -19,7 +22,7 @@ export function BeatList() {
           </div>
         </div>
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-          {beats.map((beat, index) => (
+          {recentBeats.map((beat, index) => (
             <motion.div
               key={beat.id}
               initial={{ opacity: 0, y: 20 }}

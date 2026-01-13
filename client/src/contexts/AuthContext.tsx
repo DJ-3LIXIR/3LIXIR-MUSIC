@@ -10,11 +10,19 @@ import { Button } from "@/components/ui/button";
 import { supabase } from "@/supabaseClient";
 import type { User } from "@supabase/supabase-js";
 
+interface UserProfile {
+  id: string;
+  email: string;
+  full_name: string;
+  subscription_tier: string;
+}
+
 interface AuthContextType {
   showAuthModal: boolean;
   openAuthModal: () => void;
   closeAuthModal: () => void;
-  user: User | null;
+  user: (User & { subscription_tier?: string }) | null;
+  userProfile: UserProfile | null;
   signOut: () => Promise<void>;
 }
 
@@ -23,7 +31,10 @@ const AuthContext = createContext<AuthContextType | undefined>(undefined);
 export function AuthProvider({ children }: { children: ReactNode }) {
   const [showAuthModal, setShowAuthModal] = useState(false);
   const [isSignUp, setIsSignUp] = useState(true);
-  const [user, setUser] = useState<User | null>(null);
+  const [user, setUser] = useState<
+    (User & { subscription_tier?: string }) | null
+  >(null);
+  const [userProfile, setUserProfile] = useState<UserProfile | null>(null);
   const [loading, setLoading] = useState(false);
   const [message, setMessage] = useState("");
 
@@ -32,17 +43,51 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const [password, setPassword] = useState("");
   const [fullName, setFullName] = useState("");
 
+  // Fetch user profile with subscription tier
+  const fetchUserProfile = async (userId: string) => {
+    try {
+      const { data, error } = await supabase
+        .from("profiles")
+        .select("*")
+        .eq("id", userId)
+        .single();
+
+      if (error) throw error;
+
+      setUserProfile(data);
+
+      // Attach subscription_tier to user object for easy access
+      if (user) {
+        setUser({ ...user, subscription_tier: data.subscription_tier });
+      }
+    } catch (error) {
+      console.error("Error fetching user profile:", error);
+    }
+  };
+
   useEffect(() => {
     // Check active sessions and sets the user
     supabase.auth.getSession().then(({ data: { session } }) => {
-      setUser(session?.user ?? null);
+      if (session?.user) {
+        setUser(session.user);
+        fetchUserProfile(session.user.id);
+      } else {
+        setUser(null);
+        setUserProfile(null);
+      }
     });
 
     // Listen for changes on auth state
     const {
       data: { subscription },
     } = supabase.auth.onAuthStateChange((_event, session) => {
-      setUser(session?.user ?? null);
+      if (session?.user) {
+        setUser(session.user);
+        fetchUserProfile(session.user.id);
+      } else {
+        setUser(null);
+        setUserProfile(null);
+      }
     });
 
     return () => subscription.unsubscribe();
@@ -89,6 +134,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
                 id: data.user.id,
                 email: email,
                 full_name: fullName,
+                subscription_tier: "tier_zero", // Default tier
               },
             ]);
 
@@ -123,11 +169,19 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const signOut = async () => {
     await supabase.auth.signOut();
     setUser(null);
+    setUserProfile(null);
   };
 
   return (
     <AuthContext.Provider
-      value={{ showAuthModal, openAuthModal, closeAuthModal, user, signOut }}
+      value={{
+        showAuthModal,
+        openAuthModal,
+        closeAuthModal,
+        user,
+        userProfile,
+        signOut,
+      }}
     >
       {children}
 

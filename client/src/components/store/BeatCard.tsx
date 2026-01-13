@@ -1,10 +1,12 @@
 import { Beat } from "@/lib/data";
-import { Play, Pause, ShoppingCart, Heart } from "lucide-react";
+import { Play, Pause, ShoppingCart, Heart, Crown, Lock } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { motion } from "framer-motion";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useCart } from "@/contexts/CartContext";
 import { useToast } from "@/hooks/use-toast";
+import { useAuth } from "@/contexts/AuthContext";
+import { supabase } from "@/supabaseClient";
 
 interface BeatCardProps {
   beat: Beat;
@@ -13,10 +15,73 @@ interface BeatCardProps {
 export function BeatCard({ beat }: BeatCardProps) {
   const [isPlaying, setIsPlaying] = useState(false);
   const [isHovered, setIsHovered] = useState(false);
+  const [subscriptionTier, setSubscriptionTier] = useState<string>("tier_zero");
   const { addToCart } = useCart();
   const { toast } = useToast();
+  const { user, openAuthModal } = useAuth();
+
+  // Fetch user's subscription tier
+  useEffect(() => {
+    async function fetchSubscription() {
+      if (!user) {
+        setSubscriptionTier("tier_zero");
+        return;
+      }
+
+      try {
+        const { data, error } = await supabase
+          .from("profiles")
+          .select("subscription_tier")
+          .eq("id", user.id)
+          .single();
+
+        if (!error && data) {
+          setSubscriptionTier(data.subscription_tier || "tier_zero");
+        }
+      } catch (err) {
+        console.error("Error fetching subscription:", err);
+      }
+    }
+
+    fetchSubscription();
+  }, [user]);
+
+  // Check if user has access to member-only content
+  const hasAccess =
+    !beat.memberOnly || (user && subscriptionTier !== "tier_zero");
+
+  const handlePlay = () => {
+    if (beat.memberOnly && !hasAccess) {
+      // Show modal or toast for member-only content
+      toast({
+        title: "Members Only",
+        description:
+          "This beat is exclusive to members. Upgrade your plan to access.",
+        variant: "destructive",
+      });
+      return;
+    }
+    setIsPlaying(!isPlaying);
+  };
 
   const handleAddToCart = () => {
+    if (beat.memberOnly && !hasAccess) {
+      if (!user) {
+        openAuthModal();
+        toast({
+          title: "Sign in required",
+          description: "Please sign in to purchase member-only beats.",
+        });
+      } else {
+        toast({
+          title: "Members Only",
+          description: "Upgrade your membership to purchase this beat.",
+          variant: "destructive",
+        });
+      }
+      return;
+    }
+
     addToCart(beat);
     toast({
       title: "Added to cart",
@@ -54,7 +119,7 @@ export function BeatCard({ beat }: BeatCardProps) {
     >
       {/* Cover Image Area */}
       <div className="aspect-square relative overflow-hidden">
-        {isPlaying && youtubeId ? (
+        {isPlaying && youtubeId && hasAccess ? (
           // YouTube Embed
           <iframe
             src={`https://www.youtube.com/embed/${youtubeId}?autoplay=1&controls=1`}
@@ -71,22 +136,31 @@ export function BeatCard({ beat }: BeatCardProps) {
               alt={beat.title}
               className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
             />
-
             {/* Overlay */}
             <div
               className={`absolute inset-0 bg-black/60 flex items-center justify-center transition-opacity duration-300 ${isHovered || isPlaying ? "opacity-100" : "opacity-0"}`}
             >
               <button
-                onClick={() => setIsPlaying(!isPlaying)}
-                className="w-16 h-16 rounded-full bg-white/10 backdrop-blur-md border border-white/20 flex items-center justify-center text-white hover:scale-110 transition-transform duration-300"
+                onClick={handlePlay}
+                className={`w-16 h-16 rounded-full bg-white/10 backdrop-blur-md border border-white/20 flex items-center justify-center text-white hover:scale-110 transition-transform duration-300 ${beat.memberOnly && !hasAccess ? "opacity-50" : ""}`}
               >
-                {isPlaying ? (
+                {beat.memberOnly && !hasAccess ? (
+                  <Lock className="w-6 h-6" />
+                ) : isPlaying ? (
                   <Pause className="w-6 h-6 fill-current" />
                 ) : (
                   <Play className="w-6 h-6 fill-current ml-1" />
                 )}
               </button>
             </div>
+
+            {/* Member-Only Badge */}
+            {beat.memberOnly && (
+              <div className="absolute top-4 left-4 flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-[hsl(var(--gold))] text-black font-bold text-xs uppercase tracking-wider">
+                <Crown className="w-3 h-3" />
+                <span>Members Only</span>
+              </div>
+            )}
 
             {/* Top Right Actions */}
             <div className="absolute top-4 right-4 flex gap-2 translate-y-[-10px] opacity-0 group-hover:translate-y-0 group-hover:opacity-100 transition-all duration-300">
@@ -96,9 +170,8 @@ export function BeatCard({ beat }: BeatCardProps) {
             </div>
           </>
         )}
-
         {/* Close button when video is playing */}
-        {isPlaying && youtubeId && (
+        {isPlaying && youtubeId && hasAccess && (
           <button
             onClick={() => setIsPlaying(false)}
             className="absolute top-4 right-4 z-10 w-8 h-8 rounded-full bg-black/80 backdrop-blur-md text-white hover:bg-black transition-colors flex items-center justify-center"
@@ -145,14 +218,22 @@ export function BeatCard({ beat }: BeatCardProps) {
               </span>
             ))}
           </div>
-
           <Button
             size="sm"
             onClick={handleAddToCart}
-            className="rounded-full bg-[hsl(var(--gold))] text-black hover:bg-[hsl(var(--gold))/90] font-bold text-xs uppercase px-4"
+            className={`rounded-full bg-[hsl(var(--gold))] text-black hover:bg-[hsl(var(--gold))]/90 font-bold text-xs uppercase px-4 ${beat.memberOnly && !hasAccess ? "opacity-70" : ""}`}
           >
-            <ShoppingCart className="w-3 h-3 mr-2" />
-            Add
+            {beat.memberOnly && !hasAccess ? (
+              <>
+                <Lock className="w-3 h-3 mr-2" />
+                Locked
+              </>
+            ) : (
+              <>
+                <ShoppingCart className="w-3 h-3 mr-2" />
+                Add
+              </>
+            )}
           </Button>
         </div>
       </div>
