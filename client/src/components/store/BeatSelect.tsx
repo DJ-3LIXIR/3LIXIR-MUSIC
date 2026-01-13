@@ -1,5 +1,5 @@
 import { beats } from "@/lib/data";
-import { BeatCard } from "@/components/BeatCard";
+import { BeatCard } from "@/components/store/BeatCard";
 import { motion } from "framer-motion";
 import { useState, useMemo, useEffect } from "react";
 import { Search } from "lucide-react";
