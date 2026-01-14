@@ -306,7 +306,7 @@ export const TechnicalSupport = () => {
             assist you.
           </p>
           <a
-            href="mailto:contact@3lixirmusic.com?subject=Technical Support Request"
+            href="mailto:support@3lixirmusic.com?subject=Technical Support Request"
             className="inline-flex items-center gap-2 bg-[hsl(var(--gold))] text-black px-8 py-3 rounded-full font-semibold hover:bg-[hsl(var(--gold))]/90 transition-colors"
           >
             <Mail className="w-5 h-5" />

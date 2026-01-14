@@ -994,7 +994,7 @@ const InfoPage = () => {
                       <p className="text-muted-foreground">
                         <strong className="text-foreground">Email:</strong>{" "}
                         <span className="text-[hsl(var(--gold))]">
-                          contact@3lixirmusic.com
+                          support@3lixirmusic.com
                         </span>
                       </p>
                     </div>
@@ -1266,7 +1266,7 @@ const InfoPage = () => {
                       <p className="text-muted-foreground">
                         <strong className="text-foreground">Email:</strong>{" "}
                         <span className="text-[hsl(var(--gold))]">
-                          contact@3lixirmusic.com
+                          support@3lixirmusic.com
                         </span>
                       </p>
                     </div>
@@ -1792,7 +1792,7 @@ const InfoPage = () => {
                       <p className="text-muted-foreground">
                         <strong className="text-foreground">Email:</strong>{" "}
                         <span className="text-[hsl(var(--gold))]">
-                          contact@3lixirmusic.com
+                          support@3lixirmusic.com
                         </span>
                       </p>
                     </div>
@@ -1959,7 +1959,7 @@ const InfoPage = () => {
                         </h4>
                         <p className="text-muted-foreground pl-7">
                           Check your spam folder first. If you still can't find
-                          it, contact us at contact@3lixirmusic.com with your
+                          it, contact us at support@3lixirmusic.com with your
                           order number.
                         </p>
                       </div>
@@ -1976,7 +1976,7 @@ const InfoPage = () => {
                       is here to help.
                     </p>
                     <a
-                      href="mailto:contact@3lixirmusic.com"
+                      href="mailto:support@3lixirmusic.com"
                       className="inline-flex items-center gap-2 bg-[hsl(var(--gold))] text-black px-6 py-2.5 rounded-full font-semibold hover:bg-[hsl(var(--gold))]/90 transition-colors"
                     >
                       <Mail className="w-4 h-4" />
@@ -2022,7 +2022,7 @@ const InfoPage = () => {
                       <p className="text-muted-foreground">
                         <strong className="text-foreground">Email:</strong>{" "}
                         <span className="text-[hsl(var(--gold))]">
-                          dmca@3lixirmusic.com
+                          support@3lixirmusic.com
                         </span>
                       </p>
                       <p className="text-muted-foreground">
@@ -2219,7 +2219,7 @@ const InfoPage = () => {
                   <div className="text-center">
                     <p className="font-semibold">Email</p>
                     <p className="text-muted-foreground">
-                      contact@3lixirmusic.com
+                      support@3lixirmusic.com
                     </p>
                   </div>
                 </div>
@@ -2495,7 +2495,7 @@ const InfoPage = () => {
                   production starts with a conversation.
                 </p>
                 <a
-                  href="mailto:contact@3lixirmusic.com?subject=Custom Production Inquiry"
+                  href="mailto:support@3lixirmusic.com?subject=Custom Production Inquiry"
                   className="inline-flex items-center gap-2 bg-[hsl(var(--gold))] text-black px-8 py-3 rounded-full font-semibold hover:bg-[hsl(var(--gold))]/90 transition-colors"
                 >
                   <Music className="w-5 h-5" />
@@ -2593,7 +2593,7 @@ const InfoPage = () => {
               <p>© 2026 3LIXIR MUSIC. All rights reserved.</p>
               <p className="text-sm mt-2">
                 Questions? Contact us at{" "}
-                <span className="text-yellow-600">contact@3lixirmusic.com</span>
+                <span className="text-yellow-600">support@3lixirmusic.com</span>
               </p>
             </div>
           </div>

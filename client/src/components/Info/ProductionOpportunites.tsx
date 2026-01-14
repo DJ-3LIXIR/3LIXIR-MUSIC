@@ -253,7 +253,7 @@ const ProductionOpportunities = () => {
             starts with a conversation.
           </p>
           <a
-            href="mailto:contact@3lixirmusic.com?subject=Custom Production Inquiry"
+            href="mailto:support@3lixirmusic.com?subject=Custom Production Inquiry"
             className="inline-flex items-center gap-2 bg-[hsl(var(--gold))] text-black px-8 py-3 rounded-full font-semibold hover:bg-[hsl(var(--gold))]/90 transition-colors"
           >
             <Music className="w-5 h-5" />
