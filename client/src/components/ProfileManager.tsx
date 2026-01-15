@@ -114,6 +114,55 @@ export default function ProfileManager() {
     }
   }, []);
 
+  // Add this new useEffect to handle Stripe payment success
+  useEffect(() => {
+    const handleStripeSuccess = async () => {
+      const params = new URLSearchParams(window.location.search);
+      const paymentStatus = params.get("payment");
+      const sessionId = params.get("session_id"); // Stripe adds this parameter
+
+      if (paymentStatus === "success" && sessionId) {
+        setMessage("Processing your payment...");
+
+        try {
+          // Retrieve the session details from Stripe
+          const response = await fetch(
+            "https://tciugratutxxrdtbsxim.supabase.co/functions/v1/retrieve-stripe-session",
+            {
+              method: "POST",
+              headers: {
+                "Content-Type": "application/json",
+                Authorization:
+                  "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InRjaXVncmF0dXR4eHJkdGJzeGltIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Njc0NzYwMDgsImV4cCI6MjA4MzA1MjAwOH0.-yif_fwvYOwE6kG4nkSc1HXyF-cHTlZGWGJ91YXsPuM",
+              },
+              body: JSON.stringify({ sessionId }),
+            },
+          );
+
+          const data = await response.json();
+
+          if (data.error) {
+            throw new Error(data.error);
+          }
+
+          setMessage("Payment successful! Your order has been processed.");
+
+          // Reload orders to show the new purchase
+          if (activeSection === "purchases") {
+            await loadOrders();
+          }
+
+          // Clean up URL
+          window.history.replaceState({}, "", "/profile?section=purchases");
+        } catch (error) {
+          console.error("Error processing payment:", error);
+          setMessage(`Error processing payment: ${error.message}`);
+        }
+      }
+    };
+
+    handleStripeSuccess();
+  }, [activeSection]);
   useEffect(() => {
     if (activeSection === "purchases" && profile) {
       loadOrders();
