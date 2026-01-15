@@ -70,7 +70,7 @@ export function Links() {
               onClick={handleSupportClick}
               className="group relative px-6 py-3 bg-gradient-to-r from-red-500 to-orange-500 rounded-full font-semibold text-base overflow-hidden transition-all duration-300 hover:scale-105 hover:shadow-lg hover:shadow-red-500/50"
             >
-              <span className="relative z-10">Support</span>
+              <span className="relative z-10">Support US</span>
               <div className="absolute inset-0 bg-gradient-to-r from-orange-500 to-red-500 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
             </button>
           </div>

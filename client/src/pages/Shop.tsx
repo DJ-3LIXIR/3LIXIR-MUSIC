@@ -1,23 +1,42 @@
 import { useState, useEffect, useRef } from "react";
 import { Navbar } from "@/components/layout/Navbar";
-import { Trash2, Plus, Minus, X, AlertCircle } from "lucide-react";
+import {
+  Trash2,
+  Plus,
+  Minus,
+  X,
+  AlertCircle,
+  CreditCard,
+  Wallet,
+} from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useLocation } from "wouter";
 import { useCart } from "@/contexts/CartContext";
 import { useAuth } from "@/contexts/AuthContext";
 import { supabase } from "@/supabaseClient";
+import { loadStripe } from "@stripe/stripe-js";
+
+type PaymentMethod = "stripe" | "paypal" | "crypto";
+
+// Initialize Stripe
+const stripePromise = loadStripe(
+  "pk_test_51Spw6HG4NUYiO6WbvkHI9nZxHSWSGUho6J9ZXinBUCpEt3BCdN78JffsCnPetEJIXTtwE6jRDdO7DIrlvMvZZlP1008shelj29",
+);
 
 export default function Shop() {
   const [, setLocation] = useLocation();
   const { items, removeFromCart, updateQuantity, subtotal, clearCart } =
     useCart();
-  const { user, openAuthModal } = useAuth();
-  const [showPayPal, setShowPayPal] = useState(false);
+  const { user, openAuthModal, userProfile } = useAuth();
+  const [showPaymentModal, setShowPaymentModal] = useState(false);
+  const [selectedPaymentMethod, setSelectedPaymentMethod] =
+    useState<PaymentMethod>("stripe");
   const [showLicenseModal, setShowLicenseModal] = useState(false);
   const paypalRef = useRef<HTMLDivElement>(null);
 
-  const tax = subtotal * 0.1;
-  const total = subtotal + tax;
+  // Tax will be calculated by Stripe automatically
+  const tax = 0;
+  const total = subtotal;
 
   // Count beats (non-license items) in cart
   const beatItems = items.filter(
@@ -35,12 +54,23 @@ export default function Shop() {
   const royaltyTokens = items.find((item) => item.id === "royalty-token");
   const tokenCount = royaltyTokens ? royaltyTokens.quantity : 0;
 
-  // Check if user has proper licensing
-  const hasProperLicensing = hasSubscription || tokenCount >= totalBeats;
+  // Check if user already has active membership
+  const hasActiveMembership =
+    userProfile?.subscription_tier &&
+    userProfile.subscription_tier !== "tier_zero";
 
+  // Include active membership in licensing check
+  const hasProperLicensing =
+    hasActiveMembership || hasSubscription || tokenCount >= totalBeats;
+
+  // Load PayPal buttons when PayPal is selected
   useEffect(() => {
-    if (showPayPal && paypalRef.current && window.paypal) {
-      // Clear any existing PayPal buttons
+    if (
+      showPaymentModal &&
+      selectedPaymentMethod === "paypal" &&
+      paypalRef.current &&
+      window.paypal
+    ) {
       paypalRef.current.innerHTML = "";
 
       window.paypal
@@ -54,10 +84,6 @@ export default function Shop() {
                     breakdown: {
                       item_total: {
                         value: subtotal.toFixed(2),
-                        currency_code: "USD",
-                      },
-                      tax_total: {
-                        value: tax.toFixed(2),
                         currency_code: "USD",
                       },
                     },
@@ -77,92 +103,162 @@ export default function Shop() {
           },
           onApprove: async (data: any, actions: any) => {
             const order = await actions.order.capture();
-            console.log("Payment successful!", order);
-
-            // Save order to database
-            try {
-              const {
-                data: { user },
-              } = await supabase.auth.getUser();
-
-              if (user) {
-                // Save the order
-                const { error } = await supabase.from("orders").insert({
-                  user_id: user.id,
-                  paypal_order_id: order.id,
-                  items: items,
-                  subtotal: subtotal,
-                  tax: tax,
-                  total: total,
-                  status: "completed",
-                });
-
-                if (error) {
-                  console.error("Error saving order:", error);
-                }
-
-                // Check if order contains a subscription and update user's tier
-                const subscriptionItem = items.find((item) =>
-                  item.id.startsWith("subscription-"),
-                );
-
-                if (subscriptionItem) {
-                  let newTier = "tier_zero";
-
-                  // Map subscription names to tier values
-                  if (subscriptionItem.id === "subscription-gold") {
-                    newTier = "gold";
-                  } else if (subscriptionItem.id === "subscription-diamond") {
-                    newTier = "diamond";
-                  } else if (subscriptionItem.id === "subscription-platinum") {
-                    newTier = "platinum";
-                  }
-
-                  // Update user's subscription tier in profiles table
-                  const { error: updateError } = await supabase
-                    .from("profiles")
-                    .update({
-                      subscription_tier: newTier,
-                      updated_at: new Date().toISOString(),
-                    })
-                    .eq("id", user.id);
-
-                  if (updateError) {
-                    console.error(
-                      "Error updating subscription tier:",
-                      updateError,
-                    );
-                  } else {
-                    console.log("Subscription tier updated to:", newTier);
-                  }
-                }
-              }
-            } catch (error) {
-              console.error("Error saving order:", error);
-            }
-
-            clearCart();
-            setShowPayPal(false);
-
-            // Show success message
-            alert("Payment successful! Your purchase has been completed.");
-
-            // Redirect to profile purchases section
-            setLocation("/profile?section=purchases");
+            await handlePaymentSuccess(order.id, "paypal");
           },
         })
         .render(paypalRef.current);
     }
-  }, [showPayPal, total, items, subtotal, tax, clearCart, setLocation]);
+  }, [showPaymentModal, selectedPaymentMethod, total, items, subtotal]);
+
+  const handlePaymentSuccess = async (
+    transactionId: string,
+    method: PaymentMethod,
+  ) => {
+    try {
+      const {
+        data: { user },
+      } = await supabase.auth.getUser();
+
+      if (user) {
+        // Save the order
+        const { error } = await supabase.from("orders").insert({
+          user_id: user.id,
+          payment_method: method,
+          transaction_id: transactionId,
+          items: items,
+          subtotal: subtotal,
+          tax: tax,
+          total: total,
+          status: "completed",
+        });
+
+        if (error) {
+          console.error("Error saving order:", error);
+        }
+
+        // Check if order contains a subscription and update user's tier
+        const subscriptionItem = items.find((item) =>
+          item.id.startsWith("subscription-"),
+        );
+
+        if (subscriptionItem) {
+          let newTier = "tier_zero";
+
+          if (subscriptionItem.id === "subscription-gold") {
+            newTier = "gold";
+          } else if (subscriptionItem.id === "subscription-diamond") {
+            newTier = "diamond";
+          } else if (subscriptionItem.id === "subscription-platinum") {
+            newTier = "platinum";
+          }
+
+          const { error: updateError } = await supabase
+            .from("profiles")
+            .update({
+              subscription_tier: newTier,
+              updated_at: new Date().toISOString(),
+            })
+            .eq("id", user.id);
+
+          if (updateError) {
+            console.error("Error updating subscription tier:", updateError);
+          } else {
+            console.log("Subscription tier updated to:", newTier);
+          }
+        }
+      }
+    } catch (error) {
+      console.error("Error saving order:", error);
+    }
+
+    clearCart();
+    setShowPaymentModal(false);
+    alert("Payment successful! Your purchase has been completed.");
+    setLocation("/profile?section=purchases");
+  };
+
+  const handleStripeCheckout = async () => {
+    try {
+      const stripe = await stripePromise;
+      if (!stripe) {
+        alert("Stripe failed to load. Please try again.");
+        return;
+      }
+
+      // Create line items for Stripe with tax_behavior
+      const lineItems = items.map((item) => ({
+        price_data: {
+          currency: "usd",
+          product_data: {
+            name: item.title,
+            description: `By ${item.artist}`,
+            images: item.cover ? [item.cover] : [],
+          },
+          unit_amount: Math.round(item.price * 100),
+          tax_behavior: "exclusive",
+        },
+        quantity: item.quantity,
+      }));
+
+      console.log("Sending checkout request with:", {
+        lineItems,
+        userId: user?.id,
+        userEmail: user?.email,
+      });
+
+      // Call your Edge Function
+      const response = await fetch(
+        "https://tciugratutxxrdtbsxim.supabase.co/functions/v1/create-stripe-checkout",
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization:
+              "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InRjaXVncmF0dXR4eHJkdGJzeGltIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Njc0NzYwMDgsImV4cCI6MjA4MzA1MjAwOH0.-yif_fwvYOwE6kG4nkSc1HXyF-cHTlZGWGJ91YXsPuM",
+          },
+          body: JSON.stringify({
+            lineItems,
+            userId: user?.id,
+            userEmail: user?.email,
+            successUrl: `${window.location.origin}/profile?section=purchases&payment=success`,
+            cancelUrl: `${window.location.origin}/shop?payment=cancelled`,
+          }),
+        },
+      );
+
+      const data = await response.json();
+      console.log("Stripe response:", data);
+
+      if (data.error) {
+        console.error("Stripe error details:", data.error);
+        throw new Error(data.error);
+      }
+
+      // NEW METHOD: Redirect using the URL directly
+      if (data.url) {
+        window.location.href = data.url;
+      } else {
+        throw new Error("No checkout URL returned from server");
+      }
+    } catch (error) {
+      console.error("Stripe checkout error:", error);
+      alert(`Payment failed: ${error.message}`);
+    }
+  };
+
+  const handleCryptoCheckout = async () => {
+    // TODO: Implement Coinbase Commerce checkout
+    console.log("Crypto checkout initiated");
+    alert("Crypto payment integration coming soon!");
+  };
 
   const handleCheckout = () => {
     if (!user) {
       openAuthModal();
     } else if (totalBeats > 0 && !hasProperLicensing) {
-      // Show licensing required modal if user has beats but insufficient licensing
       setShowLicenseModal(true);
     } else {
-      setShowPayPal(true);
+      setShowPaymentModal(true);
     }
   };
 
@@ -223,12 +319,12 @@ export default function Shop() {
         </div>
       )}
 
-      {/* PayPal Checkout Modal */}
-      {showPayPal && (
+      {/* Payment Method Modal */}
+      {showPaymentModal && (
         <div className="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 flex items-center justify-center p-4">
-          <div className="bg-background border border-white/10 rounded-2xl p-8 max-w-md w-full relative">
+          <div className="bg-background border border-white/10 rounded-2xl p-8 max-w-lg w-full relative">
             <button
-              onClick={() => setShowPayPal(false)}
+              onClick={() => setShowPaymentModal(false)}
               className="absolute top-4 right-4 text-muted-foreground hover:text-white transition-colors"
             >
               <X className="w-6 h-6" />
@@ -236,14 +332,17 @@ export default function Shop() {
 
             <h2 className="text-2xl font-bold mb-6">Complete Payment</h2>
 
+            {/* Order Summary */}
             <div className="mb-6 p-4 bg-white/5 rounded-lg">
               <div className="flex justify-between mb-2">
                 <span className="text-muted-foreground">Subtotal</span>
                 <span>${subtotal.toFixed(2)}</span>
               </div>
               <div className="flex justify-between mb-2">
-                <span className="text-muted-foreground">Tax</span>
-                <span>${tax.toFixed(2)}</span>
+                <span className="text-muted-foreground text-sm">Tax</span>
+                <span className="text-sm text-muted-foreground">
+                  Calculated at checkout
+                </span>
               </div>
               <div className="h-px bg-white/10 my-3"></div>
               <div className="flex justify-between text-xl font-bold">
@@ -252,13 +351,160 @@ export default function Shop() {
                   ${total.toFixed(2)}
                 </span>
               </div>
+              <p className="text-xs text-muted-foreground mt-2">
+                Final amount including tax will be shown at checkout
+              </p>
             </div>
 
-            <div ref={paypalRef} className="mb-4"></div>
+            {/* Payment Method Selector */}
+            <div className="mb-6">
+              <h3 className="text-sm font-semibold text-muted-foreground uppercase tracking-wider mb-3">
+                Select Payment Method
+              </h3>
 
-            <p className="text-xs text-muted-foreground text-center">
-              Your payment is secured by PayPal
-            </p>
+              <div className="space-y-3">
+                {/* Stripe Option */}
+                <button
+                  onClick={() => setSelectedPaymentMethod("stripe")}
+                  className={`w-full p-4 rounded-lg border-2 transition-all flex items-center gap-4 ${
+                    selectedPaymentMethod === "stripe"
+                      ? "border-[hsl(var(--gold))] bg-[hsl(var(--gold))]/5"
+                      : "border-white/10 hover:border-white/20"
+                  }`}
+                >
+                  <div
+                    className={`w-5 h-5 rounded-full border-2 flex items-center justify-center ${
+                      selectedPaymentMethod === "stripe"
+                        ? "border-[hsl(var(--gold))]"
+                        : "border-white/30"
+                    }`}
+                  >
+                    {selectedPaymentMethod === "stripe" && (
+                      <div className="w-2.5 h-2.5 rounded-full bg-[hsl(var(--gold))]"></div>
+                    )}
+                  </div>
+                  <CreditCard className="w-6 h-6 text-[hsl(var(--gold))]" />
+                  <div className="flex-grow text-left">
+                    <div className="font-semibold">Credit / Debit Card</div>
+                    <div className="text-sm text-muted-foreground">
+                      Pay with Stripe
+                    </div>
+                  </div>
+                  <div className="flex gap-1">
+                    <div className="w-8 h-5 bg-white rounded text-[10px] flex items-center justify-center font-bold text-black">
+                      VISA
+                    </div>
+                    <div className="w-8 h-5 bg-red-500 rounded text-[10px] flex items-center justify-center font-bold">
+                      MC
+                    </div>
+                  </div>
+                </button>
+
+                {/* PayPal Option */}
+                <button
+                  onClick={() => setSelectedPaymentMethod("paypal")}
+                  className={`w-full p-4 rounded-lg border-2 transition-all flex items-center gap-4 ${
+                    selectedPaymentMethod === "paypal"
+                      ? "border-[hsl(var(--gold))] bg-[hsl(var(--gold))]/5"
+                      : "border-white/10 hover:border-white/20"
+                  }`}
+                >
+                  <div
+                    className={`w-5 h-5 rounded-full border-2 flex items-center justify-center ${
+                      selectedPaymentMethod === "paypal"
+                        ? "border-[hsl(var(--gold))]"
+                        : "border-white/30"
+                    }`}
+                  >
+                    {selectedPaymentMethod === "paypal" && (
+                      <div className="w-2.5 h-2.5 rounded-full bg-[hsl(var(--gold))]"></div>
+                    )}
+                  </div>
+                  <svg className="w-6 h-6" viewBox="0 0 24 24" fill="#00457C">
+                    <path d="M20.067 8.478c.492.88.556 2.014.3 3.327-.74 3.806-3.276 5.12-6.514 5.12h-.5a.805.805 0 00-.794.68l-.04.22-.63 3.993-.032.17a.804.804 0 01-.794.68H7.72a.483.483 0 01-.477-.558L9.213 7.25a.964.964 0 01.952-.806h4.92c.947 0 1.748.098 2.397.32 1.124.386 1.815 1.15 2.085 2.306z" />
+                  </svg>
+                  <div className="flex-grow text-left">
+                    <div className="font-semibold">PayPal</div>
+                    <div className="text-sm text-muted-foreground">
+                      Fast & secure
+                    </div>
+                  </div>
+                </button>
+
+                {/* Crypto Option */}
+                <button
+                  onClick={() => setSelectedPaymentMethod("crypto")}
+                  className={`w-full p-4 rounded-lg border-2 transition-all flex items-center gap-4 ${
+                    selectedPaymentMethod === "crypto"
+                      ? "border-[hsl(var(--gold))] bg-[hsl(var(--gold))]/5"
+                      : "border-white/10 hover:border-white/20"
+                  }`}
+                >
+                  <div
+                    className={`w-5 h-5 rounded-full border-2 flex items-center justify-center ${
+                      selectedPaymentMethod === "crypto"
+                        ? "border-[hsl(var(--gold))]"
+                        : "border-white/30"
+                    }`}
+                  >
+                    {selectedPaymentMethod === "crypto" && (
+                      <div className="w-2.5 h-2.5 rounded-full bg-[hsl(var(--gold))]"></div>
+                    )}
+                  </div>
+                  <Wallet className="w-6 h-6 text-[hsl(var(--gold))]" />
+                  <div className="flex-grow text-left">
+                    <div className="font-semibold">Cryptocurrency</div>
+                    <div className="text-sm text-muted-foreground">
+                      BTC, ETH, USDC & more
+                    </div>
+                  </div>
+                </button>
+              </div>
+            </div>
+
+            {/* Payment Interface */}
+            <div className="mb-4">
+              {selectedPaymentMethod === "stripe" && (
+                <div className="space-y-4">
+                  <Button
+                    onClick={handleStripeCheckout}
+                    className="w-full bg-[hsl(var(--gold))] text-black hover:bg-[hsl(var(--gold))]/90 rounded-full py-6 text-sm font-bold uppercase tracking-widest"
+                  >
+                    Continue to Checkout
+                  </Button>
+                  <p className="text-xs text-muted-foreground text-center">
+                    Secured by Stripe • Tax calculated automatically
+                  </p>
+                </div>
+              )}
+
+              {selectedPaymentMethod === "paypal" && (
+                <div>
+                  <div ref={paypalRef} className="mb-4"></div>
+                  <p className="text-xs text-muted-foreground text-center">
+                    Your payment is secured by PayPal
+                  </p>
+                </div>
+              )}
+
+              {selectedPaymentMethod === "crypto" && (
+                <div className="text-center py-8">
+                  <Wallet className="w-16 h-16 text-[hsl(var(--gold))] mx-auto mb-4" />
+                  <p className="text-muted-foreground mb-6">
+                    Pay with Bitcoin, Ethereum, USDC, and other cryptocurrencies
+                  </p>
+                  <Button
+                    onClick={handleCryptoCheckout}
+                    className="w-full bg-[hsl(var(--gold))] text-black hover:bg-[hsl(var(--gold))]/90 rounded-full py-6 text-sm font-bold uppercase tracking-widest"
+                  >
+                    Continue with Crypto
+                  </Button>
+                  <p className="text-xs text-muted-foreground text-center mt-4">
+                    Powered by Coinbase Commerce
+                  </p>
+                </div>
+              )}
+            </div>
           </div>
         </div>
       )}
@@ -373,14 +619,27 @@ export default function Shop() {
               <div className="lg:col-span-1">
                 <div className="border border-white/10 rounded-lg p-6 sticky top-24">
                   <h2 className="text-2xl font-bold mb-6">Order Summary</h2>
+
+                  {hasActiveMembership && (
+                    <div className="mb-4 p-3 bg-[hsl(var(--gold))]/10 border border-[hsl(var(--gold))]/20 rounded-lg">
+                      <p className="text-sm text-[hsl(var(--gold))] font-semibold">
+                        ✓ Active {userProfile?.subscription_tier?.toUpperCase()}{" "}
+                        Member
+                      </p>
+                      <p className="text-xs text-muted-foreground mt-1">
+                        No license purchase required
+                      </p>
+                    </div>
+                  )}
+
                   <div className="space-y-4 mb-6">
                     <div className="flex justify-between text-muted-foreground">
                       <span>Subtotal</span>
                       <span>${subtotal.toFixed(2)}</span>
                     </div>
-                    <div className="flex justify-between text-muted-foreground">
-                      <span>Tax (10%)</span>
-                      <span>${tax.toFixed(2)}</span>
+                    <div className="flex justify-between text-muted-foreground text-sm">
+                      <span>Tax</span>
+                      <span>Calculated at checkout</span>
                     </div>
                     <div className="h-px bg-white/10"></div>
                     <div className="flex justify-between text-xl font-bold">
