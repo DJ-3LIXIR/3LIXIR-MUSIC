@@ -23,6 +23,13 @@ const stripePromise = loadStripe(
   "pk_test_51Spw6HG4NUYiO6WbvkHI9nZxHSWSGUho6J9ZXinBUCpEt3BCdN78JffsCnPetEJIXTtwE6jRDdO7DIrlvMvZZlP1008shelj29",
 );
 
+// Add global type for PayPal
+declare global {
+  interface Window {
+    paypal?: any;
+  }
+}
+
 export default function Shop() {
   const [, setLocation] = useLocation();
   const { items, removeFromCart, updateQuantity, subtotal, clearCart } =
@@ -240,9 +247,9 @@ export default function Shop() {
       } else {
         throw new Error("No checkout URL returned from server");
       }
-    } catch (error) {
-      console.error("Stripe checkout error:", error);
-      alert(`Payment failed: ${error.message}`);
+    } catch (err: any) {
+      console.error("Stripe checkout error:", err);
+      alert(`Payment failed: ${err.message}`);
     }
   };
 
@@ -610,7 +617,7 @@ export default function Shop() {
                         <Trash2 className="w-5 h-5" />
                       </button>
                       <span className="text-2xl font-bold text-[hsl(var(--gold))]">
-                        ${(item.price * item.quantity).toFixed(2)}
+                        ${((item.price || 0) * (item.quantity || 1)).toFixed(2)}
                       </span>
                     </div>
                   </div>
@@ -635,7 +642,7 @@ export default function Shop() {
                   <div className="space-y-4 mb-6">
                     <div className="flex justify-between text-muted-foreground">
                       <span>Subtotal</span>
-                      <span>${subtotal.toFixed(2)}</span>
+                      <span>${(subtotal || 0).toFixed(2)}</span>
                     </div>
                     <div className="flex justify-between text-muted-foreground text-sm">
                       <span>Tax</span>
@@ -645,7 +652,7 @@ export default function Shop() {
                     <div className="flex justify-between text-xl font-bold">
                       <span>Total</span>
                       <span className="text-[hsl(var(--gold))]">
-                        ${total.toFixed(2)}
+                        ${(total || 0).toFixed(2)}
                       </span>
                     </div>
                   </div>
@@ -674,7 +681,7 @@ export default function Shop() {
               3LIXIR
             </h2>
             <div className="text-sm text-muted-foreground">
-              © 2024 3LIXIR Audio. All rights reserved.
+              © 2026 3LIXIR MUSIC. All rights reserved.
             </div>
             <div className="flex gap-6">
               <a

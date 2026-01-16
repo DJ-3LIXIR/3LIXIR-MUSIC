@@ -303,7 +303,7 @@ export default function Downloads() {
                     • Downloads include MP3/WAV files based on your license
                   </li>
                   <li>• Keep your files backed up in a safe location</li>
-                  <li>• Need help? Contact support@3lixir.com</li>
+                  <li>• Need help? Contact support@3lixirmusic.com</li>
                 </ul>
               </div>
             )}
@@ -317,7 +317,7 @@ export default function Downloads() {
                 3LIXIR
               </h2>
               <div className="text-sm text-muted-foreground">
-                © 2024 3LIXIR Audio. All rights reserved.
+                © 2026 3LIXIR MUSIC. All rights reserved.
               </div>
               <div className="flex gap-6">
                 <a

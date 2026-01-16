@@ -3,7 +3,36 @@ import { useAuth } from "@/contexts/AuthContext";
 import { supabase } from "@/supabaseClient";
 import { useLocation } from "wouter";
 
-export default function VIPLicensesimg() {
+// Type for Subscription
+export interface Subscription {
+  id: string;
+  user_id: string;
+  subscription_id: string;
+  plan_id: string;
+  plan_name: string;
+  status: string;
+  start_date: string;
+  next_billing_date: string | null;
+  cancel_at_period_end: boolean;
+  created_at: string;
+  updated_at: string;
+}
+
+interface ManageSubscriptionProps {
+  subscription: Subscription | null;
+  loading: boolean;
+  onRefresh: () => Promise<void>;
+  userId: string;
+  userEmail: string;
+}
+
+export default function ManageSubscription({
+  subscription,
+  loading: loadingProp,
+  onRefresh,
+  userId,
+  userEmail,
+}: ManageSubscriptionProps) {
   const [, setLocation] = useLocation();
   const { user } = useAuth();
   const [subscriptionTier, setSubscriptionTier] = useState("tier_zero");
@@ -11,18 +40,27 @@ export default function VIPLicensesimg() {
   const [canceling, setCanceling] = useState(false);
 
   useEffect(() => {
+    if (subscription) {
+      setSubscriptionTier(subscription.plan_id || "tier_zero");
+      setLoading(false);
+      return;
+    }
+    
     async function fetchUserProfile() {
-      if (!user) {
+      if (!user && !userId) {
         setSubscriptionTier("tier_zero");
         setLoading(false);
         return;
       }
 
       try {
+        const targetId = userId || user?.id;
+        if (!targetId) return;
+
         const { data, error } = await supabase
           .from("profiles")
           .select("subscription_tier")
-          .eq("id", user.id)
+          .eq("id", targetId)
           .single();
 
         if (error) {
@@ -40,10 +78,11 @@ export default function VIPLicensesimg() {
     }
 
     fetchUserProfile();
-  }, [user]);
+  }, [user, userId, subscription]);
 
   const handleCancelSubscription = async () => {
-    if (!user) return;
+    const targetId = userId || user?.id;
+    if (!targetId) return;
 
     const confirmed = confirm(
       "Are you sure you want to cancel your subscription? You will lose access to your current tier benefits. Please note: All sales are final and no refunds will be issued.",
@@ -60,7 +99,7 @@ export default function VIPLicensesimg() {
           subscription_tier: "tier_zero",
           updated_at: new Date().toISOString(),
         })
-        .eq("id", user.id);
+        .eq("id", targetId);
 
       if (error) throw error;
 
@@ -68,6 +107,7 @@ export default function VIPLicensesimg() {
         "Subscription cancelled successfully. You now have the Black License.",
       );
       setSubscriptionTier("tier_zero");
+      if (onRefresh) await onRefresh();
     } catch (error: any) {
       console.error("Error cancelling subscription:", error);
       alert(`Error cancelling subscription: ${error.message}`);

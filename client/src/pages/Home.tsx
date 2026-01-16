@@ -363,7 +363,7 @@ export default function Home() {
               </a>
             </div>
             <div className="text-center text-sm text-yellow-500/60 mt-8">
-              © 2024 3LIXIR Audio. All rights reserved.
+              © 2026 3LIXIR MUSIC. All rights reserved.
             </div>
           </div>
         </footer>

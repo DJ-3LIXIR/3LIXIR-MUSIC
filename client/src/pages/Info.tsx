@@ -2589,13 +2589,13 @@ const InfoPage = () => {
         {/* Footer */}
         <div className="border-t border-white/10 mt-20">
           <div className="container mx-auto px-6 py-8">
-            <div className="text-center text-gray-400">
-              <p>© 2026 3LIXIR MUSIC. All rights reserved.</p>
-              <p className="text-sm mt-2">
-                Questions? Contact us at{" "}
-                <span className="text-yellow-600">support@3lixirmusic.com</span>
-              </p>
-            </div>
+              <div className="text-center text-gray-400">
+                <p>© 2026 3LIXIR MUSIC. All rights reserved.</p>
+                <p className="text-sm mt-2">
+                  Questions? Contact us at{" "}
+                  <span className="text-yellow-600">support@3lixirmusic.com</span>
+                </p>
+              </div>
           </div>
         </div>
       </div>

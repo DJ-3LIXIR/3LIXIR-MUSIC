@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { supabase, Profile } from "../supabaseClient";
 import { Navbar } from "@/components/layout/Navbar";
-import ManageSubscription from "@/components/Profile/ManageSubscription";
+import ManageSubscription, { Subscription as SubscriptionType } from "@/components/Profile/ManageSubscription";
 import {
   User,
   Lock,
@@ -34,20 +34,6 @@ interface Order {
   created_at: string;
 }
 
-interface Subscription {
-  id: string;
-  user_id: string;
-  subscription_id: string;
-  plan_id: string;
-  plan_name: string;
-  status: string;
-  start_date: string;
-  next_billing_date: string | null;
-  cancel_at_period_end: boolean;
-  created_at: string;
-  updated_at: string;
-}
-
 export default function ProfileManager() {
   const [profile, setProfile] = useState<Profile | null>(null);
   const [loading, setLoading] = useState(true);
@@ -60,7 +46,7 @@ export default function ProfileManager() {
   const [profileColor, setProfileColor] = useState("#f59e0b");
   const [orders, setOrders] = useState<Order[]>([]);
   const [loadingOrders, setLoadingOrders] = useState(false);
-  const [subscription, setSubscription] = useState<Subscription | null>(null);
+  const [subscription, setSubscription] = useState<SubscriptionType | null>(null);
   const [loadingSubscription, setLoadingSubscription] = useState(false);
   const [, setLocation] = useLocation();
 
@@ -154,10 +140,10 @@ export default function ProfileManager() {
 
           // Clean up URL
           window.history.replaceState({}, "", "/profile?section=purchases");
-        } catch (error) {
-          console.error("Error processing payment:", error);
-          setMessage(`Error processing payment: ${error.message}`);
-        }
+    } catch (error: any) {
+      console.error("Error processing payment:", error);
+      setMessage(`Error processing payment: ${error.message}`);
+    }
       }
     };
 
@@ -729,9 +715,9 @@ export default function ProfileManager() {
                                 </div>
                                 <div className="text-right">
                                   <p className="font-medium">
-                                    ${item.price.toFixed(2)}
+                                    ${(item.price || 0).toFixed(2)}
                                   </p>
-                                  {item.quantity > 1 && (
+                                  {(item.quantity || 1) > 1 && (
                                     <p className="text-sm text-muted-foreground">
                                       Qty: {item.quantity}
                                     </p>
@@ -746,16 +732,16 @@ export default function ProfileManager() {
                               <span className="text-muted-foreground">
                                 Subtotal
                               </span>
-                              <span>${order.subtotal.toFixed(2)}</span>
+                              <span>${(order.subtotal || 0).toFixed(2)}</span>
                             </div>
                             <div className="flex justify-between text-sm mb-2">
                               <span className="text-muted-foreground">Tax</span>
-                              <span>${order.tax.toFixed(2)}</span>
+                              <span>${(order.tax || 0).toFixed(2)}</span>
                             </div>
                             <div className="flex justify-between font-bold text-lg">
                               <span>Total</span>
                               <span className="text-[hsl(var(--gold))]">
-                                ${order.total.toFixed(2)}
+                                ${(order.total || 0).toFixed(2)}
                               </span>
                             </div>
                           </div>
@@ -783,12 +769,13 @@ export default function ProfileManager() {
                   <h2 className="text-4xl font-display font-bold mb-2 text-center">
                     Manage Your Subscriptions
                   </h2>
-                  <ManageSubscription
-                    subscription={subscription}
-                    loading={loadingSubscription}
-                    onRefresh={loadSubscription}
-                    userId={profile.id}
-                  />
+          <ManageSubscription
+            subscription={subscription}
+            loading={loadingSubscription}
+            onRefresh={loadSubscription}
+            userId={profile.id}
+            userEmail={profile.email || ""}
+          />
                 </div>
               )}
 
