@@ -12,9 +12,10 @@ import BeatsLanding from "@/pages/BeatsLanding";
 import Info from "@/pages/Info";
 import Licenses from "@/pages/Licenses";
 import Shop from "@/pages/Shop";
-import StripeSuccess from "@/pages/stripe-success"; // ADD THIS
+import StripeSuccess from "@/pages/stripe-success";
 import Downloads from "@/pages/Downloads";
 import VIPPage from "@/pages/VIPPage";
+import Favorites from "@/pages/Favorites";
 import NotFound from "@/pages/not-found";
 import ProfileManager from "@/components/ProfileManager";
 import AdminDashboard from "@/components/AdminDashboard";
@@ -28,9 +29,9 @@ function Router() {
       <Route path="/beats/catalog" component={Beats} />
       <Route path="/licenses" component={Licenses} />
       <Route path="/shop" component={Shop} />
-      <Route path="/stripe-success" component={StripeSuccess} />{" "}
-      {/* ADD THIS */}
+      <Route path="/stripe-success" component={StripeSuccess} />
       <Route path="/downloads" component={Downloads} />
+      <Route path="/favorites" component={Favorites} />
       <Route path="/vip" component={VIPPage} />
       <Route path="/profile" component={ProfileManager} />
       <Route path="/admin" component={AdminDashboard} />

@@ -338,35 +338,73 @@ export default function Downloads() {
           </div>
         </main>
 
-        <footer className="py-20 border-t border-white/5 bg-black mt-20">
+        <footer className="relative z-50 py-20 border-t border-yellow-500/20 bg-black mt-20">
           <div className="container px-6 mx-auto">
-            <div className="flex flex-col md:flex-row justify-between items-center gap-8">
-              <h2 className="text-3xl font-display font-bold tracking-tighter">
-                3LIXIR
+            <div className="text-center mb-8">
+              <h2 className="text-3xl font-display font-bold tracking-tighter text-white">
+                3LIXIR MUSIC
               </h2>
-              <div className="text-sm text-muted-foreground">
-                © 2026 3LIXIR MUSIC. All rights reserved.
-              </div>
-              <div className="flex gap-6">
-                <a
-                  href="#"
-                  className="text-muted-foreground hover:text-white transition-colors text-sm uppercase tracking-wider"
-                >
-                  Instagram
-                </a>
-                <a
-                  href="#"
-                  className="text-muted-foreground hover:text-white transition-colors text-sm uppercase tracking-wider"
-                >
-                  Twitter
-                </a>
-                <a
-                  href="#"
-                  className="text-muted-foreground hover:text-white transition-colors text-sm uppercase tracking-wider"
-                >
-                  YouTube
-                </a>
-              </div>
+            </div>
+            <div className="flex justify-center gap-6 mb-8">
+              <a
+                href="#"
+                className="relative z-10 text-yellow-500/60 hover:text-yellow-500 transition-colors text-sm uppercase tracking-wider cursor-pointer"
+              >
+                Instagram
+              </a>
+              <a
+                href="#"
+                className="relative z-10 text-yellow-500/60 hover:text-yellow-500 transition-colors text-sm uppercase tracking-wider cursor-pointer"
+              >
+                Twitter
+              </a>
+              <a
+                href="https://www.youtube.com/@DJ3LIXIR"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="relative z-10 text-yellow-500/60 hover:text-yellow-500 transition-colors text-sm uppercase tracking-wider cursor-pointer"
+              >
+                YouTube
+              </a>
+            </div>
+            <div className="flex flex-wrap justify-center gap-4 mt-8 text-sm text-yellow-500/60">
+              <a
+                href="/info?section=terms"
+                className="relative z-10 hover:text-yellow-500 transition-colors cursor-pointer"
+              >
+                Terms of Service
+              </a>
+              <span>•</span>
+              <a
+                href="/info?section=privacy"
+                className="relative z-10 hover:text-yellow-500 transition-colors cursor-pointer"
+              >
+                Privacy Policy
+              </a>
+              <span>•</span>
+              <a
+                href="/info?section=licensing"
+                className="relative z-10 hover:text-yellow-500 transition-colors cursor-pointer"
+              >
+                Licensing Agreement
+              </a>
+              <span>•</span>
+              <a
+                href="/info?section=refund"
+                className="relative z-10 hover:text-yellow-500 transition-colors cursor-pointer"
+              >
+                Refund Policy
+              </a>
+              <span>•</span>
+              <a
+                href="/info?section=copyright"
+                className="relative z-10 hover:text-yellow-500 transition-colors cursor-pointer"
+              >
+                Copyright & DMCA
+              </a>
+            </div>
+            <div className="text-center text-sm text-yellow-500/60 mt-8">
+              © 2026 3LIXIR MUSIC. All rights reserved.
             </div>
           </div>
         </footer>

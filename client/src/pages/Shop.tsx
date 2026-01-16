@@ -8,6 +8,9 @@ import {
   AlertCircle,
   CreditCard,
   Wallet,
+  Heart,
+  ShoppingCart,
+  Loader2,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useLocation } from "wouter";
@@ -15,8 +18,12 @@ import { useCart } from "@/contexts/CartContext";
 import { useAuth } from "@/contexts/AuthContext";
 import { supabase } from "@/supabaseClient";
 import { loadStripe } from "@stripe/stripe-js";
+import { BeatCard } from "@/components/store/BeatCard";
+import { beats } from "@/lib/data";
+import { motion } from "framer-motion";
 
 type PaymentMethod = "stripe" | "paypal" | "crypto";
+type ViewMode = "cart" | "favorites";
 
 // Initialize Stripe
 const stripePromise = loadStripe(
@@ -42,6 +49,45 @@ export default function Shop() {
   const [stripePopup, setStripePopup] = useState<Window | null>(null);
   const paypalRef = useRef<HTMLDivElement>(null);
 
+  // NEW: View mode state and favorites
+  const [viewMode, setViewMode] = useState<ViewMode>("cart");
+  const [favoriteBeats, setFavoriteBeats] = useState<any[]>([]);
+  const [loadingFavorites, setLoadingFavorites] = useState(false);
+
+  // NEW: Fetch favorites when user changes or view switches to favorites
+  useEffect(() => {
+    if (viewMode === "favorites" && user) {
+      fetchFavorites();
+    }
+  }, [viewMode, user]);
+
+  const fetchFavorites = async () => {
+    if (!user) return;
+
+    setLoadingFavorites(true);
+    try {
+      const { data: favorites, error } = await supabase
+        .from("favorites")
+        .select("beat_id, created_at")
+        .eq("user_id", user.id)
+        .order("created_at", { ascending: false });
+
+      if (error) throw error;
+
+      if (favorites) {
+        const favoriteBeatIds = favorites.map((f) => f.beat_id);
+        const matchedBeats = beats.filter((beat) =>
+          favoriteBeatIds.includes(beat.id),
+        );
+        setFavoriteBeats(matchedBeats);
+      }
+    } catch (err) {
+      console.error("Error fetching favorites:", err);
+    } finally {
+      setLoadingFavorites(false);
+    }
+  };
+
   // Monitor Stripe popup for completion
   useEffect(() => {
     if (!stripePopup) return;
@@ -50,7 +96,6 @@ export default function Shop() {
       if (stripePopup.closed) {
         clearInterval(checkPopup);
         setStripePopup(null);
-        // Check for payment success via URL params or storage
         checkStripePaymentStatus();
       }
     }, 500);
@@ -58,27 +103,20 @@ export default function Shop() {
     return () => clearInterval(checkPopup);
   }, [stripePopup]);
 
-  // Check for successful Stripe payment
   const checkStripePaymentStatus = async () => {
-    // Check localStorage for payment success flag set by popup
     const paymentSuccess = localStorage.getItem("stripe_payment_success");
     const sessionId = localStorage.getItem("stripe_session_id");
 
     if (paymentSuccess === "true" && sessionId) {
       console.log("Stripe payment success detected");
-
-      // Clear the flags
       localStorage.removeItem("stripe_payment_success");
       localStorage.removeItem("stripe_session_id");
-
       await handleStripeSuccess(sessionId);
     }
   };
 
-  // Listen for messages from popup window
   useEffect(() => {
     const handleMessage = async (event: MessageEvent) => {
-      // Verify origin for security
       if (event.origin !== window.location.origin) return;
 
       if (event.data.type === "STRIPE_PAYMENT_SUCCESS") {
@@ -91,16 +129,13 @@ export default function Shop() {
     return () => window.removeEventListener("message", handleMessage);
   }, []);
 
-  // Filter out any items with missing data
   const validItems = items.filter(
     (item) => item && typeof item.price === "number",
   );
 
-  // Tax will be calculated by Stripe automatically
   const tax = 0;
   const total = subtotal;
 
-  // Count beats (non-license items) in cart
   const beatItems = validItems.filter(
     (item) =>
       item.id !== "royalty-token" && !item.id.startsWith("subscription-"),
@@ -110,25 +145,20 @@ export default function Shop() {
     0,
   );
 
-  // Check if cart has subscription
   const hasSubscription = validItems.some((item) =>
     item.id.startsWith("subscription-"),
   );
 
-  // Count royalty tokens in cart
   const royaltyTokens = validItems.find((item) => item.id === "royalty-token");
   const tokenCount = royaltyTokens ? royaltyTokens.quantity : 0;
 
-  // Check if user already has active membership
   const hasActiveMembership =
     userProfile?.subscription_tier &&
     userProfile.subscription_tier !== "tier_zero";
 
-  // Include active membership in licensing check
   const hasProperLicensing =
     hasActiveMembership || hasSubscription || tokenCount >= totalBeats;
 
-  // Load PayPal buttons when PayPal is selected
   useEffect(() => {
     if (
       showPaymentModal &&
@@ -186,7 +216,6 @@ export default function Shop() {
       } = await supabase.auth.getUser();
 
       if (user) {
-        // Save the order
         const { error } = await supabase.from("orders").insert({
           user_id: user.id,
           payment_method: method,
@@ -202,7 +231,6 @@ export default function Shop() {
           console.error("Error saving order:", error);
         }
 
-        // Check if order contains a subscription and update user's tier
         const subscriptionItem = validItems.find((item) =>
           item.id.startsWith("subscription-"),
         );
@@ -251,7 +279,6 @@ export default function Shop() {
         return;
       }
 
-      // Create line items for Stripe with tax_behavior
       const lineItems = validItems.map((item) => ({
         price_data: {
           currency: "usd",
@@ -266,7 +293,6 @@ export default function Shop() {
         quantity: item.quantity || 1,
       }));
 
-      // Store cart items in localStorage with a timestamp to ensure we have them after payment
       const cartBackup = {
         items: validItems,
         subtotal: subtotal,
@@ -281,7 +307,6 @@ export default function Shop() {
         items: validItems,
       });
 
-      // Call your Edge Function
       const response = await fetch(
         "https://tciugratutxxrdtbsxim.supabase.co/functions/v1/create-stripe-checkout",
         {
@@ -310,7 +335,6 @@ export default function Shop() {
         throw new Error(data.error);
       }
 
-      // Open Stripe checkout in popup window
       if (data.url) {
         const width = 600;
         const height = 800;
@@ -325,7 +349,6 @@ export default function Shop() {
 
         if (popup) {
           setStripePopup(popup);
-          // Close payment modal while popup is open
           setShowPaymentModal(false);
         } else {
           alert("Please allow popups to complete checkout");
@@ -351,11 +374,9 @@ export default function Shop() {
         return;
       }
 
-      // Try multiple sources for cart items
       let cartItems = [];
       let calculatedSubtotal = 0;
 
-      // 1. Try stripe_cart_backup first (most reliable)
       const backupData = localStorage.getItem("stripe_cart_backup");
       if (backupData) {
         try {
@@ -363,14 +384,12 @@ export default function Shop() {
           cartItems = backup.items;
           calculatedSubtotal = backup.subtotal;
           console.log("Retrieved cart from backup:", cartItems);
-          // Clean up backup
           localStorage.removeItem("stripe_cart_backup");
         } catch (e) {
           console.error("Error parsing backup:", e);
         }
       }
 
-      // 2. Fallback to regular cart
       if (!cartItems || cartItems.length === 0) {
         const cartData = localStorage.getItem("elixir_cart");
         if (cartData) {
@@ -387,7 +406,6 @@ export default function Shop() {
         }
       }
 
-      // 3. Last fallback to validItems
       if (!cartItems || cartItems.length === 0) {
         cartItems = validItems;
         calculatedSubtotal = subtotal;
@@ -405,7 +423,6 @@ export default function Shop() {
 
       console.log("Saving order with items:", cartItems);
 
-      // Save the order
       const { error } = await supabase.from("orders").insert({
         user_id: currentUser.id,
         payment_method: "stripe",
@@ -427,7 +444,6 @@ export default function Shop() {
 
       console.log("Order saved successfully!");
 
-      // Check if order contains a subscription and update user's tier
       const subscriptionItem = cartItems.find((item: any) =>
         item.id.startsWith("subscription-"),
       );
@@ -458,10 +474,7 @@ export default function Shop() {
         }
       }
 
-      // Clear the cart
       clearCart();
-
-      // Show success message and redirect
       alert("Payment successful! Your purchase has been completed.");
       setLocation("/downloads");
     } catch (error) {
@@ -473,7 +486,6 @@ export default function Shop() {
   };
 
   const handleCryptoCheckout = async () => {
-    // TODO: Implement Coinbase Commerce checkout
     console.log("Crypto checkout initiated");
     alert("Crypto payment integration coming soon!");
   };
@@ -558,7 +570,6 @@ export default function Shop() {
 
             <h2 className="text-2xl font-bold mb-6">Complete Payment</h2>
 
-            {/* Order Summary */}
             <div className="mb-6 p-4 bg-white/5 rounded-lg">
               <div className="flex justify-between mb-2">
                 <span className="text-muted-foreground">Subtotal</span>
@@ -582,14 +593,12 @@ export default function Shop() {
               </p>
             </div>
 
-            {/* Payment Method Selector */}
             <div className="mb-6">
               <h3 className="text-sm font-semibold text-muted-foreground uppercase tracking-wider mb-3">
                 Select Payment Method
               </h3>
 
               <div className="space-y-3">
-                {/* Stripe Option */}
                 <button
                   onClick={() => setSelectedPaymentMethod("stripe")}
                   className={`w-full p-4 rounded-lg border-2 transition-all flex items-center gap-4 ${
@@ -626,7 +635,6 @@ export default function Shop() {
                   </div>
                 </button>
 
-                {/* PayPal Option */}
                 <button
                   onClick={() => setSelectedPaymentMethod("paypal")}
                   className={`w-full p-4 rounded-lg border-2 transition-all flex items-center gap-4 ${
@@ -657,7 +665,6 @@ export default function Shop() {
                   </div>
                 </button>
 
-                {/* Crypto Option */}
                 <button
                   onClick={() => setSelectedPaymentMethod("crypto")}
                   className={`w-full p-4 rounded-lg border-2 transition-all flex items-center gap-4 ${
@@ -688,7 +695,6 @@ export default function Shop() {
               </div>
             </div>
 
-            {/* Payment Interface */}
             <div className="mb-4">
               {selectedPaymentMethod === "stripe" && (
                 <div className="space-y-4">
@@ -737,193 +743,347 @@ export default function Shop() {
 
       <main className="pt-20">
         <div className="container mx-auto px-6 py-12">
-          <h1 className="text-5xl md:text-7xl font-display font-bold tracking-tighter mb-12">
-            Your Cart
-          </h1>
-          {validItems.length === 0 ? (
-            <div className="flex flex-col items-center justify-center py-20">
-              <div className="w-24 h-24 rounded-full bg-white/5 flex items-center justify-center mb-6">
-                <svg
-                  className="w-12 h-12 text-muted-foreground"
-                  fill="none"
-                  viewBox="0 0 24 24"
-                  stroke="currentColor"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth={2}
-                    d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z"
-                  />
-                </svg>
-              </div>
-              <h2 className="text-2xl font-bold mb-2">Your cart is empty</h2>
-              <p className="text-muted-foreground mb-8">
-                Add some beats or licenses to get started
-              </p>
-              <Button
-                onClick={() => setLocation("/beats")}
-                className="bg-[hsl(var(--gold))] text-black hover:bg-[hsl(var(--gold))]/90 rounded-full px-8 py-6 text-sm font-bold uppercase tracking-widest"
-              >
-                Browse Beats
-              </Button>
-            </div>
-          ) : (
-            <div className="grid grid-cols-1 lg:grid-cols-3 gap-12">
-              <div className="lg:col-span-2 space-y-6">
-                {validItems.map((item) => (
-                  <div
-                    key={item.id}
-                    className="flex gap-6 p-6 border border-white/10 rounded-lg hover:border-white/20 transition-colors"
+          {/* NEW: Toggle Buttons */}
+          <div className="mb-8 flex gap-4">
+            <button
+              onClick={() => setViewMode("cart")}
+              className={`flex items-center gap-2 px-6 py-3 rounded-full font-bold text-sm uppercase tracking-widest transition-all ${
+                viewMode === "cart"
+                  ? "bg-[hsl(var(--gold))] text-black"
+                  : "bg-white/5 text-muted-foreground hover:bg-white/10 hover:text-white"
+              }`}
+            >
+              <ShoppingCart className="w-4 h-4" />
+              Cart ({validItems.length})
+            </button>
+            <button
+              onClick={() => setViewMode("favorites")}
+              className={`flex items-center gap-2 px-6 py-3 rounded-full font-bold text-sm uppercase tracking-widest transition-all ${
+                viewMode === "favorites"
+                  ? "bg-[hsl(var(--gold))] text-black"
+                  : "bg-white/5 text-muted-foreground hover:bg-white/10 hover:text-white"
+              }`}
+            >
+              <Heart className="w-4 h-4" />
+              Favorites ({favoriteBeats.length})
+            </button>
+          </div>
+
+          {/* CART VIEW */}
+          {viewMode === "cart" && (
+            <>
+              <h1 className="text-5xl md:text-7xl font-display font-bold tracking-tighter mb-12">
+                Your Cart
+              </h1>
+              {validItems.length === 0 ? (
+                <div className="flex flex-col items-center justify-center py-20">
+                  <div className="w-24 h-24 rounded-full bg-white/5 flex items-center justify-center mb-6">
+                    <svg
+                      className="w-12 h-12 text-muted-foreground"
+                      fill="none"
+                      viewBox="0 0 24 24"
+                      stroke="currentColor"
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth={2}
+                        d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z"
+                      />
+                    </svg>
+                  </div>
+                  <h2 className="text-2xl font-bold mb-2">
+                    Your cart is empty
+                  </h2>
+                  <p className="text-muted-foreground mb-8">
+                    Add some beats or licenses to get started
+                  </p>
+                  <Button
+                    onClick={() => setLocation("/beats")}
+                    className="bg-[hsl(var(--gold))] text-black hover:bg-[hsl(var(--gold))]/90 rounded-full px-8 py-6 text-sm font-bold uppercase tracking-widest"
                   >
-                    <div className="w-24 h-24 bg-white/5 rounded-lg flex-shrink-0 overflow-hidden">
-                      {item.cover ? (
-                        <img
-                          src={item.cover}
-                          alt={item.title || "Item"}
-                          className="w-full h-full object-cover"
-                        />
-                      ) : (
-                        <div className="w-full h-full flex items-center justify-center">
-                          <svg
-                            className="w-12 h-12 text-[hsl(var(--gold))]"
-                            fill="none"
-                            viewBox="0 0 24 24"
-                            stroke="currentColor"
-                          >
-                            <path
-                              strokeLinecap="round"
-                              strokeLinejoin="round"
-                              strokeWidth={2}
-                              d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"
+                    Browse Beats
+                  </Button>
+                </div>
+              ) : (
+                <div className="grid grid-cols-1 lg:grid-cols-3 gap-12">
+                  <div className="lg:col-span-2 space-y-6">
+                    {validItems.map((item) => (
+                      <div
+                        key={item.id}
+                        className="flex gap-6 p-6 border border-white/10 rounded-lg hover:border-white/20 transition-colors"
+                      >
+                        <div className="w-24 h-24 bg-white/5 rounded-lg flex-shrink-0 overflow-hidden">
+                          {item.cover ? (
+                            <img
+                              src={item.cover}
+                              alt={item.title || "Item"}
+                              className="w-full h-full object-cover"
                             />
-                          </svg>
+                          ) : (
+                            <div className="w-full h-full flex items-center justify-center">
+                              <svg
+                                className="w-12 h-12 text-[hsl(var(--gold))]"
+                                fill="none"
+                                viewBox="0 0 24 24"
+                                stroke="currentColor"
+                              >
+                                <path
+                                  strokeLinecap="round"
+                                  strokeLinejoin="round"
+                                  strokeWidth={2}
+                                  d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"
+                                />
+                              </svg>
+                            </div>
+                          )}
+                        </div>
+                        <div className="flex-grow">
+                          <h3 className="text-xl font-bold mb-1">
+                            {item.title || "Unknown Item"}
+                          </h3>
+                          <p className="text-sm text-muted-foreground mb-3">
+                            {item.artist || "Unknown Artist"}
+                          </p>
+                          <div className="flex items-center gap-3">
+                            <button
+                              onClick={() =>
+                                updateQuantity(
+                                  item.id,
+                                  (item.quantity || 1) - 1,
+                                )
+                              }
+                              className="w-8 h-8 rounded-full bg-white/5 hover:bg-white/10 flex items-center justify-center transition-colors"
+                            >
+                              <Minus className="w-4 h-4" />
+                            </button>
+                            <span className="w-8 text-center font-bold">
+                              {item.quantity || 1}
+                            </span>
+                            <button
+                              onClick={() =>
+                                updateQuantity(
+                                  item.id,
+                                  (item.quantity || 1) + 1,
+                                )
+                              }
+                              className="w-8 h-8 rounded-full bg-white/5 hover:bg-white/10 flex items-center justify-center transition-colors"
+                            >
+                              <Plus className="w-4 h-4" />
+                            </button>
+                          </div>
+                        </div>
+                        <div className="flex flex-col items-end justify-between">
+                          <button
+                            onClick={() => removeFromCart(item.id)}
+                            className="text-muted-foreground hover:text-red-500 transition-colors"
+                          >
+                            <Trash2 className="w-5 h-5" />
+                          </button>
+                          <span className="text-2xl font-bold text-[hsl(var(--gold))]">
+                            $
+                            {((item.price || 0) * (item.quantity || 1)).toFixed(
+                              2,
+                            )}
+                          </span>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                  <div className="lg:col-span-1">
+                    <div className="border border-white/10 rounded-lg p-6 sticky top-24">
+                      <h2 className="text-2xl font-bold mb-6">Order Summary</h2>
+
+                      {hasActiveMembership && (
+                        <div className="mb-4 p-3 bg-[hsl(var(--gold))]/10 border border-[hsl(var(--gold))]/20 rounded-lg">
+                          <p className="text-sm text-[hsl(var(--gold))] font-semibold">
+                            ✓ Active{" "}
+                            {userProfile?.subscription_tier?.toUpperCase()}{" "}
+                            Member
+                          </p>
+                          <p className="text-xs text-muted-foreground mt-1">
+                            No license purchase required
+                          </p>
                         </div>
                       )}
-                    </div>
-                    <div className="flex-grow">
-                      <h3 className="text-xl font-bold mb-1">
-                        {item.title || "Unknown Item"}
-                      </h3>
-                      <p className="text-sm text-muted-foreground mb-3">
-                        {item.artist || "Unknown Artist"}
-                      </p>
-                      <div className="flex items-center gap-3">
-                        <button
-                          onClick={() =>
-                            updateQuantity(item.id, (item.quantity || 1) - 1)
-                          }
-                          className="w-8 h-8 rounded-full bg-white/5 hover:bg-white/10 flex items-center justify-center transition-colors"
-                        >
-                          <Minus className="w-4 h-4" />
-                        </button>
-                        <span className="w-8 text-center font-bold">
-                          {item.quantity || 1}
-                        </span>
-                        <button
-                          onClick={() =>
-                            updateQuantity(item.id, (item.quantity || 1) + 1)
-                          }
-                          className="w-8 h-8 rounded-full bg-white/5 hover:bg-white/10 flex items-center justify-center transition-colors"
-                        >
-                          <Plus className="w-4 h-4" />
-                        </button>
+
+                      <div className="space-y-4 mb-6">
+                        <div className="flex justify-between text-muted-foreground">
+                          <span>Subtotal</span>
+                          <span>${subtotal.toFixed(2)}</span>
+                        </div>
+                        <div className="flex justify-between text-muted-foreground text-sm">
+                          <span>Tax</span>
+                          <span>Calculated at checkout</span>
+                        </div>
+                        <div className="h-px bg-white/10"></div>
+                        <div className="flex justify-between text-xl font-bold">
+                          <span>Total</span>
+                          <span className="text-[hsl(var(--gold))]">
+                            ${total.toFixed(2)}
+                          </span>
+                        </div>
                       </div>
-                    </div>
-                    <div className="flex flex-col items-end justify-between">
-                      <button
-                        onClick={() => removeFromCart(item.id)}
-                        className="text-muted-foreground hover:text-red-500 transition-colors"
+                      <Button
+                        onClick={handleCheckout}
+                        className="w-full bg-[hsl(var(--gold))] text-black hover:bg-[hsl(var(--gold))]/90 rounded-full py-6 text-sm font-bold uppercase tracking-widest mb-4"
                       >
-                        <Trash2 className="w-5 h-5" />
+                        {user ? "Proceed to Checkout" : "Sign In to Checkout"}
+                      </Button>
+                      <button
+                        onClick={() => setLocation("/beats")}
+                        className="w-full text-sm text-muted-foreground hover:text-white transition-colors"
+                      >
+                        Continue Shopping
                       </button>
-                      <span className="text-2xl font-bold text-[hsl(var(--gold))]">
-                        ${((item.price || 0) * (item.quantity || 1)).toFixed(2)}
-                      </span>
                     </div>
                   </div>
-                ))}
-              </div>
-              <div className="lg:col-span-1">
-                <div className="border border-white/10 rounded-lg p-6 sticky top-24">
-                  <h2 className="text-2xl font-bold mb-6">Order Summary</h2>
-
-                  {hasActiveMembership && (
-                    <div className="mb-4 p-3 bg-[hsl(var(--gold))]/10 border border-[hsl(var(--gold))]/20 rounded-lg">
-                      <p className="text-sm text-[hsl(var(--gold))] font-semibold">
-                        ✓ Active {userProfile?.subscription_tier?.toUpperCase()}{" "}
-                        Member
-                      </p>
-                      <p className="text-xs text-muted-foreground mt-1">
-                        No license purchase required
-                      </p>
-                    </div>
-                  )}
-
-                  <div className="space-y-4 mb-6">
-                    <div className="flex justify-between text-muted-foreground">
-                      <span>Subtotal</span>
-                      <span>${subtotal.toFixed(2)}</span>
-                    </div>
-                    <div className="flex justify-between text-muted-foreground text-sm">
-                      <span>Tax</span>
-                      <span>Calculated at checkout</span>
-                    </div>
-                    <div className="h-px bg-white/10"></div>
-                    <div className="flex justify-between text-xl font-bold">
-                      <span>Total</span>
-                      <span className="text-[hsl(var(--gold))]">
-                        ${total.toFixed(2)}
-                      </span>
-                    </div>
-                  </div>
-                  <Button
-                    onClick={handleCheckout}
-                    className="w-full bg-[hsl(var(--gold))] text-black hover:bg-[hsl(var(--gold))]/90 rounded-full py-6 text-sm font-bold uppercase tracking-widest mb-4"
-                  >
-                    {user ? "Proceed to Checkout" : "Sign In to Checkout"}
-                  </Button>
-                  <button
-                    onClick={() => setLocation("/beats")}
-                    className="w-full text-sm text-muted-foreground hover:text-white transition-colors"
-                  >
-                    Continue Shopping
-                  </button>
                 </div>
-              </div>
-            </div>
+              )}
+            </>
+          )}
+
+          {/* FAVORITES VIEW */}
+          {viewMode === "favorites" && (
+            <>
+              <h1 className="text-5xl md:text-7xl font-display font-bold tracking-tighter mb-12">
+                Your Favorites
+              </h1>
+
+              {!user ? (
+                <div className="flex flex-col items-center justify-center py-20">
+                  <div className="w-24 h-24 rounded-full bg-white/5 flex items-center justify-center mb-6">
+                    <Heart className="w-12 h-12 text-muted-foreground" />
+                  </div>
+                  <h2 className="text-2xl font-bold mb-2">
+                    Sign In to View Favorites
+                  </h2>
+                  <p className="text-muted-foreground mb-8 text-center max-w-md">
+                    Create an account to save your favorite beats and access
+                    them anytime.
+                  </p>
+                  <Button
+                    onClick={openAuthModal}
+                    className="bg-[hsl(var(--gold))] text-black hover:bg-[hsl(var(--gold))]/90 rounded-full px-8 py-6 text-sm font-bold uppercase tracking-widest"
+                  >
+                    Sign In
+                  </Button>
+                </div>
+              ) : loadingFavorites ? (
+                <div className="flex flex-col items-center justify-center py-20">
+                  <Loader2 className="w-12 h-12 text-[hsl(var(--gold))] animate-spin mb-4" />
+                  <p className="text-muted-foreground">
+                    Loading your favorites...
+                  </p>
+                </div>
+              ) : favoriteBeats.length === 0 ? (
+                <div className="flex flex-col items-center justify-center py-20">
+                  <div className="w-24 h-24 rounded-full bg-white/5 flex items-center justify-center mb-6">
+                    <Heart className="w-12 h-12 text-muted-foreground" />
+                  </div>
+                  <h2 className="text-2xl font-bold mb-2">No favorites yet</h2>
+                  <p className="text-muted-foreground mb-8 text-center max-w-md">
+                    Start exploring our catalog and click the heart icon on any
+                    beat to add it to your favorites.
+                  </p>
+                  <Button
+                    onClick={() => setLocation("/beats")}
+                    className="bg-[hsl(var(--gold))] text-black hover:bg-[hsl(var(--gold))]/90 rounded-full px-8 py-6 text-sm font-bold uppercase tracking-widest"
+                  >
+                    Browse Beats
+                  </Button>
+                </div>
+              ) : (
+                <>
+                  <div className="mb-6 text-muted-foreground text-sm">
+                    {favoriteBeats.length} favorite
+                    {favoriteBeats.length !== 1 ? "s" : ""}
+                  </div>
+                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+                    {favoriteBeats.map((beat, index) => (
+                      <motion.div
+                        key={beat.id}
+                        initial={{ opacity: 0, y: 20 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        transition={{ delay: index * 0.1, duration: 0.5 }}
+                      >
+                        <BeatCard beat={beat} />
+                      </motion.div>
+                    ))}
+                  </div>
+                </>
+              )}
+            </>
           )}
         </div>
       </main>
-      <footer className="py-20 border-t border-white/5 bg-black mt-20">
+      <footer className="relative z-50 py-20 border-t border-yellow-500/20 bg-black-500/5">
         <div className="container px-6 mx-auto">
-          <div className="flex flex-col md:flex-row justify-between items-center gap-8">
-            <h2 className="text-3xl font-display font-bold tracking-tighter">
-              3LIXIR
+          <div className="text-center mb-8">
+            <h2 className="text-3xl font-display font-bold tracking-tighter text-white">
+              3LIXIR MUSIC
             </h2>
-            <div className="text-sm text-muted-foreground">
-              © 2024 3LIXIR Audio. All rights reserved.
-            </div>
-            <div className="flex gap-6">
-              <a
-                href="#"
-                className="text-muted-foreground hover:text-white transition-colors text-sm uppercase tracking-wider"
-              >
-                Instagram
-              </a>
-              <a
-                href="#"
-                className="text-muted-foreground hover:text-white transition-colors text-sm uppercase tracking-wider"
-              >
-                Twitter
-              </a>
-              <a
-                href="#"
-                className="text-muted-foreground hover:text-white transition-colors text-sm uppercase tracking-wider"
-              >
-                YouTube
-              </a>
-            </div>
+          </div>
+          <div className="flex justify-center gap-6 mb-8">
+            <a
+              href="#"
+              className="relative z-10 text-yellow-500/60 hover:text-yellow-500 transition-colors text-sm uppercase tracking-wider cursor-pointer"
+            >
+              Instagram
+            </a>
+            <a
+              href="#"
+              className="relative z-10 text-yellow-500/60 hover:text-yellow-500 transition-colors text-sm uppercase tracking-wider cursor-pointer"
+            >
+              Twitter
+            </a>
+            <a
+              href="https://www.youtube.com/@DJ3LIXIR"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="relative z-10 text-yellow-500/60 hover:text-yellow-500 transition-colors text-sm uppercase tracking-wider cursor-pointer"
+            >
+              YouTube
+            </a>
+          </div>
+          <div className="flex flex-wrap justify-center gap-4 mt-8 text-sm text-yellow-500/60">
+            <a
+              href="/info?section=terms"
+              className="relative z-10 hover:text-yellow-500 transition-colors cursor-pointer"
+            >
+              Terms of Service
+            </a>
+            <span>•</span>
+            <a
+              href="/info?section=privacy"
+              className="relative z-10 hover:text-yellow-500 transition-colors cursor-pointer"
+            >
+              Privacy Policy
+            </a>
+            <span>•</span>
+            <a
+              href="/info?section=licensing"
+              className="relative z-10 hover:text-yellow-500 transition-colors cursor-pointer"
+            >
+              Licensing Agreement
+            </a>
+            <span>•</span>
+            <a
+              href="/info?section=refund"
+              className="relative z-10 hover:text-yellow-500 transition-colors cursor-pointer"
+            >
+              Refund Policy
+            </a>
+            <span>•</span>
+            <a
+              href="/info?section=copyright"
+              className="relative z-10 hover:text-yellow-500 transition-colors cursor-pointer"
+            >
+              Copyright & DMCA
+            </a>
+          </div>
+          <div className="text-center text-sm text-yellow-500/60 mt-8">
+            © 2026 3LIXIR MUSIC. All rights reserved.
           </div>
         </div>
       </footer>

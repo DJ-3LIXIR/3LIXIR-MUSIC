@@ -1337,309 +1337,362 @@ const InfoPage = () => {
               </div>
             )}
 
-            {activePolicySection === "terms" && (
+            {activePolicySection === "licensing" && (
               <div className="space-y-6">
                 <h1 className="text-4xl md:text-5xl font-display font-bold tracking-tighter mb-6">
-                  Terms of Service
+                  3LIXIR MUSIC BEAT LICENSE AGREEMENT
                 </h1>
-                <p className="text-muted-foreground">
-                  [Terms of Service content would go here]
+                <p className="text-sm text-muted-foreground mb-8">
+                  <br />
+                  Last Updated: January 2026
                 </p>
-              </div>
-            )}
 
-            {activePolicySection === "licensing" && (
-            <div className="space-y-6">
-                  <div className="space-y-6">
-                    <h1 className="text-4xl md:text-5xl font-display font-bold tracking-tighter mb-6">
-                      3LIXIR MUSIC BEAT LICENSE AGREEMENT
-                    </h1>
-                    <p className="text-sm text-muted-foreground mb-8">
-                      (TOS-Aligned / Processor-Compliant)
-                      <br />
-                      Last Updated: January 2026
+                <p className="text-muted-foreground mb-8">
+                  This Beat License Agreement ("Agreement") is a legally binding
+                  agreement between{" "}
+                  <strong className="text-foreground">
+                    3LIXIR MUSIC (unofficial LLC)
+                  </strong>{" "}
+                  ("Licensor," "we," "us") and the individual or entity
+                  purchasing or otherwise acquiring a license to a Beat
+                  ("Licensee," "you"). This Agreement governs your use of any
+                  Beat obtained through the 3LIXIR MUSIC platform and is
+                  incorporated by reference into the 3LIXIR MUSIC Terms of
+                  Service ("TOS").
+                </p>
+
+                <div className="space-y-8">
+                  <section>
+                    <h3 className="text-2xl font-display font-semibold tracking-tight mb-3">
+                      1. Grant of License
+                    </h3>
+                    <p className="text-muted-foreground mb-4">
+                      Subject to full payment of applicable service fees and
+                      continued compliance with this Agreement and the Terms of
+                      Service, Licensor grants Licensee a{" "}
+                      <strong className="text-foreground">
+                        non-exclusive, non-transferable, non-sublicensable,
+                        limited license
+                      </strong>{" "}
+                      to use the licensed Beat solely as incorporated into a new
+                      musical composition ("Derivative Work").
+                    </p>
+                    <p className="text-muted-foreground">
+                      This Agreement grants a{" "}
+                      <strong className="text-foreground">license only</strong>.
+                      No sale, assignment, or transfer of ownership is made or
+                      implied.
+                    </p>
+                  </section>
+
+                  <section>
+                    <h3 className="text-2xl font-display font-semibold tracking-tight mb-3">
+                      2. Ownership and Authorship
+                    </h3>
+                    <p className="text-muted-foreground mb-2">
+                      Licensor retains{" "}
+                      <strong className="text-foreground">
+                        100% ownership and control
+                      </strong>{" "}
+                      of all rights in and to:
+                    </p>
+                    <ul className="list-disc list-inside space-y-2 text-muted-foreground ml-4">
+                      <li>The Beat</li>
+                      <li>The master recording of the Beat</li>
+                      <li>
+                        The underlying musical composition embodied in the Beat
+                      </li>
+                      <li>
+                        All copyrights and intellectual property rights therein
+                      </li>
+                    </ul>
+                    <p className="text-muted-foreground mt-4">
+                      All Beats owned by Licensor are authored and controlled by
+                      DJ 3LIXIR.
+                    </p>
+                    <p className="text-muted-foreground mt-4">
+                      Licensee retains ownership only of:
+                    </p>
+                    <ul className="list-disc list-inside space-y-2 text-muted-foreground ml-4 mt-2">
+                      <li>Original lyrics authored by Licensee</li>
+                      <li>
+                        Original vocal or instrumental performances added by
+                        Licensee
+                      </li>
+                    </ul>
+                    <p className="text-muted-foreground mt-2">
+                      Such ownership is strictly subject to Licensor's retained
+                      rights in the Beat.
+                    </p>
+                  </section>
+
+                  <section>
+                    <h3 className="text-2xl font-display font-semibold tracking-tight mb-3">
+                      3. Service Fees and License Nature
+                    </h3>
+                    <p className="text-muted-foreground mb-2">
+                      All fees paid to Licensor are service fees for:
+                    </p>
+                    <ul className="list-disc list-inside space-y-2 text-muted-foreground ml-4">
+                      <li>
+                        The production, preparation, and delivery of DJ 3LIXIR
+                        Beats
+                      </li>
+                      <li>Platform access and digital delivery</li>
+                      <li>
+                        The grant of the limited license described in this
+                        Agreement
+                      </li>
+                    </ul>
+                    <p className="text-muted-foreground mt-4">
+                      No payment constitutes a sale of any copyright, master,
+                      publishing share, or ownership interest.
+                    </p>
+                  </section>
+
+                  <section>
+                    <h3 className="text-2xl font-display font-semibold tracking-tight mb-3">
+                      4. Permitted Uses
+                    </h3>
+                    <p className="text-muted-foreground mb-2">
+                      Unless otherwise agreed in writing, Licensee may:
+                    </p>
+                    <ul className="list-disc list-inside space-y-2 text-muted-foreground ml-4">
+                      <li>Record vocals or performances over the Beat</li>
+                      <li>Release the Derivative Work on digital platforms</li>
+                      <li>
+                        Distribute the Derivative Work for sale or streaming
+                      </li>
+                      <li>Perform the Derivative Work publicly</li>
+                      <li>
+                        Synchronize the Derivative Work in audiovisual projects
+                      </li>
+                    </ul>
+                    <p className="text-muted-foreground mt-4">
+                      All permitted uses remain subject to the royalty and
+                      clearance provisions below.
+                    </p>
+                  </section>
+
+                  <section>
+                    <h3 className="text-2xl font-display font-semibold tracking-tight mb-3">
+                      5. Prohibited Uses
+                    </h3>
+                    <p className="text-muted-foreground mb-2">
+                      Licensee may not:
+                    </p>
+                    <ul className="list-disc list-inside space-y-2 text-muted-foreground ml-4">
+                      <li>
+                        Resell, sublicense, lease, or redistribute the Beat
+                        alone
+                      </li>
+                      <li>
+                        Make the Beat available for download, reuse, or
+                        extraction
+                      </li>
+                      <li>Claim authorship or ownership of the Beat</li>
+                      <li>
+                        Register the Beat or Derivative Work with Content ID,
+                        fingerprinting, or automated monetization systems
+                        (including YouTube Content ID){" "}
+                        <strong className="text-foreground">
+                          without prior written consent
+                        </strong>
+                      </li>
+                      <li>
+                        Use the Beat in unlawful, defamatory, or infringing
+                        works
+                      </li>
+                    </ul>
+                  </section>
+
+                  <section>
+                    <h3 className="text-2xl font-display font-semibold tracking-tight mb-3">
+                      6. Royalty Rights, Subscriptions, and Tokens
+                    </h3>
+
+                    <h4 className="text-xl font-medium mb-3 mt-6">
+                      6.1 Subscription Royalty Clearance
+                    </h4>
+                    <p className="text-muted-foreground">
+                      If Licensee acquires a Beat while a 3LIXIR MUSIC
+                      Subscription is active and in good standing, Licensor
+                      grants{" "}
+                      <strong className="text-foreground">
+                        royalty-free usage
+                      </strong>{" "}
+                      of that Beat only if the Derivative Work is{" "}
+                      <strong className="text-foreground">
+                        Published during the active Subscription term
+                      </strong>
+                      .
                     </p>
 
-                    <p className="text-muted-foreground mb-8">
-                      This Beat License Agreement ("Agreement") is a legally binding
-                      agreement between{" "}
-                      <strong className="text-foreground">3LIXIR MUSIC (unofficial LLC)</strong>{" "}
-                      ("Licensor," "we," "us") and the individual or entity
-                      purchasing or otherwise acquiring a license to a Beat
-                      ("Licensee," "you"). This Agreement governs your use of any
-                      Beat obtained through the 3LIXIR MUSIC platform and is incorporated by reference into the 3LIXIR MUSIC Terms of Service ("TOS").
+                    <h4 className="text-xl font-medium mb-3 mt-6">
+                      6.2 Token Royalty Clearance
+                    </h4>
+                    <p className="text-muted-foreground mb-2">
+                      If Licensee is not actively subscribed, royalty clearance
+                      may be obtained by applying a{" "}
+                      <strong className="text-foreground">Token</strong> to a
+                      specific Beat. Tokens:
                     </p>
+                    <ul className="list-disc list-inside space-y-2 text-muted-foreground ml-4">
+                      <li>Apply on a per-Beat basis</li>
+                      <li>Are non-refundable</li>
+                      <li>
+                        Grant royalty clearance only for the identified Beat
+                      </li>
+                    </ul>
 
-                    <div className="space-y-8">
-                      <section>
-                        <h3 className="text-2xl font-display font-semibold tracking-tight mb-3">
-                          1. Grant of License
-                        </h3>
-                        <p className="text-muted-foreground mb-4">
-                          Subject to full payment of applicable service fees and continued compliance with this Agreement
-                          and the Terms of Service, Licensor grants
-                          Licensee a{" "}
-                          <strong className="text-foreground">
-                            non-exclusive, non-transferable, non-sublicensable,
-                            limited license
-                          </strong>{" "}
-                          to use the licensed Beat solely as incorporated into a new
-                          musical composition ("Derivative Work").
-                        </p>
-                        <p className="text-muted-foreground">
-                          This Agreement grants a{" "}
-                          <strong className="text-foreground">
-                            license only
-                          </strong>
-                          . No sale, assignment, or transfer of ownership is made or implied.
-                        </p>
-                      </section>
+                    <h4 className="text-xl font-medium mb-3 mt-6">
+                      6.3 Scope of Royalty Rights
+                    </h4>
+                    <p className="text-muted-foreground mb-2">
+                      Royalty clearance:
+                    </p>
+                    <ul className="list-disc list-inside space-y-2 text-muted-foreground ml-4">
+                      <li>
+                        Applies only to the licensed Beat and Derivative Work
+                      </li>
+                      <li>Does not transfer copyright</li>
+                      <li>Does not grant exclusivity</li>
+                    </ul>
+                  </section>
 
-                      <section>
-                        <h3 className="text-2xl font-display font-semibold tracking-tight mb-3">
-                          2. Ownership and Authorship
-                        </h3>
-                        <p className="text-muted-foreground mb-2">
-                          Licensor retains{" "}
-                          <strong className="text-foreground">
-                            100% ownership and control
-                          </strong>{" "}
-                          of all rights in and to:
-                        </p>
-                        <ul className="list-disc list-inside space-y-2 text-muted-foreground ml-4">
-                          <li>The Beat</li>
-                          <li>The master recording of the Beat</li>
-                          <li>The underlying musical composition embodied in the Beat</li>
-                          <li>All copyrights and intellectual property rights therein</li>
-                        </ul>
-                        <p className="text-muted-foreground mt-4">
-                          All Beats owned by Licensor are authored and controlled by DJ 3LIXIR.
-                        </p>
-                        <p className="text-muted-foreground mt-4">
-                          Licensee retains ownership only of:
-                        </p>
-                        <ul className="list-disc list-inside space-y-2 text-muted-foreground ml-4 mt-2">
-                          <li>Original lyrics authored by Licensee</li>
-                          <li>Original vocal or instrumental performances added by Licensee</li>
-                        </ul>
-                        <p className="text-muted-foreground mt-2">
-                          Such ownership is strictly subject to Licensor's retained rights in the Beat.
-                        </p>
-                      </section>
+                  <section>
+                    <h3 className="text-2xl font-display font-semibold tracking-tight mb-3">
+                      7. Publication Requirement
+                    </h3>
+                    <p className="text-muted-foreground">
+                      If a Beat is licensed during a Subscription but not
+                      Published before Subscription cancellation or expiration,
+                      royalty clearance is not preserved, and additional
+                      clearance (Token or re-subscription) is required prior to
+                      Publication.
+                    </p>
+                  </section>
 
-                      <section>
-                        <h3 className="text-2xl font-display font-semibold tracking-tight mb-3">
-                          3. Service Fees and License Nature
-                        </h3>
-                        <p className="text-muted-foreground mb-2">
-                          All fees paid to Licensor are service fees for:
-                        </p>
-                        <ul className="list-disc list-inside space-y-2 text-muted-foreground ml-4">
-                          <li>The production, preparation, and delivery of DJ 3LIXIR Beats</li>
-                          <li>Platform access and digital delivery</li>
-                          <li>The grant of the limited license described in this Agreement</li>
-                        </ul>
-                        <p className="text-muted-foreground mt-4">
-                          No payment constitutes a sale of any copyright, master, publishing share, or ownership interest.
-                        </p>
-                      </section>
+                  <section>
+                    <h3 className="text-2xl font-display font-semibold tracking-tight mb-3">
+                      8. Credit
+                    </h3>
+                    <p className="text-muted-foreground mb-4">
+                      Where commercially reasonable, Licensee agrees to credit:
+                    </p>
+                    <blockquote className="border-l-4 border-yellow-500 pl-4 italic text-muted-foreground mb-4">
+                      "Produced by 3LIXIR MUSIC"
+                    </blockquote>
+                    <p className="text-muted-foreground">
+                      Failure to credit does not void the license but may
+                      constitute a breach.
+                    </p>
+                  </section>
 
-                      <section>
-                        <h3 className="text-2xl font-display font-semibold tracking-tight mb-3">
-                          4. Permitted Uses
-                        </h3>
-                        <p className="text-muted-foreground mb-2">
-                          Unless otherwise agreed in writing, Licensee may:
-                        </p>
-                        <ul className="list-disc list-inside space-y-2 text-muted-foreground ml-4">
-                          <li>Record vocals or performances over the Beat</li>
-                          <li>Release the Derivative Work on digital platforms</li>
-                          <li>Distribute the Derivative Work for sale or streaming</li>
-                          <li>Perform the Derivative Work publicly</li>
-                          <li>Synchronize the Derivative Work in audiovisual projects</li>
-                        </ul>
-                        <p className="text-muted-foreground mt-4">
-                          All permitted uses remain subject to the royalty and clearance provisions below.
-                        </p>
-                      </section>
+                  <section>
+                    <h3 className="text-2xl font-display font-semibold tracking-tight mb-3">
+                      9. Exclusivity
+                    </h3>
+                    <p className="text-muted-foreground">
+                      All licenses are{" "}
+                      <strong className="text-foreground">non-exclusive</strong>{" "}
+                      unless expressly granted in a separate written agreement
+                      signed by Licensor.
+                    </p>
+                  </section>
 
-                      <section>
-                        <h3 className="text-2xl font-display font-semibold tracking-tight mb-3">
-                          5. Prohibited Uses
-                        </h3>
-                        <p className="text-muted-foreground mb-2">
-                          Licensee may not:
-                        </p>
-                        <ul className="list-disc list-inside space-y-2 text-muted-foreground ml-4">
-                          <li>Resell, sublicense, lease, or redistribute the Beat alone</li>
-                          <li>Make the Beat available for download, reuse, or extraction</li>
-                          <li>Claim authorship or ownership of the Beat</li>
-                          <li>
-                            Register the Beat or Derivative Work with Content ID, fingerprinting, or automated monetization systems (including YouTube Content ID){" "}
-                            <strong className="text-foreground">without prior written consent</strong>
-                          </li>
-                          <li>Use the Beat in unlawful, defamatory, or infringing works</li>
-                        </ul>
-                      </section>
+                  <section>
+                    <h3 className="text-2xl font-display font-semibold tracking-tight mb-3">
+                      10. Warranties and Disclaimers
+                    </h3>
+                    <p className="text-muted-foreground mb-2">
+                      Licensee represents that:
+                    </p>
+                    <ul className="list-disc list-inside space-y-2 text-muted-foreground ml-4">
+                      <li>
+                        The Derivative Work will not infringe third-party rights
+                      </li>
+                      <li>Licensee has authority to enter this Agreement</li>
+                      <li>All applicable laws will be followed</li>
+                    </ul>
+                    <p className="text-muted-foreground mt-4">
+                      Licensor disclaims all warranties regarding commercial
+                      success or fitness for a particular purpose.
+                    </p>
+                  </section>
 
-                      <section>
-                        <h3 className="text-2xl font-display font-semibold tracking-tight mb-3">
-                          6. Royalty Rights, Subscriptions, and Tokens
-                        </h3>
+                  <section>
+                    <h3 className="text-2xl font-display font-semibold tracking-tight mb-3">
+                      11. Termination
+                    </h3>
+                    <p className="text-muted-foreground mb-4">
+                      Licensor may terminate this Agreement upon material
+                      breach.
+                    </p>
+                    <p className="text-muted-foreground mb-2">
+                      Upon termination:
+                    </p>
+                    <ul className="list-disc list-inside space-y-2 text-muted-foreground ml-4">
+                      <li>
+                        All licensed rights immediately revert to Licensor
+                      </li>
+                      <li>
+                        Continued exploitation must cease unless otherwise
+                        authorized
+                      </li>
+                    </ul>
+                  </section>
 
-                        <h4 className="text-xl font-medium mb-3 mt-6">
-                          6.1 Subscription Royalty Clearance
-                        </h4>
-                        <p className="text-muted-foreground">
-                          If Licensee acquires a Beat while a 3LIXIR MUSIC
-                          Subscription is active and in good standing, Licensor grants{" "}
-                          <strong className="text-foreground">royalty-free usage</strong>{" "}
-                          of that Beat only if the Derivative Work is{" "}
-                          <strong className="text-foreground">
-                            Published during the active Subscription term
-                          </strong>.
-                        </p>
+                  <section>
+                    <h3 className="text-2xl font-display font-semibold tracking-tight mb-3">
+                      12. Limitation of Liability
+                    </h3>
+                    <p className="text-muted-foreground">
+                      Licensor's total liability shall not exceed the service
+                      fees paid by Licensee for the applicable Beat.
+                    </p>
+                  </section>
 
-                        <h4 className="text-xl font-medium mb-3 mt-6">
-                          6.2 Token Royalty Clearance
-                        </h4>
-                        <p className="text-muted-foreground mb-2">
-                          If Licensee is not actively subscribed, royalty clearance may be obtained by applying a{" "}
-                          <strong className="text-foreground">Token</strong> to a specific Beat. Tokens:
-                        </p>
-                        <ul className="list-disc list-inside space-y-2 text-muted-foreground ml-4">
-                          <li>Apply on a per-Beat basis</li>
-                          <li>Are non-refundable</li>
-                          <li>Grant royalty clearance only for the identified Beat</li>
-                        </ul>
+                  <section>
+                    <h3 className="text-2xl font-display font-semibold tracking-tight mb-3">
+                      13. Indemnification
+                    </h3>
+                    <p className="text-muted-foreground">
+                      Licensee agrees to indemnify and hold harmless Licensor
+                      from claims arising from Licensee's use of the Beat or
+                      breach of this Agreement.
+                    </p>
+                  </section>
 
-                        <h4 className="text-xl font-medium mb-3 mt-6">
-                          6.3 Scope of Royalty Rights
-                        </h4>
-                        <p className="text-muted-foreground mb-2">
-                          Royalty clearance:
-                        </p>
-                        <ul className="list-disc list-inside space-y-2 text-muted-foreground ml-4">
-                          <li>Applies only to the licensed Beat and Derivative Work</li>
-                          <li>Does not transfer copyright</li>
-                          <li>Does not grant exclusivity</li>
-                        </ul>
-                      </section>
+                  <section>
+                    <h3 className="text-2xl font-display font-semibold tracking-tight mb-3">
+                      14. Governing Law
+                    </h3>
+                    <p className="text-muted-foreground">
+                      This Agreement is governed by the laws of the State of
+                      California and subject to the dispute resolution
+                      provisions in the Terms of Service.
+                    </p>
+                  </section>
 
-                      <section>
-                        <h3 className="text-2xl font-display font-semibold tracking-tight mb-3">
-                          7. Publication Requirement
-                        </h3>
-                        <p className="text-muted-foreground">
-                          If a Beat is licensed during a Subscription but not Published before Subscription cancellation or expiration, royalty clearance is not preserved, and additional clearance (Token or re-subscription) is required prior to Publication.
-                        </p>
-                      </section>
+                  <section>
+                    <h3 className="text-2xl font-display font-semibold tracking-tight mb-3">
+                      15. Entire Agreement
+                    </h3>
+                    <p className="text-muted-foreground">
+                      This Agreement, together with the Terms of Service,
+                      constitutes the entire agreement regarding Beat licensing.
+                    </p>
+                  </section>
 
-                      <section>
-                        <h3 className="text-2xl font-display font-semibold tracking-tight mb-3">
-                          8. Credit
-                        </h3>
-                        <p className="text-muted-foreground mb-4">
-                          Where commercially reasonable, Licensee agrees to credit:
-                        </p>
-                        <blockquote className="border-l-4 border-yellow-500 pl-4 italic text-muted-foreground mb-4">
-                          "Produced by 3LIXIR MUSIC"
-                        </blockquote>
-                        <p className="text-muted-foreground">
-                          Failure to credit does not void the license but may constitute a breach.
-                        </p>
-                      </section>
-
-                      <section>
-                        <h3 className="text-2xl font-display font-semibold tracking-tight mb-3">
-                          9. Exclusivity
-                        </h3>
-                        <p className="text-muted-foreground">
-                          All licenses are{" "}
-                          <strong className="text-foreground">non-exclusive</strong>{" "}
-                          unless expressly granted in a separate written agreement signed by Licensor.
-                        </p>
-                      </section>
-
-                      <section>
-                        <h3 className="text-2xl font-display font-semibold tracking-tight mb-3">
-                          10. Warranties and Disclaimers
-                        </h3>
-                        <p className="text-muted-foreground mb-2">
-                          Licensee represents that:
-                        </p>
-                        <ul className="list-disc list-inside space-y-2 text-muted-foreground ml-4">
-                          <li>The Derivative Work will not infringe third-party rights</li>
-                          <li>Licensee has authority to enter this Agreement</li>
-                          <li>All applicable laws will be followed</li>
-                        </ul>
-                        <p className="text-muted-foreground mt-4">
-                          Licensor disclaims all warranties regarding commercial success or fitness for a particular purpose.
-                        </p>
-                      </section>
-
-                      <section>
-                        <h3 className="text-2xl font-display font-semibold tracking-tight mb-3">
-                          11. Termination
-                        </h3>
-                        <p className="text-muted-foreground mb-4">
-                          Licensor may terminate this Agreement upon material breach.
-                        </p>
-                        <p className="text-muted-foreground mb-2">
-                          Upon termination:
-                        </p>
-                        <ul className="list-disc list-inside space-y-2 text-muted-foreground ml-4">
-                          <li>All licensed rights immediately revert to Licensor</li>
-                          <li>Continued exploitation must cease unless otherwise authorized</li>
-                        </ul>
-                      </section>
-
-                      <section>
-                        <h3 className="text-2xl font-display font-semibold tracking-tight mb-3">
-                          12. Limitation of Liability
-                        </h3>
-                        <p className="text-muted-foreground">
-                          Licensor's total liability shall not exceed the service fees paid by Licensee for the applicable Beat.
-                        </p>
-                      </section>
-
-                      <section>
-                        <h3 className="text-2xl font-display font-semibold tracking-tight mb-3">
-                          13. Indemnification
-                        </h3>
-                        <p className="text-muted-foreground">
-                          Licensee agrees to indemnify and hold harmless Licensor from claims arising from Licensee's use of the Beat or breach of this Agreement.
-                        </p>
-                      </section>
-
-                      <section>
-                        <h3 className="text-2xl font-display font-semibold tracking-tight mb-3">
-                          14. Governing Law
-                        </h3>
-                        <p className="text-muted-foreground">
-                          This Agreement is governed by the laws of the State of California and subject to the dispute resolution provisions in the Terms of Service.
-                        </p>
-                      </section>
-
-                      <section>
-                        <h3 className="text-2xl font-display font-semibold tracking-tight mb-3">
-                          15. Entire Agreement
-                        </h3>
-                        <p className="text-muted-foreground">
-                          This Agreement, together with the Terms of Service, constitutes the entire agreement regarding Beat licensing.
-                        </p>
-                      </section>
-
-                      <div className="mt-12 pt-8 border-t border-white/10 text-center">
-                        <p className="text-muted-foreground font-semibold">
-                          END OF LICENSE AGREEMENT
-                        </p>
-                      </div>
-                    </div>
+                  <div className="mt-12 pt-8 border-t border-white/10 text-center">
+                    <p className="text-muted-foreground font-semibold">
+                      END OF LICENSE AGREEMENT
+                    </p>
                   </div>
                 </div>
-              );
-            }
+              </div>
+            )}
 
             {activePolicySection === "refund" && (
               <div className="space-y-6">
@@ -1653,9 +1706,9 @@ const InfoPage = () => {
                 <p className="text-muted-foreground mb-8">
                   This Refund & Cancellation Policy explains how refunds,
                   cancellations, and billing disputes are handled for purchases
-                  made through the 3LIXIR Music platform. This policy is
-                  incorporated by reference into the 3LIXIR Music Terms of
-                  Service and Beat License Agreement.
+                  made through the 3LIXIR MUSIC (unofficial LLC) platform. This
+                  policy is incorporated by reference into the 3LIXIR MUSIC
+                  Terms of Service, Beat License Agreement, and Return Policy.
                 </p>
 
                 <div className="space-y-8">
@@ -1669,7 +1722,7 @@ const InfoPage = () => {
                         all sales are final
                       </strong>
                       , except where refunds are required by applicable law. By
-                      purchasing or subscribing to any 3LIXIR Music product or
+                      purchasing or subscribing to any 3LIXIR MUSIC product or
                       service, you acknowledge and agree to this policy.
                     </p>
                   </section>
@@ -1758,15 +1811,23 @@ const InfoPage = () => {
                     </h3>
                     <p className="text-muted-foreground mb-2">
                       Refunds may be considered solely at the discretion of
-                      3LIXIR Music in limited circumstances, such as:
+                      3LIXIR MUSIC in limited circumstances, such as:
                     </p>
                     <ul className="list-disc list-inside space-y-2 text-muted-foreground ml-4">
                       <li>Duplicate charges due to technical error</li>
                       <li>Billing errors confirmed by our payment processor</li>
+                      <li>
+                        Platform errors that prevented access after confirmed
+                        payment
+                      </li>
                     </ul>
                     <p className="text-muted-foreground mt-4">
                       No refunds will be issued for dissatisfaction, change of
                       mind, lack of use, or misunderstanding of license terms.
+                    </p>
+                    <p className="text-muted-foreground mt-2">
+                      Any resolution may include account credit, replacement
+                      access, or correction, rather than a monetary refund.
                     </p>
                   </section>
 
@@ -1776,7 +1837,7 @@ const InfoPage = () => {
                     </h3>
                     <p className="text-muted-foreground mb-2">
                       Initiating a chargeback or payment dispute without first
-                      contacting 3LIXIR Music may result in:
+                      contacting 3LIXIR MUSIC may result in:
                     </p>
                     <ul className="list-disc list-inside space-y-2 text-muted-foreground ml-4">
                       <li>
@@ -1784,6 +1845,7 @@ const InfoPage = () => {
                       </li>
                       <li>Revocation of access to the Services</li>
                       <li>Loss of any granted licenses or benefits</li>
+                      <li>Permanent restriction from future purchases</li>
                     </ul>
                     <p className="text-muted-foreground mt-4">
                       We reserve the right to dispute chargebacks and provide
@@ -1793,19 +1855,49 @@ const InfoPage = () => {
 
                   <section>
                     <h3 className="text-2xl font-display font-semibold tracking-tight mb-3">
-                      7. Legal Compliance
+                      7. Mistaken Purchases
                     </h3>
-                    <p className="text-muted-foreground">
-                      Nothing in this policy limits any rights you may have
-                      under applicable consumer protection laws that cannot be
-                      waived. If local law requires a refund, we will comply to
-                      the extent required.
+                    <p className="text-muted-foreground mb-2">
+                      Mistaken purchases, including but not limited to:
+                    </p>
+                    <ul className="list-disc list-inside space-y-2 text-muted-foreground ml-4">
+                      <li>Purchasing the wrong Beat</li>
+                      <li>Misunderstanding license terms</li>
+                      <li>Purchasing without intended use</li>
+                      <li>Failure to review documentation</li>
+                    </ul>
+                    <p className="text-muted-foreground mt-4">
+                      do not qualify for a refund or reversal.
                     </p>
                   </section>
 
                   <section>
                     <h3 className="text-2xl font-display font-semibold tracking-tight mb-3">
-                      8. Changes to This Policy
+                      8. Relationship to Return Policy
+                    </h3>
+                    <p className="text-muted-foreground">
+                      This Refund & Cancellation Policy works in conjunction
+                      with the Return Policy. Because all products and services
+                      are digital, no physical returns are possible. See the
+                      Return Policy for additional details.
+                    </p>
+                  </section>
+
+                  <section>
+                    <h3 className="text-2xl font-display font-semibold tracking-tight mb-3">
+                      9. Legal Compliance
+                    </h3>
+                    <p className="text-muted-foreground">
+                      Nothing in this policy limits any non-waivable rights you
+                      may have under applicable consumer protection laws. If
+                      local law requires a refund, we will comply to the extent
+                      required.
+                    </p>
+                  </section>
+
+                  <section>
+                    <h3 className="text-2xl font-display font-semibold tracking-tight mb-3">
+                      10. Changes to This Policy
                     </h3>
                     <p className="text-muted-foreground">
                       We reserve the right to update or modify this Refund &
@@ -1816,7 +1908,7 @@ const InfoPage = () => {
 
                   <section>
                     <h3 className="text-2xl font-display font-semibold tracking-tight mb-3">
-                      9. Contact Information
+                      11. Contact Information
                     </h3>
                     <p className="text-muted-foreground mb-2">
                       For billing questions or cancellation assistance, contact:
@@ -1824,7 +1916,7 @@ const InfoPage = () => {
                     <div className="border border-white/10 rounded-xl p-6 bg-white/5 space-y-2">
                       <p className="text-muted-foreground">
                         <strong className="text-foreground">
-                          3LIXIR Music
+                          3LIXIR MUSIC (unofficial LLC)
                         </strong>
                       </p>
                       <p className="text-muted-foreground">
@@ -1866,12 +1958,17 @@ const InfoPage = () => {
                       <div className="bg-white/5 rounded-lg p-5">
                         <h4 className="font-semibold mb-2 flex items-start gap-2">
                           <HelpCircle className="w-5 h-5 text-[hsl(var(--gold))] flex-shrink-0 mt-0.5" />
-                          How do I purchase a beat?
+                          What am I paying for?
                         </h4>
                         <p className="text-muted-foreground pl-7">
-                          Browse our catalog, select your beat, choose a license
-                          tier, and complete checkout via PayPal. You'll receive
-                          instant download access.
+                          you are paying for creative labor and licensing. Your
+                          payment covers: The labor involved in creating and
+                          preparing the beat (by DJ 3LIXIR and/or hosted
+                          artists) Platform services (hosting, delivery, and
+                          rights administration) A limited license to use the
+                          beat under the 3LIXIR MUSIC license terms You are not
+                          buying ownership of the beat, copyright, or exclusive
+                          rights.
                         </p>
                       </div>
 
@@ -1881,19 +1978,23 @@ const InfoPage = () => {
                           What file formats do you provide?
                         </h4>
                         <p className="text-muted-foreground pl-7">
-                          Basic licenses include MP3. Premium and Exclusive
-                          licenses include WAV files and/or trackout stems.
+                          All Licenses come with WAV files for that lossless
+                          audio quality.
                         </p>
                       </div>
 
                       <div className="bg-white/5 rounded-lg p-5">
                         <h4 className="font-semibold mb-2 flex items-start gap-2">
                           <HelpCircle className="w-5 h-5 text-[hsl(var(--gold))] flex-shrink-0 mt-0.5" />
-                          What's the difference between Basic and Premium?
+                          Why Subscribe to a VIP License?
                         </h4>
                         <p className="text-muted-foreground pl-7">
-                          Premium offers higher usage limits, tag-free versions,
-                          and higher quality files (WAV/trackouts).
+                          Subscribing gives you ongoing access to beats and
+                          built-in royalty clearance, so you can release music
+                          without paying per-beat licensing fees as long as your
+                          subscription is active. It’s the most cost-effective
+                          way to consistently create and publish music using
+                          3LIXIR beats.
                         </p>
                       </div>
 
@@ -1904,7 +2005,8 @@ const InfoPage = () => {
                         </h4>
                         <p className="text-muted-foreground pl-7">
                           Yes, unless someone purchases an Exclusive License,
-                          which removes the beat from our store.
+                          which removes the beat from our store. You can contact
+                          us for exclusive licensing.
                         </p>
                       </div>
                     </div>
@@ -1923,7 +2025,8 @@ const InfoPage = () => {
                           What payment methods do you accept?
                         </h4>
                         <p className="text-muted-foreground pl-7">
-                          Currently PayPal, with Cash App coming soon.
+                          Currently PayPal, Stripe, Crypto with Coinbase coming
+                          soon.
                         </p>
                       </div>
 
@@ -1966,18 +2069,23 @@ const InfoPage = () => {
                           Can I use the beat on Spotify, Apple Music, etc.?
                         </h4>
                         <p className="text-muted-foreground pl-7">
-                          Yes, within your license tier's distribution limits.
+                          Yes, within your license tier it allows you access to
+                          collect royalties on a song you have made using an
+                          instrumental.
                         </p>
                       </div>
 
                       <div className="bg-white/5 rounded-lg p-5">
                         <h4 className="font-semibold mb-2 flex items-start gap-2">
                           <HelpCircle className="w-5 h-5 text-[hsl(var(--gold))] flex-shrink-0 mt-0.5" />
-                          What happens if I exceed my license limits?
+                          What happens if I cancel my license?
                         </h4>
                         <p className="text-muted-foreground pl-7">
-                          You must upgrade to the next tier. Contact us to
-                          discuss your options.
+                          This only applies to VIP Licenses. If you cancel your
+                          subcription than any beat you own that you hhave not
+                          published will require a token to publish upon
+                          cancellation, so make sure to publish your music
+                          before cancellation.
                         </p>
                       </div>
                     </div>
@@ -2034,12 +2142,19 @@ const InfoPage = () => {
                 </p>
 
                 <p className="text-muted-foreground mb-8">
-                  3LIXIR Music respects the intellectual property rights of
-                  others and expects users of our services to do the same. This
-                  Digital Millennium Copyright Act ("DMCA") Copyright
-                  Infringement Policy outlines our procedures for responding to
-                  claims of copyright infringement in compliance with the DMCA
-                  (17 U.S.C. § 512).
+                  3LIXIR MUSIC (unofficial LLC) respects the intellectual
+                  property rights of others and expects all users of its
+                  services to do the same. This Digital Millennium Copyright Act
+                  ("DMCA") Copyright Infringement Policy describes the
+                  procedures we follow to respond to claims of copyright
+                  infringement in accordance with the DMCA (17 U.S.C. § 512).
+                </p>
+
+                <p className="text-muted-foreground mb-8">
+                  This policy applies to all content made available through the
+                  3LIXIR MUSIC platform, including but not limited to DJ 3LIXIR
+                  Beats, third-party licensed Beats, user-submitted materials
+                  (if applicable), and related services.
                 </p>
 
                 <div className="space-y-8">
@@ -2048,14 +2163,14 @@ const InfoPage = () => {
                       1. Designated DMCA Agent
                     </h3>
                     <p className="text-muted-foreground mb-4">
-                      Pursuant to the DMCA, 3LIXIR Music has designated the
-                      following agent to receive notifications of claimed
-                      infringement:
+                      Pursuant to the DMCA, 3LIXIR MUSIC (unofficial LLC) has
+                      designated the following agent to receive notifications of
+                      claimed copyright infringement:
                     </p>
                     <div className="border border-white/10 rounded-xl p-6 bg-white/5 space-y-2">
                       <p className="text-muted-foreground">
                         <strong className="text-foreground">DMCA Agent:</strong>{" "}
-                        3LIXIR Music
+                        3LIXIR MUSIC (unofficial LLC)
                       </p>
                       <p className="text-muted-foreground">
                         <strong className="text-foreground">Email:</strong>{" "}
@@ -2068,6 +2183,10 @@ const InfoPage = () => {
                         [Business Address]
                       </p>
                     </div>
+                    <p className="text-muted-foreground mt-4 italic">
+                      Only DMCA-compliant notices sent to this agent will be
+                      processed.
+                    </p>
                   </section>
 
                   <section>
@@ -2075,10 +2194,10 @@ const InfoPage = () => {
                       2. Filing a DMCA Takedown Notice
                     </h3>
                     <p className="text-muted-foreground mb-4">
-                      If you believe that your copyrighted work has been copied
-                      or used in a way that constitutes copyright infringement,
-                      you may submit a written notification to our DMCA Agent
-                      that includes all of the following:
+                      If you believe that material available through the
+                      Services infringes a copyright you own or control, you may
+                      submit a written DMCA takedown notice that includes all of
+                      the following:
                     </p>
                     <ol className="list-decimal list-inside space-y-3 text-muted-foreground ml-4">
                       <li>
@@ -2090,7 +2209,7 @@ const InfoPage = () => {
                         been infringed
                       </li>
                       <li>
-                        Identification of the infringing material and
+                        Identification of the allegedly infringing material and
                         information reasonably sufficient to permit us to locate
                         the material
                       </li>
@@ -2099,18 +2218,18 @@ const InfoPage = () => {
                         telephone number, and email address
                       </li>
                       <li>
-                        A statement that you have a good faith belief that use
-                        of the material is not authorized by the copyright
+                        A statement that you have a good-faith belief that the
+                        use of the material is not authorized by the copyright
                         owner, its agent, or the law
                       </li>
                       <li>
-                        A statement, under penalty of perjury, that the
+                        A statement, made under penalty of perjury, that the
                         information in the notification is accurate and that you
                         are authorized to act on behalf of the copyright owner
                       </li>
                     </ol>
                     <p className="text-muted-foreground mt-4 italic">
-                      Incomplete notices may not be processed.
+                      Incomplete or non-compliant notices may not be processed.
                     </p>
                   </section>
 
@@ -2119,22 +2238,26 @@ const InfoPage = () => {
                       3. Our Response to Valid Notices
                     </h3>
                     <p className="text-muted-foreground mb-2">
-                      Upon receipt of a valid DMCA takedown notice, 3LIXIR Music
-                      may:
+                      Upon receipt of a valid DMCA takedown notice, 3LIXIR MUSIC
+                      (unofficial LLC) may, at its discretion and in accordance
+                      with applicable law:
                     </p>
                     <ul className="list-disc list-inside space-y-2 text-muted-foreground ml-4">
                       <li>
                         Remove or disable access to the allegedly infringing
                         material
                       </li>
-                      <li>Notify the affected user of the takedown</li>
+                      <li>Notify the affected user or licensee</li>
                       <li>
-                        Take additional action consistent with applicable law
+                        Restrict or terminate access for repeat infringers
+                      </li>
+                      <li>
+                        Take any other action deemed appropriate under the DMCA
                       </li>
                     </ul>
                     <p className="text-muted-foreground mt-4">
-                      We reserve the right to remove content at our sole
-                      discretion.
+                      Nothing in this policy requires 3LIXIR MUSIC to adjudicate
+                      ownership disputes or contractual license disagreements.
                     </p>
                   </section>
 
@@ -2144,32 +2267,33 @@ const InfoPage = () => {
                     </h3>
                     <p className="text-muted-foreground mb-4">
                       If you believe that material removed or disabled pursuant
-                      to a DMCA notice was removed due to mistake or
+                      to a DMCA notice was removed as a result of mistake or
                       misidentification, you may submit a counter-notification
                       that includes:
                     </p>
                     <ol className="list-decimal list-inside space-y-3 text-muted-foreground ml-4">
                       <li>Your physical or electronic signature</li>
                       <li>
-                        Identification of the material that has been removed and
-                        its prior location
+                        Identification of the material that was removed or
+                        disabled and its prior location
                       </li>
                       <li>
-                        A statement under penalty of perjury that you have a
-                        good faith belief the material was removed due to
-                        mistake or misidentification
+                        A statement, under penalty of perjury, that you have a
+                        good-faith belief the material was removed or disabled
+                        due to mistake or misidentification
                       </li>
                       <li>
                         Your name, address, telephone number, and email address
                       </li>
                       <li>
                         A statement consenting to the jurisdiction of the
-                        federal court located in your judicial district (or
-                        California if outside the United States)
+                        federal district court in your judicial district, or the
+                        State of California if you reside outside the United
+                        States
                       </li>
                     </ol>
                     <p className="text-muted-foreground mt-4">
-                      Counter-notifications should be sent to the DMCA Agent
+                      Counter-notifications must be sent to the DMCA Agent
                       listed above.
                     </p>
                   </section>
@@ -2179,10 +2303,10 @@ const InfoPage = () => {
                       5. Repeat Infringer Policy
                     </h3>
                     <p className="text-muted-foreground">
-                      In accordance with the DMCA, 3LIXIR Music maintains a
-                      policy to terminate, in appropriate circumstances and at
-                      our sole discretion, users who are deemed to be repeat
-                      infringers.
+                      In accordance with the DMCA, 3LIXIR MUSIC (unofficial LLC)
+                      maintains a policy of terminating, in appropriate
+                      circumstances and at its sole discretion, users who are
+                      determined to be repeat copyright infringers.
                     </p>
                   </section>
 
@@ -2200,29 +2324,48 @@ const InfoPage = () => {
 
                   <section>
                     <h3 className="text-2xl font-display font-semibold tracking-tight mb-3">
-                      7. No Legal Advice
+                      7. Licensing Disputes
                     </h3>
-                    <p className="text-muted-foreground">
-                      This DMCA Policy is provided for informational purposes
-                      only and does not constitute legal advice. We encourage
-                      copyright owners and users to consult legal counsel before
-                      submitting a notice or counter-notice.
+                    <p className="text-muted-foreground mb-2">
+                      DMCA notices must not be used to resolve licensing
+                      disputes, royalty disagreements, or contractual conflicts.
+                      Beats licensed through 3LIXIR MUSIC are governed by the
+                      applicable Beat License Agreement and Terms of Service.
+                    </p>
+                    <p className="text-muted-foreground mt-2">
+                      Improper DMCA submissions based on licensing
+                      misunderstandings may be rejected.
                     </p>
                   </section>
 
                   <section>
                     <h3 className="text-2xl font-display font-semibold tracking-tight mb-3">
-                      8. Changes to This Policy
+                      8. No Legal Advice
                     </h3>
                     <p className="text-muted-foreground">
-                      We reserve the right to update this DMCA Policy at any
-                      time. Changes become effective upon posting.
+                      This DMCA Policy is provided for informational purposes
+                      only and does not constitute legal advice. We encourage
+                      copyright owners and users to consult qualified legal
+                      counsel before submitting a takedown notice or
+                      counter-notification.
+                    </p>
+                  </section>
+
+                  <section>
+                    <h3 className="text-2xl font-display font-semibold tracking-tight mb-3">
+                      9. Changes to This Policy
+                    </h3>
+                    <p className="text-muted-foreground">
+                      We reserve the right to modify this DMCA Policy at any
+                      time. Changes become effective upon posting to the
+                      platform. Continued use of the Services constitutes
+                      acceptance of the revised policy.
                     </p>
                   </section>
 
                   <div className="mt-12 pt-8 border-t border-white/10 text-center">
                     <p className="text-muted-foreground font-semibold">
-                      END OF DMCA COPYRIGHT POLICY
+                      END OF DMCA COPYRIGHT INFRINGEMENT POLICY
                     </p>
                   </div>
                 </div>

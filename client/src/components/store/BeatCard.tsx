@@ -16,6 +16,8 @@ export function BeatCard({ beat }: BeatCardProps) {
   const [isPlaying, setIsPlaying] = useState(false);
   const [isHovered, setIsHovered] = useState(false);
   const [subscriptionTier, setSubscriptionTier] = useState<string>("tier_zero");
+  const [isFavorited, setIsFavorited] = useState(false);
+  const [isTogglingFavorite, setIsTogglingFavorite] = useState(false);
   const { addToCart } = useCart();
   const { toast } = useToast();
   const { user, openAuthModal } = useAuth();
@@ -27,7 +29,6 @@ export function BeatCard({ beat }: BeatCardProps) {
         setSubscriptionTier("tier_zero");
         return;
       }
-
       try {
         const { data, error } = await supabase
           .from("profiles")
@@ -42,9 +43,96 @@ export function BeatCard({ beat }: BeatCardProps) {
         console.error("Error fetching subscription:", err);
       }
     }
-
     fetchSubscription();
   }, [user]);
+
+  // Check if beat is favorited
+  useEffect(() => {
+    async function checkFavorite() {
+      if (!user) {
+        setIsFavorited(false);
+        return;
+      }
+
+      try {
+        const { data, error } = await supabase
+          .from("favorites")
+          .select("id")
+          .eq("user_id", user.id)
+          .eq("beat_id", beat.id)
+          .single();
+
+        if (!error && data) {
+          setIsFavorited(true);
+        } else {
+          setIsFavorited(false);
+        }
+      } catch (err) {
+        setIsFavorited(false);
+      }
+    }
+    checkFavorite();
+  }, [user, beat.id]);
+
+  // Toggle favorite
+  const handleToggleFavorite = async (e: React.MouseEvent) => {
+    e.stopPropagation();
+
+    if (!user) {
+      openAuthModal();
+      toast({
+        title: "Sign in required",
+        description: "Please sign in to save favorites.",
+      });
+      return;
+    }
+
+    if (isTogglingFavorite) return;
+
+    setIsTogglingFavorite(true);
+
+    try {
+      if (isFavorited) {
+        // Remove from favorites
+        const { error } = await supabase
+          .from("favorites")
+          .delete()
+          .eq("user_id", user.id)
+          .eq("beat_id", beat.id);
+
+        if (error) throw error;
+
+        setIsFavorited(false);
+        toast({
+          title: "Removed from favorites",
+          description: `${beat.title} has been removed from your favorites.`,
+        });
+      } else {
+        // Add to favorites
+        const { error } = await supabase.from("favorites").insert({
+          user_id: user.id,
+          beat_id: beat.id,
+        });
+
+        if (error) throw error;
+
+        setIsFavorited(true);
+        toast({
+          title: "Added to favorites",
+          description: `${beat.title} has been added to your favorites.`,
+        });
+      }
+    } catch (err) {
+      console.error("Error toggling favorite:", err);
+      toast({
+        title: "Error",
+        description: "Failed to update favorites. Please try again.",
+        variant: "destructive",
+      });
+    } finally {
+      setIsTogglingFavorite(false);
+    }
+  };
 
   // Check if user has access to member-only content
   const hasAccess =
@@ -52,7 +140,6 @@ export function BeatCard({ beat }: BeatCardProps) {
 
   const handlePlay = () => {
     if (beat.memberOnly && !hasAccess) {
-      // Show modal or toast for member-only content
       toast({
         title: "Members Only",
         description:
@@ -81,7 +168,6 @@ export function BeatCard({ beat }: BeatCardProps) {
       }
       return;
     }
-
     addToCart(beat);
     toast({
       title: "Added to cart",
@@ -89,7 +175,6 @@ export function BeatCard({ beat }: BeatCardProps) {
     });
   };
 
-  // Format the date
   const formatDate = (dateString: string) => {
     const date = new Date(dateString);
     return date.toLocaleDateString("en-US", {
@@ -99,7 +184,6 @@ export function BeatCard({ beat }: BeatCardProps) {
     });
   };
 
-  // Extract YouTube video ID from URL
   const getYouTubeId = (url: string) => {
     if (!url) return null;
     const regExp =
@@ -117,10 +201,8 @@ export function BeatCard({ beat }: BeatCardProps) {
       onMouseLeave={() => setIsHovered(false)}
       whileHover={{ y: -5 }}
     >
-      {/* Cover Image Area */}
       <div className="aspect-square relative overflow-hidden">
         {isPlaying && youtubeId && hasAccess ? (
-          // YouTube Embed
           <iframe
             src={`https://www.youtube.com/embed/${youtubeId}?autoplay=1&controls=1`}
             title={beat.title}
@@ -130,13 +212,11 @@ export function BeatCard({ beat }: BeatCardProps) {
           />
         ) : (
           <>
-            {/* Cover Image */}
             <img
               src={beat.cover}
               alt={beat.title}
               className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
             />
-            {/* Overlay */}
             <div
               className={`absolute inset-0 bg-black/60 flex items-center justify-center transition-opacity duration-300 ${isHovered || isPlaying ? "opacity-100" : "opacity-0"}`}
             >
@@ -153,24 +233,25 @@ export function BeatCard({ beat }: BeatCardProps) {
                 )}
               </button>
             </div>
-
-            {/* Member-Only Badge */}
             {beat.memberOnly && (
               <div className="absolute top-4 left-4 flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-[hsl(var(--gold))] text-black font-bold text-xs uppercase tracking-wider">
                 <Crown className="w-3 h-3" />
                 <span>Members Only</span>
               </div>
             )}
-
-            {/* Top Right Actions */}
             <div className="absolute top-4 right-4 flex gap-2 translate-y-[-10px] opacity-0 group-hover:translate-y-0 group-hover:opacity-100 transition-all duration-300">
-              <button className="p-2 rounded-full bg-black/50 backdrop-blur-md text-white hover:text-[hsl(var(--gold))] transition-colors">
-                <Heart className="w-4 h-4" />
+              <button
+                onClick={handleToggleFavorite}
+                disabled={isTogglingFavorite}
+                className="p-2 rounded-full bg-black/50 backdrop-blur-md text-white hover:text-[hsl(var(--gold))] transition-colors disabled:opacity-50"
+              >
+                <Heart
+                  className={`w-4 h-4 ${isFavorited ? "fill-[hsl(var(--gold))] text-[hsl(var(--gold))]" : ""}`}
+                />
               </button>
             </div>
           </>
         )}
-        {/* Close button when video is playing */}
         {isPlaying && youtubeId && hasAccess && (
           <button
             onClick={() => setIsPlaying(false)}
@@ -180,8 +261,6 @@ export function BeatCard({ beat }: BeatCardProps) {
           </button>
         )}
       </div>
-
-      {/* Content */}
       <div className="p-5">
         <div className="flex justify-between items-start mb-2">
           <div>
@@ -198,7 +277,6 @@ export function BeatCard({ beat }: BeatCardProps) {
             </span>
           </div>
         </div>
-
         <div className="flex items-center gap-4 text-xs text-muted-foreground font-mono mb-4">
           <span>{beat.bpm} BPM</span>
           <span className="w-1 h-1 rounded-full bg-white/20" />
@@ -206,7 +284,6 @@ export function BeatCard({ beat }: BeatCardProps) {
           <span className="w-1 h-1 rounded-full bg-white/20" />
           <span>{formatDate(beat.releaseDate)}</span>
         </div>
-
         <div className="flex items-center justify-between gap-3 pt-4 border-t border-white/5">
           <div className="flex gap-2">
             {beat.tags.slice(0, 2).map((tag) => (
