@@ -87,34 +87,38 @@ export default function Shop() {
       const sessionId = params.get("session_id");
       const orderId = params.get("order_id");
 
-      if (paymentSuccess === "success" && sessionId && orderId && user) {
-        console.log("Stripe payment detected, updating order...", {
-          sessionId,
-          orderId,
-        });
+      if (paymentSuccess === "success" && sessionId) {
+        console.log("Stripe payment detected, session:", sessionId);
 
         try {
-          // Update the pending order to completed
-          const { error } = await supabase
-            .from("orders")
-            .update({
-              transaction_id: sessionId,
-              status: "completed",
-            })
-            .eq("id", orderId)
-            .eq("user_id", user.id);
+          // If user is logged in and has an order ID, update the order
+          if (user && orderId) {
+            const { error } = await supabase
+              .from("orders")
+              .update({
+                transaction_id: sessionId,
+                status: "completed",
+              })
+              .eq("id", orderId)
+              .eq("user_id", user.id);
 
-          if (error) {
-            console.error("Error updating order:", error);
-            alert(
-              "Payment successful but there was an error. Please contact support with order ID: " +
-                orderId,
-            );
+            if (error) {
+              console.error("Error updating order:", error);
+              alert(
+                "Payment successful but there was an error. Please contact support with session ID: " +
+                  sessionId,
+              );
+            } else {
+              console.log("Order updated successfully");
+              clearCart();
+              alert("Payment successful! Your purchase has been completed.");
+              setLocation("/downloads");
+            }
           } else {
-            console.log("Order updated successfully");
+            // Guest checkout - just clear cart and show success
             clearCart();
-            alert("Payment successful! Your purchase has been completed.");
-            setLocation("/downloads");
+            alert("Payment successful! Check your email for download links.");
+            window.history.replaceState({}, "", "/shop");
           }
         } catch (error) {
           console.error("Error processing payment:", error);
@@ -122,15 +126,16 @@ export default function Shop() {
 
         // Clean up URL
         window.history.replaceState({}, "", "/shop");
-      } else if (paymentSuccess === "cancelled" && orderId && user) {
-        // Delete the pending order if payment was cancelled
-        await supabase
-          .from("orders")
-          .delete()
-          .eq("id", orderId)
-          .eq("user_id", user.id)
-          .eq("status", "pending");
-
+      } else if (paymentSuccess === "cancelled") {
+        // Delete the pending order if payment was cancelled and user is logged in
+        if (user && orderId) {
+          await supabase
+            .from("orders")
+            .delete()
+            .eq("id", orderId)
+            .eq("user_id", user.id)
+            .eq("status", "pending");
+        }
         window.history.replaceState({}, "", "/shop");
       }
     };
@@ -189,25 +194,23 @@ export default function Shop() {
   const handlePaymentSuccess = async (
     transactionId: string,
     method: PaymentMethod,
-    itemsToSave?: any[], // Allow passing items explicitly for Stripe
+    itemsToSave?: any[],
   ) => {
     try {
       const {
-        data: { user },
+        data: { user: currentUser },
       } = await supabase.auth.getUser();
 
-      if (user) {
-        // Use passed items for Stripe, or validItems for PayPal
+      if (currentUser) {
         const orderItems = itemsToSave || validItems;
 
         console.log("Saving order with items:", orderItems);
 
-        // Save the order
         const { error } = await supabase.from("orders").insert({
-          user_id: user.id,
+          user_id: currentUser.id,
           payment_method: method,
           transaction_id: transactionId,
-          items: orderItems, // Save the actual cart items, not Stripe format
+          items: orderItems,
           subtotal: orderItems.reduce(
             (sum, item) => sum + item.price * item.quantity,
             0,
@@ -231,7 +234,6 @@ export default function Shop() {
           );
         }
 
-        // Check if order contains a subscription and update user's tier
         const subscriptionItem = orderItems.find((item) =>
           item.id.startsWith("subscription-"),
         );
@@ -253,7 +255,7 @@ export default function Shop() {
               subscription_tier: newTier,
               updated_at: new Date().toISOString(),
             })
-            .eq("id", user.id);
+            .eq("id", currentUser.id);
 
           if (updateError) {
             console.error("Error updating subscription tier:", updateError);
@@ -262,16 +264,19 @@ export default function Shop() {
           }
         }
 
-        // Only clear cart and show success for PayPal (Stripe clears cart on redirect)
         if (method === "paypal") {
           clearCart();
           setShowPaymentModal(false);
           alert("Payment successful! Your purchase has been completed.");
           setLocation("/downloads");
         } else {
-          // For Stripe, just redirect without clearing (cart already cleared on checkout)
           setLocation("/downloads");
         }
+      } else {
+        // Guest checkout success
+        clearCart();
+        setShowPaymentModal(false);
+        alert("Payment successful! Check your email for download links.");
       }
     } catch (error) {
       console.error("Error saving order:", error);
@@ -290,47 +295,45 @@ export default function Shop() {
         return;
       }
 
-      // First, save a pending order to the database with the cart items
       const {
         data: { user: currentUser },
       } = await supabase.auth.getUser();
 
-      if (!currentUser) {
-        alert("Please sign in to continue");
-        return;
+      let pendingOrderId = null;
+
+      // Only create order in DB if user is logged in
+      if (currentUser) {
+        const { data: pendingOrder, error: orderError } = await supabase
+          .from("orders")
+          .insert({
+            user_id: currentUser.id,
+            payment_method: "stripe",
+            transaction_id: "pending",
+            items: validItems,
+            subtotal: validItems.reduce(
+              (sum, item) => sum + item.price * item.quantity,
+              0,
+            ),
+            tax: tax,
+            total: validItems.reduce(
+              (sum, item) => sum + item.price * item.quantity,
+              0,
+            ),
+            status: "pending",
+          })
+          .select()
+          .single();
+
+        if (orderError || !pendingOrder) {
+          console.error("Error creating pending order:", orderError);
+          alert("Failed to create order. Please try again.");
+          return;
+        }
+
+        pendingOrderId = pendingOrder.id;
+        console.log("Created pending order:", pendingOrderId);
       }
 
-      // Create a pending order in the database
-      const { data: pendingOrder, error: orderError } = await supabase
-        .from("orders")
-        .insert({
-          user_id: currentUser.id,
-          payment_method: "stripe",
-          transaction_id: "pending",
-          items: validItems, // Save the actual cart items here
-          subtotal: validItems.reduce(
-            (sum, item) => sum + item.price * item.quantity,
-            0,
-          ),
-          tax: tax,
-          total: validItems.reduce(
-            (sum, item) => sum + item.price * item.quantity,
-            0,
-          ),
-          status: "pending",
-        })
-        .select()
-        .single();
-
-      if (orderError || !pendingOrder) {
-        console.error("Error creating pending order:", orderError);
-        alert("Failed to create order. Please try again.");
-        return;
-      }
-
-      console.log("Created pending order:", pendingOrder.id);
-
-      // Create line items for Stripe with tax_behavior
       const lineItems = validItems.map((item) => ({
         price_data: {
           currency: "usd",
@@ -345,14 +348,24 @@ export default function Shop() {
         quantity: item.quantity || 1,
       }));
 
+      // Build URLs - only include order_id if user is logged in
+      const baseSuccessUrl = `${window.location.origin}/shop?payment=success&session_id={CHECKOUT_SESSION_ID}`;
+      const successUrl = pendingOrderId
+        ? `${baseSuccessUrl}&order_id=${pendingOrderId}`
+        : baseSuccessUrl;
+
+      const baseCancelUrl = `${window.location.origin}/shop?payment=cancelled`;
+      const cancelUrl = pendingOrderId
+        ? `${baseCancelUrl}&order_id=${pendingOrderId}`
+        : baseCancelUrl;
+
       console.log("Sending checkout request with:", {
         lineItems,
-        orderId: pendingOrder.id,
-        userId: user?.id,
-        userEmail: user?.email,
+        orderId: pendingOrderId,
+        userId: currentUser?.id,
+        userEmail: currentUser?.email,
       });
 
-      // Call your Edge Function
       const response = await fetch(
         "https://tciugratutxxrdtbsxim.supabase.co/functions/v1/create-stripe-checkout",
         {
@@ -364,11 +377,11 @@ export default function Shop() {
           },
           body: JSON.stringify({
             lineItems,
-            orderId: pendingOrder.id, // Pass the order ID so we can update it later
-            userId: user?.id,
-            userEmail: user?.email,
-            successUrl: `${window.location.origin}/shop?payment=success&order_id=${pendingOrder.id}&session_id={CHECKOUT_SESSION_ID}`,
-            cancelUrl: `${window.location.origin}/shop?payment=cancelled&order_id=${pendingOrder.id}`,
+            orderId: pendingOrderId,
+            userId: currentUser?.id,
+            userEmail: currentUser?.email,
+            successUrl: successUrl,
+            cancelUrl: cancelUrl,
           }),
         },
       );
@@ -381,7 +394,6 @@ export default function Shop() {
         throw new Error(data.error);
       }
 
-      // Redirect using the URL directly
       if (data.url) {
         window.location.href = data.url;
       } else {
@@ -394,15 +406,13 @@ export default function Shop() {
   };
 
   const handleCryptoCheckout = async () => {
-    // TODO: Implement Coinbase Commerce checkout
     console.log("Crypto checkout initiated");
     alert("Crypto payment integration coming soon!");
   };
 
   const handleCheckout = () => {
-    if (!user) {
-      openAuthModal();
-    } else if (totalBeats > 0 && !hasProperLicensing) {
+    // Only check licensing if user is logged in
+    if (user && totalBeats > 0 && !hasProperLicensing) {
       setShowLicenseModal(true);
     } else {
       setShowPaymentModal(true);
@@ -413,7 +423,6 @@ export default function Shop() {
     <div className="min-h-screen bg-background text-foreground">
       <Navbar />
 
-      {/* Processing Payment Overlay */}
       {processingPayment && (
         <div className="fixed inset-0 bg-black/90 backdrop-blur-sm z-50 flex items-center justify-center">
           <div className="text-center">
@@ -426,7 +435,6 @@ export default function Shop() {
         </div>
       )}
 
-      {/* Licensing Required Modal */}
       {showLicenseModal && (
         <div className="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 flex items-center justify-center p-4">
           <div className="bg-background border border-white/10 rounded-2xl p-8 max-w-md w-full relative">
@@ -479,7 +487,6 @@ export default function Shop() {
         </div>
       )}
 
-      {/* Payment Method Modal */}
       {showPaymentModal && (
         <div className="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 flex items-center justify-center p-4">
           <div className="bg-background border border-white/10 rounded-2xl p-8 max-w-lg w-full relative">
@@ -492,7 +499,6 @@ export default function Shop() {
 
             <h2 className="text-2xl font-bold mb-6">Complete Payment</h2>
 
-            {/* Order Summary */}
             <div className="mb-6 p-4 bg-white/5 rounded-lg">
               <div className="flex justify-between mb-2">
                 <span className="text-muted-foreground">Subtotal</span>
@@ -516,14 +522,12 @@ export default function Shop() {
               </p>
             </div>
 
-            {/* Payment Method Selector */}
             <div className="mb-6">
               <h3 className="text-sm font-semibold text-muted-foreground uppercase tracking-wider mb-3">
                 Select Payment Method
               </h3>
 
               <div className="space-y-3">
-                {/* Stripe Option */}
                 <button
                   onClick={() => setSelectedPaymentMethod("stripe")}
                   className={`w-full p-4 rounded-lg border-2 transition-all flex items-center gap-4 ${
@@ -560,7 +564,6 @@ export default function Shop() {
                   </div>
                 </button>
 
-                {/* PayPal Option */}
                 <button
                   onClick={() => setSelectedPaymentMethod("paypal")}
                   className={`w-full p-4 rounded-lg border-2 transition-all flex items-center gap-4 ${
@@ -591,7 +594,6 @@ export default function Shop() {
                   </div>
                 </button>
 
-                {/* Crypto Option */}
                 <button
                   onClick={() => setSelectedPaymentMethod("crypto")}
                   className={`w-full p-4 rounded-lg border-2 transition-all flex items-center gap-4 ${
@@ -622,7 +624,6 @@ export default function Shop() {
               </div>
             </div>
 
-            {/* Payment Interface */}
             <div className="mb-4">
               {selectedPaymentMethod === "stripe" && (
                 <div className="space-y-4">
@@ -815,7 +816,7 @@ export default function Shop() {
                     onClick={handleCheckout}
                     className="w-full bg-[hsl(var(--gold))] text-black hover:bg-[hsl(var(--gold))]/90 rounded-full py-6 text-sm font-bold uppercase tracking-widest mb-4"
                   >
-                    {user ? "Proceed to Checkout" : "Sign In to Checkout"}
+                    Proceed to Checkout
                   </Button>
                   <button
                     onClick={() => setLocation("/beats")}
