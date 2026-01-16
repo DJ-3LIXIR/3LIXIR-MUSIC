@@ -46,6 +46,10 @@ export default function Downloads() {
           .order("created_at", { ascending: false });
 
         if (error) throw error;
+
+        // Log orders to debug
+        console.log("Fetched orders:", data);
+
         setOrders(data || []);
       } catch (error) {
         console.error("Error fetching orders:", error);
@@ -163,19 +167,43 @@ export default function Downloads() {
     );
   }
 
-  // Get all unique purchased beats from all orders
-  const allPurchasedBeats = orders.flatMap((order) =>
-    order.items
-      .filter(
-        (item) =>
-          item.id !== "royalty-token" && !item.id.startsWith("subscription-"),
-      )
+  // Get all unique purchased beats from all orders with null checks
+  const allPurchasedBeats = orders.flatMap((order) => {
+    if (!order.items || !Array.isArray(order.items)) {
+      console.warn("Order has no items array:", order);
+      return [];
+    }
+
+    return order.items
+      .filter((item) => {
+        // Check if item exists and has required properties
+        if (!item || !item.id) {
+          console.warn("Invalid item in order:", item);
+          return false;
+        }
+
+        // Skip Stripe's price_data format (these are broken orders from before the fix)
+        if (item.hasOwnProperty("price_data")) {
+          console.warn("Skipping Stripe format item (broken order):", item);
+          return false;
+        }
+
+        // Filter out tokens and subscriptions
+        return (
+          item.id !== "royalty-token" && !item.id.startsWith("subscription-")
+        );
+      })
       .map((item) => ({
         ...item,
+        // Provide defaults for missing properties
+        title: item.title || "Unknown Beat",
+        artist: item.artist || "Unknown Artist",
+        price: item.price || 0,
+        quantity: item.quantity || 1,
         orderId: order.id,
         orderDate: order.created_at,
-      })),
-  );
+      }));
+  });
 
   return (
     <div className="min-h-screen bg-black text-foreground relative">

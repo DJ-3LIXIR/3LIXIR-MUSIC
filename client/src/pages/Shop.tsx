@@ -41,24 +41,32 @@ export default function Shop() {
   const [showLicenseModal, setShowLicenseModal] = useState(false);
   const paypalRef = useRef<HTMLDivElement>(null);
 
+  // Filter out any items with missing data
+  const validItems = items.filter(
+    (item) => item && typeof item.price === "number",
+  );
+
   // Tax will be calculated by Stripe automatically
   const tax = 0;
   const total = subtotal;
 
   // Count beats (non-license items) in cart
-  const beatItems = items.filter(
+  const beatItems = validItems.filter(
     (item) =>
       item.id !== "royalty-token" && !item.id.startsWith("subscription-"),
   );
-  const totalBeats = beatItems.reduce((sum, item) => sum + item.quantity, 0);
+  const totalBeats = beatItems.reduce(
+    (sum, item) => sum + (item.quantity || 0),
+    0,
+  );
 
   // Check if cart has subscription
-  const hasSubscription = items.some((item) =>
+  const hasSubscription = validItems.some((item) =>
     item.id.startsWith("subscription-"),
   );
 
   // Count royalty tokens in cart
-  const royaltyTokens = items.find((item) => item.id === "royalty-token");
+  const royaltyTokens = validItems.find((item) => item.id === "royalty-token");
   const tokenCount = royaltyTokens ? royaltyTokens.quantity : 0;
 
   // Check if user already has active membership
@@ -70,13 +78,73 @@ export default function Shop() {
   const hasProperLicensing =
     hasActiveMembership || hasSubscription || tokenCount >= totalBeats;
 
+  // Check for successful Stripe payment on page load
+  useEffect(() => {
+    const checkStripeSuccess = async () => {
+      const params = new URLSearchParams(window.location.search);
+      const paymentSuccess = params.get("payment");
+      const sessionId = params.get("session_id");
+      const orderId = params.get("order_id");
+
+      if (paymentSuccess === "success" && sessionId && orderId && user) {
+        console.log("Stripe payment detected, updating order...", {
+          sessionId,
+          orderId,
+        });
+
+        try {
+          // Update the pending order to completed
+          const { error } = await supabase
+            .from("orders")
+            .update({
+              transaction_id: sessionId,
+              status: "completed",
+            })
+            .eq("id", orderId)
+            .eq("user_id", user.id);
+
+          if (error) {
+            console.error("Error updating order:", error);
+            alert(
+              "Payment successful but there was an error. Please contact support with order ID: " +
+                orderId,
+            );
+          } else {
+            console.log("Order updated successfully");
+            clearCart();
+            alert("Payment successful! Your purchase has been completed.");
+            setLocation("/downloads");
+          }
+        } catch (error) {
+          console.error("Error processing payment:", error);
+        }
+
+        // Clean up URL
+        window.history.replaceState({}, "", "/shop");
+      } else if (paymentSuccess === "cancelled" && orderId && user) {
+        // Delete the pending order if payment was cancelled
+        await supabase
+          .from("orders")
+          .delete()
+          .eq("id", orderId)
+          .eq("user_id", user.id)
+          .eq("status", "pending");
+
+        window.history.replaceState({}, "", "/shop");
+      }
+    };
+
+    checkStripeSuccess();
+  }, [user]);
+
   // Load PayPal buttons when PayPal is selected
   useEffect(() => {
     if (
       showPaymentModal &&
       selectedPaymentMethod === "paypal" &&
       paypalRef.current &&
-      window.paypal
+      window.paypal &&
+      validItems.length > 0
     ) {
       paypalRef.current.innerHTML = "";
 
@@ -95,14 +163,14 @@ export default function Shop() {
                       },
                     },
                   },
-                  items: items.map((item) => ({
-                    name: item.title,
-                    description: `By ${item.artist}`,
+                  items: validItems.map((item) => ({
+                    name: item.title || "Unknown Item",
+                    description: `By ${item.artist || "Unknown Artist"}`,
                     unit_amount: {
-                      value: item.price.toFixed(2),
+                      value: (item.price || 0).toFixed(2),
                       currency_code: "USD",
                     },
-                    quantity: item.quantity,
+                    quantity: item.quantity || 1,
                   })),
                 },
               ],
@@ -115,11 +183,12 @@ export default function Shop() {
         })
         .render(paypalRef.current);
     }
-  }, [showPaymentModal, selectedPaymentMethod, total, items, subtotal]);
+  }, [showPaymentModal, selectedPaymentMethod, total, validItems, subtotal]);
 
   const handlePaymentSuccess = async (
     transactionId: string,
     method: PaymentMethod,
+    itemsToSave?: any[], // Allow passing items explicitly for Stripe
   ) => {
     try {
       const {
@@ -127,24 +196,42 @@ export default function Shop() {
       } = await supabase.auth.getUser();
 
       if (user) {
+        // Use passed items for Stripe, or validItems for PayPal
+        const orderItems = itemsToSave || validItems;
+
+        console.log("Saving order with items:", orderItems);
+
         // Save the order
         const { error } = await supabase.from("orders").insert({
           user_id: user.id,
           payment_method: method,
           transaction_id: transactionId,
-          items: items,
-          subtotal: subtotal,
+          items: orderItems, // Save the actual cart items, not Stripe format
+          subtotal: orderItems.reduce(
+            (sum, item) => sum + item.price * item.quantity,
+            0,
+          ),
           tax: tax,
-          total: total,
+          total: orderItems.reduce(
+            (sum, item) => sum + item.price * item.quantity,
+            0,
+          ),
           status: "completed",
         });
 
         if (error) {
           console.error("Error saving order:", error);
+          throw error;
+        } else {
+          console.log(
+            "Order saved successfully with",
+            orderItems.length,
+            "items",
+          );
         }
 
         // Check if order contains a subscription and update user's tier
-        const subscriptionItem = items.find((item) =>
+        const subscriptionItem = orderItems.find((item) =>
           item.id.startsWith("subscription-"),
         );
 
@@ -173,15 +260,25 @@ export default function Shop() {
             console.log("Subscription tier updated to:", newTier);
           }
         }
+
+        // Only clear cart and show success for PayPal (Stripe clears cart on redirect)
+        if (method === "paypal") {
+          clearCart();
+          setShowPaymentModal(false);
+          alert("Payment successful! Your purchase has been completed.");
+          setLocation("/downloads");
+        } else {
+          // For Stripe, just redirect without clearing (cart already cleared on checkout)
+          setLocation("/downloads");
+        }
       }
     } catch (error) {
       console.error("Error saving order:", error);
+      alert(
+        "There was an error processing your order. Please contact support with transaction ID: " +
+          transactionId,
+      );
     }
-
-    clearCart();
-    setShowPaymentModal(false);
-    alert("Payment successful! Your purchase has been completed.");
-    setLocation("/profile?section=purchases");
   };
 
   const handleStripeCheckout = async () => {
@@ -192,23 +289,64 @@ export default function Shop() {
         return;
       }
 
+      // First, save a pending order to the database with the cart items
+      const {
+        data: { user: currentUser },
+      } = await supabase.auth.getUser();
+
+      if (!currentUser) {
+        alert("Please sign in to continue");
+        return;
+      }
+
+      // Create a pending order in the database
+      const { data: pendingOrder, error: orderError } = await supabase
+        .from("orders")
+        .insert({
+          user_id: currentUser.id,
+          payment_method: "stripe",
+          transaction_id: "pending",
+          items: validItems, // Save the actual cart items here
+          subtotal: validItems.reduce(
+            (sum, item) => sum + item.price * item.quantity,
+            0,
+          ),
+          tax: tax,
+          total: validItems.reduce(
+            (sum, item) => sum + item.price * item.quantity,
+            0,
+          ),
+          status: "pending",
+        })
+        .select()
+        .single();
+
+      if (orderError || !pendingOrder) {
+        console.error("Error creating pending order:", orderError);
+        alert("Failed to create order. Please try again.");
+        return;
+      }
+
+      console.log("Created pending order:", pendingOrder.id);
+
       // Create line items for Stripe with tax_behavior
-      const lineItems = items.map((item) => ({
+      const lineItems = validItems.map((item) => ({
         price_data: {
           currency: "usd",
           product_data: {
-            name: item.title,
-            description: `By ${item.artist}`,
+            name: item.title || "Unknown Item",
+            description: `By ${item.artist || "Unknown Artist"}`,
             images: item.cover ? [item.cover] : [],
           },
-          unit_amount: Math.round(item.price * 100),
+          unit_amount: Math.round((item.price || 0) * 100),
           tax_behavior: "exclusive",
         },
-        quantity: item.quantity,
+        quantity: item.quantity || 1,
       }));
 
       console.log("Sending checkout request with:", {
         lineItems,
+        orderId: pendingOrder.id,
         userId: user?.id,
         userEmail: user?.email,
       });
@@ -225,10 +363,11 @@ export default function Shop() {
           },
           body: JSON.stringify({
             lineItems,
+            orderId: pendingOrder.id, // Pass the order ID so we can update it later
             userId: user?.id,
             userEmail: user?.email,
-            successUrl: `${window.location.origin}/profile?section=purchases&payment=success`,
-            cancelUrl: `${window.location.origin}/shop?payment=cancelled`,
+            successUrl: `${window.location.origin}/shop?payment=success&order_id=${pendingOrder.id}&session_id={CHECKOUT_SESSION_ID}`,
+            cancelUrl: `${window.location.origin}/shop?payment=cancelled&order_id=${pendingOrder.id}`,
           }),
         },
       );
@@ -241,7 +380,7 @@ export default function Shop() {
         throw new Error(data.error);
       }
 
-      // NEW METHOD: Redirect using the URL directly
+      // Redirect using the URL directly
       if (data.url) {
         window.location.href = data.url;
       } else {
@@ -521,7 +660,7 @@ export default function Shop() {
           <h1 className="text-5xl md:text-7xl font-display font-bold tracking-tighter mb-12">
             Your Cart
           </h1>
-          {items.length === 0 ? (
+          {validItems.length === 0 ? (
             <div className="flex flex-col items-center justify-center py-20">
               <div className="w-24 h-24 rounded-full bg-white/5 flex items-center justify-center mb-6">
                 <svg
@@ -552,7 +691,7 @@ export default function Shop() {
           ) : (
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-12">
               <div className="lg:col-span-2 space-y-6">
-                {items.map((item) => (
+                {validItems.map((item) => (
                   <div
                     key={item.id}
                     className="flex gap-6 p-6 border border-white/10 rounded-lg hover:border-white/20 transition-colors"
@@ -561,7 +700,7 @@ export default function Shop() {
                       {item.cover ? (
                         <img
                           src={item.cover}
-                          alt={item.title}
+                          alt={item.title || "Item"}
                           className="w-full h-full object-cover"
                         />
                       ) : (
@@ -583,25 +722,27 @@ export default function Shop() {
                       )}
                     </div>
                     <div className="flex-grow">
-                      <h3 className="text-xl font-bold mb-1">{item.title}</h3>
+                      <h3 className="text-xl font-bold mb-1">
+                        {item.title || "Unknown Item"}
+                      </h3>
                       <p className="text-sm text-muted-foreground mb-3">
-                        {item.artist}
+                        {item.artist || "Unknown Artist"}
                       </p>
                       <div className="flex items-center gap-3">
                         <button
                           onClick={() =>
-                            updateQuantity(item.id, item.quantity - 1)
+                            updateQuantity(item.id, (item.quantity || 1) - 1)
                           }
                           className="w-8 h-8 rounded-full bg-white/5 hover:bg-white/10 flex items-center justify-center transition-colors"
                         >
                           <Minus className="w-4 h-4" />
                         </button>
                         <span className="w-8 text-center font-bold">
-                          {item.quantity}
+                          {item.quantity || 1}
                         </span>
                         <button
                           onClick={() =>
-                            updateQuantity(item.id, item.quantity + 1)
+                            updateQuantity(item.id, (item.quantity || 1) + 1)
                           }
                           className="w-8 h-8 rounded-full bg-white/5 hover:bg-white/10 flex items-center justify-center transition-colors"
                         >
@@ -681,7 +822,7 @@ export default function Shop() {
               3LIXIR
             </h2>
             <div className="text-sm text-muted-foreground">
-              © 2026 3LIXIR MUSIC. All rights reserved.
+              © 2024 3LIXIR Audio. All rights reserved.
             </div>
             <div className="flex gap-6">
               <a
