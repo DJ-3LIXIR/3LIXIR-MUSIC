@@ -39,6 +39,7 @@ export default function Shop() {
   const [selectedPaymentMethod, setSelectedPaymentMethod] =
     useState<PaymentMethod>("stripe");
   const [showLicenseModal, setShowLicenseModal] = useState(false);
+  const [processingPayment, setProcessingPayment] = useState(false);
   const paypalRef = useRef<HTMLDivElement>(null);
 
   // Filter out any items with missing data
@@ -411,6 +412,19 @@ export default function Shop() {
   return (
     <div className="min-h-screen bg-background text-foreground">
       <Navbar />
+
+      {/* Processing Payment Overlay */}
+      {processingPayment && (
+        <div className="fixed inset-0 bg-black/90 backdrop-blur-sm z-50 flex items-center justify-center">
+          <div className="text-center">
+            <div className="animate-spin rounded-full h-16 w-16 border-t-2 border-b-2 border-[hsl(var(--gold))] mx-auto mb-4"></div>
+            <h2 className="text-2xl font-bold mb-2">Processing Payment...</h2>
+            <p className="text-muted-foreground">
+              Please wait while we confirm your order
+            </p>
+          </div>
+        </div>
+      )}
 
       {/* Licensing Required Modal */}
       {showLicenseModal && (
