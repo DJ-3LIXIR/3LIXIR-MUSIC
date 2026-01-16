@@ -1,4 +1,10 @@
-import { createContext, useContext, useState, ReactNode } from "react";
+import {
+  createContext,
+  useContext,
+  useState,
+  useEffect,
+  ReactNode,
+} from "react";
 import { Beat } from "@/lib/data";
 
 interface CartItem extends Beat {
@@ -17,13 +23,34 @@ interface CartContextType {
 
 const CartContext = createContext<CartContextType | undefined>(undefined);
 
+const CART_STORAGE_KEY = "elixir_cart";
+
 export function CartProvider({ children }: { children: ReactNode }) {
-  const [items, setItems] = useState<CartItem[]>([]);
+  // Initialize from localStorage
+  const [items, setItems] = useState<CartItem[]>(() => {
+    try {
+      const savedCart = localStorage.getItem(CART_STORAGE_KEY);
+      if (savedCart) {
+        return JSON.parse(savedCart);
+      }
+    } catch (error) {
+      console.error("Error loading cart from localStorage:", error);
+    }
+    return [];
+  });
+
+  // Save to localStorage whenever items change
+  useEffect(() => {
+    try {
+      localStorage.setItem(CART_STORAGE_KEY, JSON.stringify(items));
+    } catch (error) {
+      console.error("Error saving cart to localStorage:", error);
+    }
+  }, [items]);
 
   const addToCart = (beat: Beat) => {
     setItems((prevItems) => {
       const existingItem = prevItems.find((item) => item.id === beat.id);
-
       if (existingItem) {
         // If item exists, increase quantity
         return prevItems.map((item) =>
@@ -45,7 +72,6 @@ export function CartProvider({ children }: { children: ReactNode }) {
       removeFromCart(beatId);
       return;
     }
-
     setItems((prevItems) =>
       prevItems.map((item) =>
         item.id === beatId ? { ...item, quantity } : item,

@@ -39,8 +39,57 @@ export default function Shop() {
   const [selectedPaymentMethod, setSelectedPaymentMethod] =
     useState<PaymentMethod>("stripe");
   const [showLicenseModal, setShowLicenseModal] = useState(false);
-  const [processingPayment, setProcessingPayment] = useState(false);
+  const [stripePopup, setStripePopup] = useState<Window | null>(null);
   const paypalRef = useRef<HTMLDivElement>(null);
+
+  // Monitor Stripe popup for completion
+  useEffect(() => {
+    if (!stripePopup) return;
+
+    const checkPopup = setInterval(() => {
+      if (stripePopup.closed) {
+        clearInterval(checkPopup);
+        setStripePopup(null);
+        // Check for payment success via URL params or storage
+        checkStripePaymentStatus();
+      }
+    }, 500);
+
+    return () => clearInterval(checkPopup);
+  }, [stripePopup]);
+
+  // Check for successful Stripe payment
+  const checkStripePaymentStatus = async () => {
+    // Check localStorage for payment success flag set by popup
+    const paymentSuccess = localStorage.getItem("stripe_payment_success");
+    const sessionId = localStorage.getItem("stripe_session_id");
+
+    if (paymentSuccess === "true" && sessionId) {
+      console.log("Stripe payment success detected");
+
+      // Clear the flags
+      localStorage.removeItem("stripe_payment_success");
+      localStorage.removeItem("stripe_session_id");
+
+      await handleStripeSuccess(sessionId);
+    }
+  };
+
+  // Listen for messages from popup window
+  useEffect(() => {
+    const handleMessage = async (event: MessageEvent) => {
+      // Verify origin for security
+      if (event.origin !== window.location.origin) return;
+
+      if (event.data.type === "STRIPE_PAYMENT_SUCCESS") {
+        console.log("Received payment success message from popup");
+        await handleStripeSuccess(event.data.sessionId);
+      }
+    };
+
+    window.addEventListener("message", handleMessage);
+    return () => window.removeEventListener("message", handleMessage);
+  }, []);
 
   // Filter out any items with missing data
   const validItems = items.filter(
@@ -78,70 +127,6 @@ export default function Shop() {
   // Include active membership in licensing check
   const hasProperLicensing =
     hasActiveMembership || hasSubscription || tokenCount >= totalBeats;
-
-  // Check for successful Stripe payment on page load
-  useEffect(() => {
-    const checkStripeSuccess = async () => {
-      const params = new URLSearchParams(window.location.search);
-      const paymentSuccess = params.get("payment");
-      const sessionId = params.get("session_id");
-      const orderId = params.get("order_id");
-
-      if (paymentSuccess === "success" && sessionId) {
-        console.log("Stripe payment detected, session:", sessionId);
-
-        try {
-          // If user is logged in and has an order ID, update the order
-          if (user && orderId) {
-            const { error } = await supabase
-              .from("orders")
-              .update({
-                transaction_id: sessionId,
-                status: "completed",
-              })
-              .eq("id", orderId)
-              .eq("user_id", user.id);
-
-            if (error) {
-              console.error("Error updating order:", error);
-              alert(
-                "Payment successful but there was an error. Please contact support with session ID: " +
-                  sessionId,
-              );
-            } else {
-              console.log("Order updated successfully");
-              clearCart();
-              alert("Payment successful! Your purchase has been completed.");
-              setLocation("/downloads");
-            }
-          } else {
-            // Guest checkout - just clear cart and show success
-            clearCart();
-            alert("Payment successful! Check your email for download links.");
-            window.history.replaceState({}, "", "/shop");
-          }
-        } catch (error) {
-          console.error("Error processing payment:", error);
-        }
-
-        // Clean up URL
-        window.history.replaceState({}, "", "/shop");
-      } else if (paymentSuccess === "cancelled") {
-        // Delete the pending order if payment was cancelled and user is logged in
-        if (user && orderId) {
-          await supabase
-            .from("orders")
-            .delete()
-            .eq("id", orderId)
-            .eq("user_id", user.id)
-            .eq("status", "pending");
-        }
-        window.history.replaceState({}, "", "/shop");
-      }
-    };
-
-    checkStripeSuccess();
-  }, [user]);
 
   // Load PayPal buttons when PayPal is selected
   useEffect(() => {
@@ -194,47 +179,31 @@ export default function Shop() {
   const handlePaymentSuccess = async (
     transactionId: string,
     method: PaymentMethod,
-    itemsToSave?: any[],
   ) => {
     try {
       const {
-        data: { user: currentUser },
+        data: { user },
       } = await supabase.auth.getUser();
 
-      if (currentUser) {
-        const orderItems = itemsToSave || validItems;
-
-        console.log("Saving order with items:", orderItems);
-
+      if (user) {
+        // Save the order
         const { error } = await supabase.from("orders").insert({
-          user_id: currentUser.id,
+          user_id: user.id,
           payment_method: method,
           transaction_id: transactionId,
-          items: orderItems,
-          subtotal: orderItems.reduce(
-            (sum, item) => sum + item.price * item.quantity,
-            0,
-          ),
+          items: validItems,
+          subtotal: subtotal,
           tax: tax,
-          total: orderItems.reduce(
-            (sum, item) => sum + item.price * item.quantity,
-            0,
-          ),
+          total: total,
           status: "completed",
         });
 
         if (error) {
           console.error("Error saving order:", error);
-          throw error;
-        } else {
-          console.log(
-            "Order saved successfully with",
-            orderItems.length,
-            "items",
-          );
         }
 
-        const subscriptionItem = orderItems.find((item) =>
+        // Check if order contains a subscription and update user's tier
+        const subscriptionItem = validItems.find((item) =>
           item.id.startsWith("subscription-"),
         );
 
@@ -255,7 +224,7 @@ export default function Shop() {
               subscription_tier: newTier,
               updated_at: new Date().toISOString(),
             })
-            .eq("id", currentUser.id);
+            .eq("id", user.id);
 
           if (updateError) {
             console.error("Error updating subscription tier:", updateError);
@@ -263,28 +232,15 @@ export default function Shop() {
             console.log("Subscription tier updated to:", newTier);
           }
         }
-
-        if (method === "paypal") {
-          clearCart();
-          setShowPaymentModal(false);
-          alert("Payment successful! Your purchase has been completed.");
-          setLocation("/downloads");
-        } else {
-          setLocation("/downloads");
-        }
-      } else {
-        // Guest checkout success
-        clearCart();
-        setShowPaymentModal(false);
-        alert("Payment successful! Check your email for download links.");
       }
     } catch (error) {
       console.error("Error saving order:", error);
-      alert(
-        "There was an error processing your order. Please contact support with transaction ID: " +
-          transactionId,
-      );
     }
+
+    clearCart();
+    setShowPaymentModal(false);
+    alert("Payment successful! Your purchase has been completed.");
+    setLocation("/downloads");
   };
 
   const handleStripeCheckout = async () => {
@@ -295,45 +251,7 @@ export default function Shop() {
         return;
       }
 
-      const {
-        data: { user: currentUser },
-      } = await supabase.auth.getUser();
-
-      let pendingOrderId = null;
-
-      // Only create order in DB if user is logged in
-      if (currentUser) {
-        const { data: pendingOrder, error: orderError } = await supabase
-          .from("orders")
-          .insert({
-            user_id: currentUser.id,
-            payment_method: "stripe",
-            transaction_id: "pending",
-            items: validItems,
-            subtotal: validItems.reduce(
-              (sum, item) => sum + item.price * item.quantity,
-              0,
-            ),
-            tax: tax,
-            total: validItems.reduce(
-              (sum, item) => sum + item.price * item.quantity,
-              0,
-            ),
-            status: "pending",
-          })
-          .select()
-          .single();
-
-        if (orderError || !pendingOrder) {
-          console.error("Error creating pending order:", orderError);
-          alert("Failed to create order. Please try again.");
-          return;
-        }
-
-        pendingOrderId = pendingOrder.id;
-        console.log("Created pending order:", pendingOrderId);
-      }
-
+      // Create line items for Stripe with tax_behavior
       const lineItems = validItems.map((item) => ({
         price_data: {
           currency: "usd",
@@ -348,24 +266,22 @@ export default function Shop() {
         quantity: item.quantity || 1,
       }));
 
-      // Build URLs - only include order_id if user is logged in
-      const baseSuccessUrl = `${window.location.origin}/shop?payment=success&session_id={CHECKOUT_SESSION_ID}`;
-      const successUrl = pendingOrderId
-        ? `${baseSuccessUrl}&order_id=${pendingOrderId}`
-        : baseSuccessUrl;
-
-      const baseCancelUrl = `${window.location.origin}/shop?payment=cancelled`;
-      const cancelUrl = pendingOrderId
-        ? `${baseCancelUrl}&order_id=${pendingOrderId}`
-        : baseCancelUrl;
+      // Store cart items in localStorage with a timestamp to ensure we have them after payment
+      const cartBackup = {
+        items: validItems,
+        subtotal: subtotal,
+        timestamp: Date.now(),
+      };
+      localStorage.setItem("stripe_cart_backup", JSON.stringify(cartBackup));
 
       console.log("Sending checkout request with:", {
         lineItems,
-        orderId: pendingOrderId,
-        userId: currentUser?.id,
-        userEmail: currentUser?.email,
+        userId: user?.id,
+        userEmail: user?.email,
+        items: validItems,
       });
 
+      // Call your Edge Function
       const response = await fetch(
         "https://tciugratutxxrdtbsxim.supabase.co/functions/v1/create-stripe-checkout",
         {
@@ -377,11 +293,11 @@ export default function Shop() {
           },
           body: JSON.stringify({
             lineItems,
-            orderId: pendingOrderId,
-            userId: currentUser?.id,
-            userEmail: currentUser?.email,
-            successUrl: successUrl,
-            cancelUrl: cancelUrl,
+            userId: user?.id,
+            userEmail: user?.email,
+            items: validItems,
+            successUrl: `${window.location.origin}/stripe-success?session_id={CHECKOUT_SESSION_ID}`,
+            cancelUrl: `${window.location.origin}/shop?payment=cancelled`,
           }),
         },
       );
@@ -394,25 +310,178 @@ export default function Shop() {
         throw new Error(data.error);
       }
 
+      // Open Stripe checkout in popup window
       if (data.url) {
-        window.location.href = data.url;
+        const width = 600;
+        const height = 800;
+        const left = (window.screen.width - width) / 2;
+        const top = (window.screen.height - height) / 2;
+
+        const popup = window.open(
+          data.url,
+          "stripe-checkout",
+          `width=${width},height=${height},left=${left},top=${top},toolbar=no,location=no,status=no,menubar=no,scrollbars=yes,resizable=yes`,
+        );
+
+        if (popup) {
+          setStripePopup(popup);
+          // Close payment modal while popup is open
+          setShowPaymentModal(false);
+        } else {
+          alert("Please allow popups to complete checkout");
+        }
       } else {
         throw new Error("No checkout URL returned from server");
       }
-    } catch (err: any) {
-      console.error("Stripe checkout error:", err);
-      alert(`Payment failed: ${err.message}`);
+    } catch (error: any) {
+      console.error("Stripe checkout error:", error);
+      alert(`Payment failed: ${error.message}`);
+    }
+  };
+
+  const handleStripeSuccess = async (sessionId: string) => {
+    try {
+      const {
+        data: { user: currentUser },
+      } = await supabase.auth.getUser();
+
+      if (!currentUser) {
+        console.error("No user found after payment");
+        alert("Please sign in to complete your order");
+        return;
+      }
+
+      // Try multiple sources for cart items
+      let cartItems = [];
+      let calculatedSubtotal = 0;
+
+      // 1. Try stripe_cart_backup first (most reliable)
+      const backupData = localStorage.getItem("stripe_cart_backup");
+      if (backupData) {
+        try {
+          const backup = JSON.parse(backupData);
+          cartItems = backup.items;
+          calculatedSubtotal = backup.subtotal;
+          console.log("Retrieved cart from backup:", cartItems);
+          // Clean up backup
+          localStorage.removeItem("stripe_cart_backup");
+        } catch (e) {
+          console.error("Error parsing backup:", e);
+        }
+      }
+
+      // 2. Fallback to regular cart
+      if (!cartItems || cartItems.length === 0) {
+        const cartData = localStorage.getItem("elixir_cart");
+        if (cartData) {
+          try {
+            cartItems = JSON.parse(cartData);
+            calculatedSubtotal = cartItems.reduce(
+              (sum: number, item: any) => sum + item.price * item.quantity,
+              0,
+            );
+            console.log("Retrieved cart from localStorage:", cartItems);
+          } catch (e) {
+            console.error("Error parsing cart from localStorage:", e);
+          }
+        }
+      }
+
+      // 3. Last fallback to validItems
+      if (!cartItems || cartItems.length === 0) {
+        cartItems = validItems;
+        calculatedSubtotal = subtotal;
+        console.log("Using validItems as fallback:", cartItems);
+      }
+
+      if (cartItems.length === 0) {
+        console.error("No items found in cart after Stripe payment");
+        alert(
+          "Error: No items found. Please contact support with session ID: " +
+            sessionId,
+        );
+        return;
+      }
+
+      console.log("Saving order with items:", cartItems);
+
+      // Save the order
+      const { error } = await supabase.from("orders").insert({
+        user_id: currentUser.id,
+        payment_method: "stripe",
+        transaction_id: sessionId,
+        items: cartItems,
+        subtotal: calculatedSubtotal,
+        tax: 0,
+        total: calculatedSubtotal,
+        status: "completed",
+      });
+
+      if (error) {
+        console.error("Error saving Stripe order:", error);
+        alert(
+          "Payment successful but there was an error saving your order. Please contact support.",
+        );
+        return;
+      }
+
+      console.log("Order saved successfully!");
+
+      // Check if order contains a subscription and update user's tier
+      const subscriptionItem = cartItems.find((item: any) =>
+        item.id.startsWith("subscription-"),
+      );
+
+      if (subscriptionItem) {
+        let newTier = "tier_zero";
+
+        if (subscriptionItem.id === "subscription-gold") {
+          newTier = "gold";
+        } else if (subscriptionItem.id === "subscription-diamond") {
+          newTier = "diamond";
+        } else if (subscriptionItem.id === "subscription-platinum") {
+          newTier = "platinum";
+        }
+
+        const { error: updateError } = await supabase
+          .from("profiles")
+          .update({
+            subscription_tier: newTier,
+            updated_at: new Date().toISOString(),
+          })
+          .eq("id", currentUser.id);
+
+        if (updateError) {
+          console.error("Error updating subscription tier:", updateError);
+        } else {
+          console.log("Subscription tier updated to:", newTier);
+        }
+      }
+
+      // Clear the cart
+      clearCart();
+
+      // Show success message and redirect
+      alert("Payment successful! Your purchase has been completed.");
+      setLocation("/downloads");
+    } catch (error) {
+      console.error("Error processing Stripe success:", error);
+      alert(
+        "There was an error processing your order. Please contact support.",
+      );
     }
   };
 
   const handleCryptoCheckout = async () => {
+    // TODO: Implement Coinbase Commerce checkout
     console.log("Crypto checkout initiated");
     alert("Crypto payment integration coming soon!");
   };
 
   const handleCheckout = () => {
-    // Only check licensing if user is logged in
-    if (user && totalBeats > 0 && !hasProperLicensing) {
+    if (!user) {
+      openAuthModal();
+    } else if (totalBeats > 0 && !hasProperLicensing) {
       setShowLicenseModal(true);
     } else {
       setShowPaymentModal(true);
@@ -423,18 +492,7 @@ export default function Shop() {
     <div className="min-h-screen bg-background text-foreground">
       <Navbar />
 
-      {processingPayment && (
-        <div className="fixed inset-0 bg-black/90 backdrop-blur-sm z-50 flex items-center justify-center">
-          <div className="text-center">
-            <div className="animate-spin rounded-full h-16 w-16 border-t-2 border-b-2 border-[hsl(var(--gold))] mx-auto mb-4"></div>
-            <h2 className="text-2xl font-bold mb-2">Processing Payment...</h2>
-            <p className="text-muted-foreground">
-              Please wait while we confirm your order
-            </p>
-          </div>
-        </div>
-      )}
-
+      {/* Licensing Required Modal */}
       {showLicenseModal && (
         <div className="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 flex items-center justify-center p-4">
           <div className="bg-background border border-white/10 rounded-2xl p-8 max-w-md w-full relative">
@@ -487,6 +545,7 @@ export default function Shop() {
         </div>
       )}
 
+      {/* Payment Method Modal */}
       {showPaymentModal && (
         <div className="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 flex items-center justify-center p-4">
           <div className="bg-background border border-white/10 rounded-2xl p-8 max-w-lg w-full relative">
@@ -499,6 +558,7 @@ export default function Shop() {
 
             <h2 className="text-2xl font-bold mb-6">Complete Payment</h2>
 
+            {/* Order Summary */}
             <div className="mb-6 p-4 bg-white/5 rounded-lg">
               <div className="flex justify-between mb-2">
                 <span className="text-muted-foreground">Subtotal</span>
@@ -522,12 +582,14 @@ export default function Shop() {
               </p>
             </div>
 
+            {/* Payment Method Selector */}
             <div className="mb-6">
               <h3 className="text-sm font-semibold text-muted-foreground uppercase tracking-wider mb-3">
                 Select Payment Method
               </h3>
 
               <div className="space-y-3">
+                {/* Stripe Option */}
                 <button
                   onClick={() => setSelectedPaymentMethod("stripe")}
                   className={`w-full p-4 rounded-lg border-2 transition-all flex items-center gap-4 ${
@@ -564,6 +626,7 @@ export default function Shop() {
                   </div>
                 </button>
 
+                {/* PayPal Option */}
                 <button
                   onClick={() => setSelectedPaymentMethod("paypal")}
                   className={`w-full p-4 rounded-lg border-2 transition-all flex items-center gap-4 ${
@@ -594,6 +657,7 @@ export default function Shop() {
                   </div>
                 </button>
 
+                {/* Crypto Option */}
                 <button
                   onClick={() => setSelectedPaymentMethod("crypto")}
                   className={`w-full p-4 rounded-lg border-2 transition-all flex items-center gap-4 ${
@@ -624,6 +688,7 @@ export default function Shop() {
               </div>
             </div>
 
+            {/* Payment Interface */}
             <div className="mb-4">
               {selectedPaymentMethod === "stripe" && (
                 <div className="space-y-4">
@@ -798,7 +863,7 @@ export default function Shop() {
                   <div className="space-y-4 mb-6">
                     <div className="flex justify-between text-muted-foreground">
                       <span>Subtotal</span>
-                      <span>${(subtotal || 0).toFixed(2)}</span>
+                      <span>${subtotal.toFixed(2)}</span>
                     </div>
                     <div className="flex justify-between text-muted-foreground text-sm">
                       <span>Tax</span>
@@ -808,7 +873,7 @@ export default function Shop() {
                     <div className="flex justify-between text-xl font-bold">
                       <span>Total</span>
                       <span className="text-[hsl(var(--gold))]">
-                        ${(total || 0).toFixed(2)}
+                        ${total.toFixed(2)}
                       </span>
                     </div>
                   </div>
@@ -816,7 +881,7 @@ export default function Shop() {
                     onClick={handleCheckout}
                     className="w-full bg-[hsl(var(--gold))] text-black hover:bg-[hsl(var(--gold))]/90 rounded-full py-6 text-sm font-bold uppercase tracking-widest mb-4"
                   >
-                    Proceed to Checkout
+                    {user ? "Proceed to Checkout" : "Sign In to Checkout"}
                   </Button>
                   <button
                     onClick={() => setLocation("/beats")}
