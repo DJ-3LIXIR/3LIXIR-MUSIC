@@ -60,8 +60,12 @@ app.use("/api/chat", chatRoutes);
 app.use("/api/tickets", ticketRoutes);
 app.use("/api/kb", kbRoutes);
 
-// Root endpoint
-app.get("/", (req, res) => {
+// Serve frontend static files (for production/deployment)
+const path = require("path");
+app.use(express.static(path.join(__dirname, "../client/dist")));
+
+// API root endpoint
+app.get("/api", (req, res) => {
   res.json({
     message: "IT Support AI API",
     version: "1.0.0",
@@ -75,7 +79,12 @@ app.get("/", (req, res) => {
   });
 });
 
-// 404 handler
+// Serve frontend for all other routes (must be after API routes)
+app.get("*", (req, res) => {
+  res.sendFile(path.join(__dirname, "../client/dist/index.html"));
+});
+
+// 404 handler (this won't be reached due to catch-all above, but keep for API errors)
 app.use(notFound);
 
 // Error handler (must be last)
@@ -83,7 +92,6 @@ app.use(errorHandler);
 
 // Start server
 const PORT = process.env.PORT || 5000;
-
 app.listen(PORT, () => {
   console.log(`🚀 Server running on port ${PORT}`);
   console.log(`📝 Environment: ${process.env.NODE_ENV || "development"}`);

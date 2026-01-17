@@ -30,9 +30,12 @@ export default function ChatInterface() {
       try {
         setLoadingConversations(true);
         const data = await chatService.getConversations();
-        setConversations(data);
+        console.log("Fetched conversations:", data);
+        // Safety check: ensure data is an array
+        setConversations(Array.isArray(data) ? data : []);
       } catch (error) {
         console.error("Error fetching conversations:", error);
+        setConversations([]); // Set to empty array on error
         toast({
           title: "Error",
           description: "Failed to load conversations",

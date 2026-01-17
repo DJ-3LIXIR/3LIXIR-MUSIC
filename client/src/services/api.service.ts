@@ -2,7 +2,25 @@
 import axios, { AxiosInstance, AxiosError } from "axios";
 import { supabase } from "@/supabaseClient";
 
-const API_URL = import.meta.env.VITE_API_URL || "http://localhost:3001/api";
+// Smart API URL detection
+const getAPIUrl = () => {
+  // If VITE_API_URL is set, use it
+  if (import.meta.env.VITE_API_URL) {
+    return import.meta.env.VITE_API_URL;
+  }
+
+  // If we're in production (replit.dev), use relative URL
+  if (window.location.hostname.includes("replit.dev")) {
+    return "/api";
+  }
+
+  // Otherwise use localhost for development
+  return "http://localhost:3001/api";
+};
+
+const API_URL = getAPIUrl();
+
+console.log("API URL:", API_URL); // Debug log
 
 // Types
 export interface Message {
@@ -80,6 +98,7 @@ api.interceptors.request.use(
     if (session?.access_token) {
       config.headers.Authorization = `Bearer ${session.access_token}`;
     }
+
     return config;
   },
   (error) => {
@@ -94,11 +113,13 @@ api.interceptors.response.use(
     if (error.response?.status === 401) {
       // Unauthorized - try to refresh session
       const { error: refreshError } = await supabase.auth.refreshSession();
+
       if (refreshError) {
         // Session refresh failed, redirect to home
         window.location.href = "/";
       }
     }
+
     return Promise.reject(error);
   },
 );
@@ -120,7 +141,21 @@ export const chatService = {
   // Get all conversations for current user
   getConversations: async (): Promise<Conversation[]> => {
     const response = await api.get<Conversation[]>("/chat/conversations");
-    return response.data;
+    console.log("getConversations response:", response.data);
+
+    // Handle case where response might not be an array
+    if (Array.isArray(response.data)) {
+      return response.data;
+    }
+
+    // If it's an object with a data property, return that
+    if (response.data && Array.isArray((response.data as any).data)) {
+      return (response.data as any).data;
+    }
+
+    // Otherwise return empty array
+    console.warn("Unexpected conversations response format:", response.data);
+    return [];
   },
 
   // Get a specific conversation with messages

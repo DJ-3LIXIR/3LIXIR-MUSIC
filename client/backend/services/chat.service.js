@@ -36,17 +36,33 @@ class ChatService {
         messageText,
       );
 
-      // Get conversation history
+      // Get conversation history (EXCLUDING the message we just saved - we'll add it separately)
       const history = await this.getConversationHistory(conversation.id);
 
-      // Format for Claude
-      const claudeMessages = claudeService.formatMessagesForClaude(history);
+      // Filter out the message we just saved to avoid duplication
+      const previousHistory = history.filter(
+        (msg) => msg.id !== userMessage.id,
+      );
+
+      // Format for Claude - this now properly handles metadata
+      const claudeMessages = this.formatMessagesForClaude(previousHistory);
+
+      // Add the current user message
+      claudeMessages.push({
+        role: "user",
+        content: messageText,
+      });
 
       // Tool handler for Claude
       const toolHandler = async (toolName, toolInput) => {
+        console.log(`Tool called: ${toolName}`, toolInput);
+
         switch (toolName) {
           case "search_knowledge_base":
-            return await knowledgeBaseService.search(toolInput.query);
+            const searchResults = await knowledgeBaseService.search(
+              toolInput.query,
+            );
+            return searchResults;
 
           case "create_ticket":
             const ticket = await ticketService.createTicket({
@@ -66,21 +82,48 @@ class ChatService {
         }
       };
 
-      // Get Claude's response
-      const claudeResponse = await claudeService.sendMessage(
-        claudeMessages,
-        toolHandler,
-      );
+      // Get Claude's response (now returns both response and updated messages array)
+      const { response: claudeResponse, messages: updatedMessages } =
+        await claudeService.sendMessage(claudeMessages, toolHandler);
+
+      // Save any tool interactions that occurred
+      // The updatedMessages array contains all messages including tool_use and tool_result
+      const originalLength = claudeMessages.length;
+      if (updatedMessages.length > originalLength) {
+        // Tool use occurred - save the intermediate messages
+        for (let i = originalLength; i < updatedMessages.length - 1; i++) {
+          const msg = updatedMessages[i];
+
+          // Extract text content for display
+          let displayContent = "";
+          if (msg.role === "assistant") {
+            displayContent = claudeService.extractTextResponse({
+              content: msg.content,
+            });
+          } else if (msg.role === "user" && Array.isArray(msg.content)) {
+            // This is a tool_result message
+            displayContent = "Tool result returned";
+          }
+
+          await this.saveMessage(conversation.id, msg.role, displayContent, {
+            fullContent: msg.content,
+            isToolInteraction: true,
+          });
+        }
+      }
 
       // Extract text response
       const assistantText = claudeService.extractTextResponse(claudeResponse);
 
-      // Save assistant message
+      // Save assistant message with full content for context preservation
       const assistantMessage = await this.saveMessage(
         conversation.id,
         "assistant",
         assistantText,
-        claudeResponse.content, // Store full response for debugging
+        {
+          fullContent: claudeResponse.content,
+          stopReason: claudeResponse.stop_reason,
+        },
       );
 
       // Update conversation timestamp
@@ -99,6 +142,30 @@ class ChatService {
       console.error("Chat Service Error:", error);
       throw error;
     }
+  }
+
+  /**
+   * Format messages for Claude API
+   * Properly handles metadata that contains full Claude responses
+   * @param {Array} dbMessages - Messages from database
+   * @returns {Array} Formatted messages for Claude
+   */
+  formatMessagesForClaude(dbMessages) {
+    return dbMessages.map((msg) => {
+      // If message has metadata with fullContent, use that (preserves tool_use blocks)
+      if (msg.metadata && msg.metadata.fullContent) {
+        return {
+          role: msg.role,
+          content: msg.metadata.fullContent,
+        };
+      }
+
+      // Otherwise just use the text content
+      return {
+        role: msg.role,
+        content: msg.content,
+      };
+    });
   }
 
   /**

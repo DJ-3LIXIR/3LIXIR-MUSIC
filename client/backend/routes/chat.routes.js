@@ -7,6 +7,27 @@ const auth = require("../middleware/auth");
 router.use(auth);
 
 /**
+ * POST /api/chat/conversations
+ * Create a new conversation
+ */
+router.post("/conversations", async (req, res, next) => {
+  try {
+    const userId = req.user.id;
+    const { title } = req.body;
+
+    const conversation = await chatService.createConversation(
+      userId,
+      title || "New Conversation",
+    );
+
+    // Return conversation directly (not wrapped in data)
+    res.json(conversation);
+  } catch (error) {
+    next(error);
+  }
+});
+
+/**
  * POST /api/chat/message
  * Send a message and get Claude's response
  */
@@ -17,7 +38,6 @@ router.post("/message", async (req, res, next) => {
 
     if (!message || message.trim().length === 0) {
       return res.status(400).json({
-        success: false,
         error: "Message is required",
       });
     }
@@ -28,17 +48,13 @@ router.post("/message", async (req, res, next) => {
       message,
     );
 
+    // Return just the assistant message
     res.json({
-      success: true,
-      data: {
-        conversationId: result.conversation.id,
-        message: {
-          id: result.assistantMessage.id,
-          content: result.assistantMessage.content,
-          role: "assistant",
-          timestamp: result.assistantMessage.created_at,
-        },
-      },
+      id: result.assistantMessage.id,
+      conversation_id: result.conversation.id,
+      role: "assistant",
+      content: result.assistantMessage.content,
+      created_at: result.assistantMessage.created_at,
     });
   } catch (error) {
     next(error);
@@ -56,10 +72,8 @@ router.get("/conversations", async (req, res, next) => {
 
     const conversations = await chatService.getUserConversations(userId, limit);
 
-    res.json({
-      success: true,
-      data: conversations,
-    });
+    // Return conversations directly (not wrapped in data)
+    res.json(conversations);
   } catch (error) {
     next(error);
   }
@@ -79,10 +93,8 @@ router.get("/conversations/:id", async (req, res, next) => {
       conversationId,
     );
 
-    res.json({
-      success: true,
-      data: conversation,
-    });
+    // Return conversation directly (not wrapped in data)
+    res.json(conversation);
   } catch (error) {
     next(error);
   }
@@ -100,7 +112,6 @@ router.patch("/conversations/:id", async (req, res, next) => {
 
     if (!title) {
       return res.status(400).json({
-        success: false,
         error: "Title is required",
       });
     }
@@ -111,10 +122,8 @@ router.patch("/conversations/:id", async (req, res, next) => {
       title,
     );
 
-    res.json({
-      success: true,
-      data: conversation,
-    });
+    // Return conversation directly (not wrapped in data)
+    res.json(conversation);
   } catch (error) {
     next(error);
   }
@@ -132,7 +141,6 @@ router.delete("/conversations/:id", async (req, res, next) => {
     await chatService.deleteConversation(userId, conversationId);
 
     res.json({
-      success: true,
       message: "Conversation deleted",
     });
   } catch (error) {
