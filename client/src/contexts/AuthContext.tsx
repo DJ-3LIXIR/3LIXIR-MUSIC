@@ -1,3 +1,4 @@
+// client/src/contexts/AuthContext.tsx
 import {
   createContext,
   useContext,
@@ -55,7 +56,6 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       if (error) throw error;
 
       setUserProfile(data);
-
       // Attach subscription_tier to user object for easy access
       if (user) {
         setUser({ ...user, subscription_tier: data.subscription_tier });
@@ -221,7 +221,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
               </h2>
               <p className="text-muted-foreground">
                 {isSignUp
-                  ? "Create an account to complete your purchase and access your beats instantly."
+                  ? "Create an account to access all features"
                   : "Welcome back! Sign in to your account."}
               </p>
             </div>
@@ -276,7 +276,6 @@ export function AuthProvider({ children }: { children: ReactNode }) {
                     ? "Create Account"
                     : "Sign In"}
               </Button>
-
               <Button
                 onClick={() => {
                   setIsSignUp(!isSignUp);

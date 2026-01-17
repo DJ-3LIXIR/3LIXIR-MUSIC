@@ -1,7 +1,10 @@
 import { useState, useEffect } from "react";
 import { supabase, Profile } from "../supabaseClient";
 import { Navbar } from "@/components/layout/Navbar";
-import ManageSubscription, { Subscription as SubscriptionType } from "@/components/Profile/ManageSubscription";
+import CustomerSupport from "@/pages/CustomerSupport";
+import ManageSubscription, {
+  Subscription as SubscriptionType,
+} from "@/components/Profile/ManageSubscription";
 import {
   User,
   Lock,
@@ -11,6 +14,7 @@ import {
   Camera,
   Download,
   Crown,
+  MessageSquare, // ← Add this if not already there
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useLocation } from "wouter";
@@ -20,7 +24,8 @@ type Section =
   | "security"
   | "purchases"
   | "subscription"
-  | "settings";
+  | "settings"
+  | "support";
 
 interface Order {
   id: string;
@@ -46,7 +51,9 @@ export default function ProfileManager() {
   const [profileColor, setProfileColor] = useState("#f59e0b");
   const [orders, setOrders] = useState<Order[]>([]);
   const [loadingOrders, setLoadingOrders] = useState(false);
-  const [subscription, setSubscription] = useState<SubscriptionType | null>(null);
+  const [subscription, setSubscription] = useState<SubscriptionType | null>(
+    null,
+  );
   const [loadingSubscription, setLoadingSubscription] = useState(false);
   const [, setLocation] = useLocation();
 
@@ -140,10 +147,10 @@ export default function ProfileManager() {
 
           // Clean up URL
           window.history.replaceState({}, "", "/profile?section=purchases");
-    } catch (error: any) {
-      console.error("Error processing payment:", error);
-      setMessage(`Error processing payment: ${error.message}`);
-    }
+        } catch (error: any) {
+          console.error("Error processing payment:", error);
+          setMessage(`Error processing payment: ${error.message}`);
+        }
       }
     };
 
@@ -399,6 +406,11 @@ export default function ProfileManager() {
       id: "subscription" as Section,
       label: "Manage Subscription",
       icon: Crown,
+    },
+    {
+      id: "support" as Section,
+      label: "Customer Support",
+      icon: MessageSquare,
     },
   ];
 
@@ -769,13 +781,23 @@ export default function ProfileManager() {
                   <h2 className="text-4xl font-display font-bold mb-2 text-center">
                     Manage Your Subscriptions
                   </h2>
-          <ManageSubscription
-            subscription={subscription}
-            loading={loadingSubscription}
-            onRefresh={loadSubscription}
-            userId={profile.id}
-            userEmail={profile.email || ""}
-          />
+                  <ManageSubscription
+                    subscription={subscription}
+                    loading={loadingSubscription}
+                    onRefresh={loadSubscription}
+                    userId={profile.id}
+                    userEmail={profile.email || ""}
+                  />
+                </div>
+              )}
+
+              {/* Customer Support Section */}
+              {activeSection === "support" && (
+                <div className="border border-white/10 rounded-2xl p-8">
+                  <h2 className="text-2xl font-display font-bold mb-6">
+                    Customer Support
+                  </h2>
+                  <CustomerSupport isAdmin={profile.is_admin} />
                 </div>
               )}
 
