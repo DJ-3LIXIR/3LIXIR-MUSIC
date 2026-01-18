@@ -9,12 +9,15 @@ const getAPIUrl = () => {
     return import.meta.env.VITE_API_URL;
   }
 
-  // If we're in production (replit.dev), use relative URL
-  if (window.location.hostname.includes("replit.dev")) {
+  // Check if we're in production (not localhost)
+  if (
+    window.location.hostname !== "localhost" &&
+    window.location.hostname !== "127.0.0.1"
+  ) {
     return "/api";
   }
 
-  // Otherwise use localhost for development
+  // Only use localhost:3001 when actually running locally
   return "http://localhost:3001/api";
 };
 
