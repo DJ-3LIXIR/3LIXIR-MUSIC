@@ -9,60 +9,42 @@ import {
   AlertCircle,
   Users,
 } from "lucide-react";
-
-// Mock API client - replace with actual backend calls
-const api = {
-  async sendMessage(conversationId, message) {
-    await new Promise((resolve) => setTimeout(resolve, 1000));
-    return {
-      id: Date.now(),
-      content: "I understand you need help. Let me look into that for you...",
-      role: "assistant",
-      timestamp: new Date().toISOString(),
-    };
-  },
-  async createTicket(data) {
-    await new Promise((resolve) => setTimeout(resolve, 500));
-    return {
-      id: `TICK-${Date.now()}`,
-      ...data,
-      status: "open",
-      created_at: new Date().toISOString(),
-    };
-  },
-  async getTickets() {
-    return [
-      {
-        id: "TICK-001",
-        subject: "Login issue",
-        status: "open",
-        priority: "high",
-        created_at: new Date().toISOString(),
-      },
-      {
-        id: "TICK-002",
-        subject: "Billing question",
-        status: "pending",
-        priority: "medium",
-        created_at: new Date().toISOString(),
-      },
-    ];
-  },
-};
+import { chatService, ticketService } from "@/services/api.service";
+import type { Message, Conversation } from "@/services/api.service";
 
 // Customer Chat Interface
 function ChatInterface() {
-  const [messages, setMessages] = useState([
-    {
-      id: 1,
-      content: "Hello! How can I help you today?",
-      role: "assistant",
-      timestamp: new Date().toISOString(),
-    },
-  ]);
+  const [conversationId, setConversationId] = useState<string | null>(null);
+  const [messages, setMessages] = useState<Message[]>([]);
   const [input, setInput] = useState("");
   const [loading, setLoading] = useState(false);
-  const messagesEndRef = useRef(null);
+  const messagesEndRef = useRef<HTMLDivElement>(null);
+
+  // Initialize conversation on mount
+  useEffect(() => {
+    const initConversation = async () => {
+      try {
+        // Create a new conversation for the customer
+        const conv = await chatService.createConversation("Customer Support");
+        setConversationId(conv.id);
+
+        // Add welcome message
+        setMessages([
+          {
+            id: "welcome",
+            conversation_id: conv.id,
+            content: "Hello! How can I help you today?",
+            role: "assistant",
+            created_at: new Date().toISOString(),
+          },
+        ]);
+      } catch (error) {
+        console.error("Error initializing conversation:", error);
+      }
+    };
+
+    initConversation();
+  }, []);
 
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
@@ -73,13 +55,14 @@ function ChatInterface() {
   }, [messages]);
 
   const handleSend = async () => {
-    if (!input.trim() || loading) return;
+    if (!input.trim() || loading || !conversationId) return;
 
-    const userMessage = {
-      id: Date.now(),
+    const userMessage: Message = {
+      id: Date.now().toString(),
+      conversation_id: conversationId,
       content: input,
       role: "user",
-      timestamp: new Date().toISOString(),
+      created_at: new Date().toISOString(),
     };
 
     setMessages((prev) => [...prev, userMessage]);
@@ -87,10 +70,22 @@ function ChatInterface() {
     setLoading(true);
 
     try {
-      const response = await api.sendMessage("conv-123", input);
+      // Send message to real backend
+      const response = await chatService.sendMessage(conversationId, input);
       setMessages((prev) => [...prev, response]);
     } catch (error) {
       console.error("Error sending message:", error);
+      // Add error message
+      setMessages((prev) => [
+        ...prev,
+        {
+          id: Date.now().toString(),
+          conversation_id: conversationId,
+          content: "Sorry, I'm having trouble connecting. Please try again.",
+          role: "assistant",
+          created_at: new Date().toISOString(),
+        },
+      ]);
     } finally {
       setLoading(false);
     }
@@ -104,7 +99,6 @@ function ChatInterface() {
           Customer Support Chat
         </h2>
       </div>
-
       <div className="flex-1 overflow-y-auto p-4 space-y-4">
         {messages.map((msg) => (
           <div
@@ -120,7 +114,7 @@ function ChatInterface() {
             >
               <p className="text-sm">{msg.content}</p>
               <span className="text-xs opacity-70 mt-1 block">
-                {new Date(msg.timestamp).toLocaleTimeString()}
+                {new Date(msg.created_at).toLocaleTimeString()}
               </span>
             </div>
           </div>
@@ -144,7 +138,6 @@ function ChatInterface() {
         )}
         <div ref={messagesEndRef} />
       </div>
-
       <div className="p-4 border-t border-white/10">
         <div className="flex gap-2">
           <input
@@ -170,20 +163,35 @@ function ChatInterface() {
 }
 
 // Ticket Creation Form
-function TicketForm({ onClose, onSubmit }) {
+function TicketForm({
+  onClose,
+  onSubmit,
+}: {
+  onClose: () => void;
+  onSubmit: (ticket: any) => void;
+}) {
   const [formData, setFormData] = useState({
-    subject: "",
+    title: "",
     description: "",
-    priority: "medium",
+    priority: "medium" as "low" | "medium" | "high" | "urgent",
     category: "general",
   });
+  const [submitting, setSubmitting] = useState(false);
 
   const handleSubmit = async () => {
-    if (!formData.subject || !formData.description) return;
+    if (!formData.title || !formData.description) return;
 
-    const ticket = await api.createTicket(formData);
-    onSubmit(ticket);
-    onClose();
+    setSubmitting(true);
+    try {
+      const ticket = await ticketService.createTicket(formData);
+      onSubmit(ticket);
+      onClose();
+    } catch (error) {
+      console.error("Error creating ticket:", error);
+      alert("Failed to create ticket. Please try again.");
+    } finally {
+      setSubmitting(false);
+    }
   };
 
   return (
@@ -197,7 +205,6 @@ function TicketForm({ onClose, onSubmit }) {
             <X size={24} />
           </button>
         </div>
-
         <div className="space-y-4">
           <div>
             <label className="block text-sm font-medium text-gray-300 mb-1">
@@ -205,14 +212,13 @@ function TicketForm({ onClose, onSubmit }) {
             </label>
             <input
               type="text"
-              value={formData.subject}
+              value={formData.title}
               onChange={(e) =>
-                setFormData({ ...formData, subject: e.target.value })
+                setFormData({ ...formData, title: e.target.value })
               }
               className="w-full px-3 py-2 bg-white/5 border border-white/10 rounded-lg focus:outline-none focus:ring-2 focus:ring-yellow-600 text-white"
             />
           </div>
-
           <div>
             <label className="block text-sm font-medium text-gray-300 mb-1">
               Description
@@ -223,10 +229,9 @@ function TicketForm({ onClose, onSubmit }) {
                 setFormData({ ...formData, description: e.target.value })
               }
               className="w-full px-3 py-2 bg-white/5 border border-white/10 rounded-lg focus:outline-none focus:ring-2 focus:ring-yellow-600 text-white"
-              rows="4"
+              rows={4}
             />
           </div>
-
           <div>
             <label className="block text-sm font-medium text-gray-300 mb-1">
               Priority
@@ -234,7 +239,7 @@ function TicketForm({ onClose, onSubmit }) {
             <select
               value={formData.priority}
               onChange={(e) =>
-                setFormData({ ...formData, priority: e.target.value })
+                setFormData({ ...formData, priority: e.target.value as any })
               }
               className="w-full px-3 py-2 bg-white/5 border border-white/10 rounded-lg focus:outline-none focus:ring-2 focus:ring-yellow-600 text-white"
             >
@@ -244,7 +249,6 @@ function TicketForm({ onClose, onSubmit }) {
               <option value="urgent">Urgent</option>
             </select>
           </div>
-
           <div>
             <label className="block text-sm font-medium text-gray-300 mb-1">
               Category
@@ -262,19 +266,20 @@ function TicketForm({ onClose, onSubmit }) {
               <option value="account">Account</option>
             </select>
           </div>
-
           <div className="flex gap-2 pt-4">
             <button
               onClick={onClose}
               className="flex-1 px-4 py-2 border border-white/10 rounded-lg hover:bg-white/5 text-white"
+              disabled={submitting}
             >
               Cancel
             </button>
             <button
               onClick={handleSubmit}
-              className="flex-1 px-4 py-2 bg-gradient-to-r from-yellow-600 to-orange-600 text-black rounded-lg hover:from-yellow-500 hover:to-orange-500 font-medium"
+              disabled={submitting || !formData.title || !formData.description}
+              className="flex-1 px-4 py-2 bg-gradient-to-r from-yellow-600 to-orange-600 text-black rounded-lg hover:from-yellow-500 hover:to-orange-500 font-medium disabled:opacity-50"
             >
-              Create Ticket
+              {submitting ? "Creating..." : "Create Ticket"}
             </button>
           </div>
         </div>
@@ -285,7 +290,7 @@ function TicketForm({ onClose, onSubmit }) {
 
 // Ticket List Component
 function TicketList() {
-  const [tickets, setTickets] = useState([]);
+  const [tickets, setTickets] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -294,16 +299,21 @@ function TicketList() {
 
   const loadTickets = async () => {
     setLoading(true);
-    const data = await api.getTickets();
-    setTickets(data);
-    setLoading(false);
+    try {
+      const data = await ticketService.getMyTickets();
+      setTickets(data);
+    } catch (error) {
+      console.error("Error loading tickets:", error);
+    } finally {
+      setLoading(false);
+    }
   };
 
-  const getStatusIcon = (status) => {
+  const getStatusIcon = (status: string) => {
     switch (status) {
       case "open":
         return <Clock size={16} className="text-blue-400" />;
-      case "pending":
+      case "in_progress":
         return <AlertCircle size={16} className="text-yellow-400" />;
       case "resolved":
         return <Check size={16} className="text-green-400" />;
@@ -312,7 +322,7 @@ function TicketList() {
     }
   };
 
-  const getPriorityColor = (priority) => {
+  const getPriorityColor = (priority: string) => {
     switch (priority) {
       case "urgent":
         return "bg-red-500/20 text-red-400 border-red-500/30";
@@ -333,6 +343,14 @@ function TicketList() {
     );
   }
 
+  if (tickets.length === 0) {
+    return (
+      <div className="text-center py-8 text-gray-400">
+        No tickets yet. Create one to get started!
+      </div>
+    );
+  }
+
   return (
     <div className="space-y-3">
       {tickets.map((ticket) => (
@@ -344,7 +362,7 @@ function TicketList() {
             <div className="flex-1">
               <div className="flex items-center gap-2 mb-2">
                 {getStatusIcon(ticket.status)}
-                <h3 className="font-semibold text-white">{ticket.subject}</h3>
+                <h3 className="font-semibold text-white">{ticket.title}</h3>
               </div>
               <div className="flex items-center gap-3 text-sm">
                 <span className="font-mono text-gray-400">{ticket.id}</span>
@@ -367,29 +385,50 @@ function TicketList() {
 
 // Admin Dashboard
 function AdminDashboard() {
-  const stats = [
+  const [stats, setStats] = useState({
+    total: 0,
+    open: 0,
+    in_progress: 0,
+    resolved: 0,
+    closed: 0,
+  });
+
+  useEffect(() => {
+    loadStats();
+  }, []);
+
+  const loadStats = async () => {
+    try {
+      const data = await ticketService.getTicketStats();
+      setStats(data);
+    } catch (error) {
+      console.error("Error loading stats:", error);
+    }
+  };
+
+  const statCards = [
     {
       label: "Open Tickets",
-      value: "24",
+      value: stats.open.toString(),
       icon: Ticket,
       color: "from-yellow-600 to-orange-600",
     },
     {
-      label: "Active Chats",
-      value: "12",
+      label: "In Progress",
+      value: stats.in_progress.toString(),
       icon: MessageSquare,
       color: "from-green-600 to-emerald-600",
     },
     {
-      label: "Avg Response Time",
-      value: "2.3m",
-      icon: Clock,
+      label: "Resolved",
+      value: stats.resolved.toString(),
+      icon: Check,
       color: "from-purple-600 to-pink-600",
     },
     {
-      label: "Customer Satisfaction",
-      value: "94%",
-      icon: Check,
+      label: "Total Tickets",
+      value: stats.total.toString(),
+      icon: AlertCircle,
       color: "from-blue-600 to-cyan-600",
     },
   ];
@@ -397,7 +436,7 @@ function AdminDashboard() {
   return (
     <div className="space-y-6">
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-        {stats.map((stat) => (
+        {statCards.map((stat) => (
           <div
             key={stat.label}
             className="bg-white/5 border border-white/10 p-6 rounded-lg"
@@ -416,7 +455,6 @@ function AdminDashboard() {
           </div>
         ))}
       </div>
-
       <div className="bg-white/5 border border-white/10 p-6 rounded-lg">
         <h3 className="text-lg font-semibold mb-4 text-white">
           Recent Tickets
@@ -428,7 +466,11 @@ function AdminDashboard() {
 }
 
 // Main Embedded Component
-export default function CustomerSupport({ isAdmin = false }) {
+export default function CustomerSupport({
+  isAdmin = false,
+}: {
+  isAdmin?: boolean;
+}) {
   const [activeView, setActiveView] = useState("chat");
   const [showTicketForm, setShowTicketForm] = useState(false);
 
@@ -457,11 +499,9 @@ export default function CustomerSupport({ isAdmin = false }) {
           </button>
         ))}
       </div>
-
       {/* Main Content */}
       <div>
         {activeView === "chat" && <ChatInterface />}
-
         {activeView === "tickets" && (
           <div>
             <div className="flex justify-between items-center mb-6">
@@ -477,15 +517,16 @@ export default function CustomerSupport({ isAdmin = false }) {
             <TicketList />
           </div>
         )}
-
         {activeView === "admin" && isAdmin && <AdminDashboard />}
       </div>
-
       {/* Ticket Form Modal */}
       {showTicketForm && (
         <TicketForm
           onClose={() => setShowTicketForm(false)}
-          onSubmit={(ticket) => console.log("Ticket created:", ticket)}
+          onSubmit={(ticket) => {
+            console.log("Ticket created:", ticket);
+            setActiveView("tickets");
+          }}
         />
       )}
     </div>

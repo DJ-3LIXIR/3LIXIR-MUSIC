@@ -1,15 +1,12 @@
 import type { Express } from "express";
 import { createServer, type Server } from "http";
-import { storage } from "./storage";
 
 const AI_BACKEND_URL = process.env.AI_BACKEND_URL || "http://localhost:3001";
 
 export async function registerRoutes(
   httpServer: Server,
-  app: Express,
+  app: Express
 ): Promise<Server> {
-  
-  console.log("🔧 Registering proxy routes for AI backend...");
   
   const proxyAIBackend = async (req: any, res: any, next: any) => {
     const path = req.path;
@@ -31,24 +28,16 @@ export async function registerRoutes(
         method: req.method,
         headers: {
           "Content-Type": "application/json",
-          ...(req.headers.authorization && {
-            authorization: req.headers.authorization,
-          }),
+          ...(req.headers.authorization && { authorization: req.headers.authorization }),
         },
-        body:
-          req.method !== "GET" && req.method !== "HEAD"
-            ? JSON.stringify(req.body)
-            : undefined,
+        body: req.method !== "GET" && req.method !== "HEAD" ? JSON.stringify(req.body) : undefined,
       });
 
       const data = await response.json();
       res.status(response.status).json(data);
     } catch (error: any) {
       console.error(`[Proxy Error] ${req.path}:`, error.message);
-      res.status(500).json({
-        message: "Error connecting to AI backend",
-        error: error.message,
-      });
+      res.status(500).json({ message: "Error connecting to AI backend", error: error.message });
     }
   };
 

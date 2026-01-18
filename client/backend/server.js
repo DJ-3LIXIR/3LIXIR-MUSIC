@@ -1,5 +1,6 @@
 // backend/server.js
 require("dotenv").config();
+console.log("DEBUG: PORT from .env =", process.env.PORT);
 const express = require("express");
 const cors = require("cors");
 const { errorHandler, notFound } = require("./middleware/errorHandler");
@@ -36,7 +37,6 @@ app.get("/health", async (req, res) => {
   try {
     // Test Supabase connection
     const { error } = await supabase.from("profiles").select("count").limit(1);
-
     res.json({
       status: error ? "degraded" : "ok",
       timestamp: new Date().toISOString(),
@@ -90,8 +90,8 @@ app.use(notFound);
 // Error handler (must be last)
 app.use(errorHandler);
 
-// Start server
-const PORT = process.env.PORT || 5000;
+// Start server - CHANGED TO PORT 3001
+const PORT = process.env.PORT || 3001;
 app.listen(PORT, () => {
   console.log(`🚀 Server running on port ${PORT}`);
   console.log(`📝 Environment: ${process.env.NODE_ENV || "development"}`);
@@ -104,7 +104,6 @@ process.on("SIGTERM", () => {
   console.log("SIGTERM signal received: closing HTTP server");
   process.exit(0);
 });
-
 process.on("SIGINT", () => {
   console.log("SIGINT signal received: closing HTTP server");
   process.exit(0);
