@@ -101,6 +101,7 @@ export default function ProfileManager() {
         "purchases",
         "subscription",
         "settings",
+        "support", // ← ADD THIS LINE
       ].includes(section)
     ) {
       setActiveSection(section as Section);

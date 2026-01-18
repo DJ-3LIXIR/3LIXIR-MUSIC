@@ -23,6 +23,7 @@ import { SupportArtist } from "@/components/Info/SupportArtist";
 import MeetTheArtistBanner from "@/components/Info/MeetTheArtistBanner";
 import { TechnicalSupport } from "@/components/Info/TechnicalSupport";
 import { SocialMedia } from "@/components/Info/SocialMedia";
+import { CustomerServiceInfo } from "@/components/Info/CustomerServiceInfo";
 
 const InfoPage = () => {
   const [activeSection, setActiveSection] = useState("about");
@@ -2383,7 +2384,6 @@ const InfoPage = () => {
           <h2 className="text-4xl md:text-5xl font-display font-bold tracking-tighter mb-6 text-center">
             Contact Us
           </h2>
-
           <div className="space-y-8">
             <section>
               <h3 className="text-2xl font-display font-semibold tracking-tight mb-3 text-center">
@@ -2393,7 +2393,6 @@ const InfoPage = () => {
                 Have questions, need support, or want to discuss custom work?
                 We're here to help.
               </p>
-
               <div className="border border-white/10 rounded-xl p-6 bg-white/5 space-y-4">
                 <div className="flex items-center justify-center gap-3">
                   <Mail className="w-5 h-5 text-[hsl(var(--gold))]" />
@@ -2415,6 +2414,9 @@ const InfoPage = () => {
             </section>
           </div>
         </div>
+
+        {/* Customer Service Section */}
+        <CustomerServiceInfo />
 
         {/* Production Opportunities Section */}
         <div className="border-t border-white/10 pt-12">
@@ -2470,7 +2472,7 @@ const InfoPage = () => {
                     </li>
                   </ul>
                 </div>
-
+                <CustomerServiceInfo />
                 {/* Full Production Services */}
                 <div className="border border-white/10 rounded-xl p-6 bg-gradient-to-br from-[hsl(var(--gold))]/10 to-transparent hover:border-[hsl(var(--gold))]/30 transition-all">
                   <div className="flex items-start gap-4 mb-4">
