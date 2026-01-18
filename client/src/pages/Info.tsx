@@ -2472,7 +2472,7 @@ const InfoPage = () => {
                     </li>
                   </ul>
                 </div>
-                <CustomerServiceInfo />
+
                 {/* Full Production Services */}
                 <div className="border border-white/10 rounded-xl p-6 bg-gradient-to-br from-[hsl(var(--gold))]/10 to-transparent hover:border-[hsl(var(--gold))]/30 transition-all">
                   <div className="flex items-start gap-4 mb-4">
