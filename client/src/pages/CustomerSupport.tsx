@@ -23,9 +23,10 @@ function ChatInterface() {
   // Initialize conversation on mount
   useEffect(() => {
     const initConversation = async () => {
+      console.log("🔵 Initializing conversation...");
       try {
-        // Create a new conversation for the customer
         const conv = await chatService.createConversation("Customer Support");
+        console.log("✅ Conversation created:", conv);
         setConversationId(conv.id);
 
         // Add welcome message
@@ -39,7 +40,7 @@ function ChatInterface() {
           },
         ]);
       } catch (error) {
-        console.error("Error initializing conversation:", error);
+        console.error("❌ Error initializing conversation:", error);
       }
     };
 
@@ -55,7 +56,16 @@ function ChatInterface() {
   }, [messages]);
 
   const handleSend = async () => {
-    if (!input.trim() || loading || !conversationId) return;
+    console.log("🔵 handleSend called", { input, loading, conversationId });
+
+    if (!input.trim() || loading || !conversationId) {
+      console.log("❌ Blocked:", {
+        hasInput: !!input.trim(),
+        loading,
+        hasConversationId: !!conversationId,
+      });
+      return;
+    }
 
     const userMessage: Message = {
       id: Date.now().toString(),
@@ -65,17 +75,18 @@ function ChatInterface() {
       created_at: new Date().toISOString(),
     };
 
+    console.log("📤 Sending message:", userMessage);
     setMessages((prev) => [...prev, userMessage]);
     setInput("");
     setLoading(true);
 
     try {
-      // Send message to real backend
+      console.log("🔄 Calling API...");
       const response = await chatService.sendMessage(conversationId, input);
+      console.log("✅ Got response:", response);
       setMessages((prev) => [...prev, response]);
     } catch (error) {
-      console.error("Error sending message:", error);
-      // Add error message
+      console.error("❌ Error sending message:", error);
       setMessages((prev) => [
         ...prev,
         {
