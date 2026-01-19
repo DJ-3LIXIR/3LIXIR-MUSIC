@@ -9,14 +9,11 @@ export function ExploreArtist() {
           <div className="relative group">
             <div className="absolute inset-0 bg-gradient-to-br from-pink-600/20 to-red-600/20 rounded-xl blur-xl group-hover:blur-2xl transition-all duration-300"></div>
             <div className="relative aspect-square rounded-xl overflow-hidden border border-pink-500/30 bg-gradient-to-br from-pink-900/20 to-red-900/20">
-              <div className="w-full h-full flex items-center justify-center">
-                <div className="text-center space-y-3">
-                  <div className="w-24 h-24 mx-auto rounded-full bg-gradient-to-br from-pink-500 to-red-500 opacity-20 animate-pulse"></div>
-                  <p className="text-gray-500 text-sm">
-                    Your Artistic Image Here
-                  </p>
-                </div>
-              </div>
+              <img
+                src="/3LIXIR_logo_transparent.png"
+                alt="DJ 3LIXIR Logo"
+                className="w-full h-full object-contain p-8"
+              />
             </div>
           </div>
           <div className="space-y-5">

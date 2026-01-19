@@ -21,8 +21,7 @@ export const beats: Beat[] = [
     bpm: 120,
     key: "Em",
     price: 749.99,
-    cover:
-      "https://images.unsplash.com/photo-1605810230434-7631ac76ec81?q=80&w=1000&auto=format&fit=crop",
+    cover: "/Megamix-Cover.png",
     tags: ["EDM", "House", "Atmospheric"],
     releaseDate: "2026-01-02",
     youtubeUrl: "https://youtu.be/RamMgoQDEso",
@@ -35,8 +34,7 @@ export const beats: Beat[] = [
     bpm: 100,
     key: "D",
     price: 299.99,
-    cover:
-      "https://images.unsplash.com/photo-1470225620780-dba8ba36b745?q=80&w=1000&auto=format&fit=crop",
+    cover: "/Megamix-Cover.png",
     tags: ["Etheral", "Boom Bap", "LOFI"],
     releaseDate: "2026-01-02",
     youtubeUrl: "https://youtu.be/czWOFYrTASo",
@@ -49,8 +47,7 @@ export const beats: Beat[] = [
     bpm: 120,
     key: "F",
     price: 149.99,
-    cover:
-      "https://images.unsplash.com/photo-1557672172-298e090bd0f1?q=80&w=1000&auto=format&fit=crop",
+    cover: "/Megamix-Cover.png",
     tags: ["Synthwave", "LOFI", "EDM"],
     releaseDate: "2026-01-02",
     youtubeUrl: "https://youtu.be/URACea9_w2Q",
@@ -63,8 +60,7 @@ export const beats: Beat[] = [
     bpm: 100,
     key: "D#",
     price: 649.99,
-    cover:
-      "https://images.unsplash.com/photo-1511671782779-c97d3d27a1d4?q=80&w=1000&auto=format&fit=crop",
+    cover: "/Megamix-Cover.png",
     tags: ["Boom Bap", "EDM", "LOFI"],
     releaseDate: "2026-01-03",
     youtubeUrl: "https://youtu.be/9HMeD5Hy_FU",
@@ -77,8 +73,7 @@ export const beats: Beat[] = [
     bpm: 85,
     key: "Dm",
     price: 449.99,
-    cover:
-      "https://images.unsplash.com/photo-1614149162883-504ce4d13909?q=80&w=1000&auto=format&fit=crop",
+    cover: "/Megamix-Cover.png",
     tags: ["EDM", "LOFI", "Trap"],
     releaseDate: "2026-01-03",
     youtubeUrl: "https://youtu.be/1FewK3a-3l4",
@@ -91,8 +86,7 @@ export const beats: Beat[] = [
     bpm: 110,
     key: "Db",
     price: 249.99,
-    cover:
-      "https://images.unsplash.com/photo-1493225255756-d9584f8606e9?q=80&w=1000&auto=format&fit=crop",
+    cover: "/Megamix-Cover.png",
     tags: ["LOFI", "Jazz", "Boombap"],
     releaseDate: "2026-01-03",
     youtubeUrl: "https://youtu.be/7WRtUYAtOqk",
@@ -105,8 +99,7 @@ export const beats: Beat[] = [
     bpm: 120,
     key: "E",
     price: 1949.99,
-    cover:
-      "https://images.unsplash.com/photo-1605810230434-7631ac76ec81?q=80&w=1000&auto=format&fit=crop",
+    cover: "/Megamix-Cover.png",
     tags: ["EDM", "House", "cinematic"],
     releaseDate: "2026-01-12",
     youtubeUrl: "https://youtu.be/fBU5HTRvtPc",
@@ -119,8 +112,7 @@ export const beats: Beat[] = [
     bpm: 100,
     key: "D#m",
     price: 249.99,
-    cover:
-      "https://images.unsplash.com/photo-1470225620780-dba8ba36b745?q=80&w=1000&auto=format&fit=crop",
+    cover: "/Megamix-Cover.png",
     tags: ["LOFI", "Liminal", "EDM"],
     releaseDate: "2026-01-12",
     youtubeUrl: "https://youtu.be/q1BUr1nkRAo",
@@ -133,8 +125,7 @@ export const beats: Beat[] = [
     bpm: 120,
     key: "Em",
     price: 149.99,
-    cover:
-      "https://images.unsplash.com/photo-1557672172-298e090bd0f1?q=80&w=1000&auto=format&fit=crop",
+    cover: "/Megamix-Cover.png",
     tags: ["House", "EDM", "Club"],
     releaseDate: "2026-01-12",
     youtubeUrl: "https://youtu.be/nNExA6NHn5s",
@@ -147,8 +138,7 @@ export const beats: Beat[] = [
     bpm: 210,
     key: "Em",
     price: 1449.99,
-    cover:
-      "https://images.unsplash.com/photo-1511671782779-c97d3d27a1d4?q=80&w=1000&auto=format&fit=crop",
+    cover: "/Megamix-Cover.png",
     tags: ["Dubstep", "EDM", "Boom Bap"],
     releaseDate: "2026-01-12",
     youtubeUrl: "https://youtu.be/SNy6AtR55yM",
@@ -161,8 +151,7 @@ export const beats: Beat[] = [
     bpm: 120,
     key: "F#",
     price: 1249.99,
-    cover:
-      "https://images.unsplash.com/photo-1614149162883-504ce4d13909?q=80&w=1000&auto=format&fit=crop",
+    cover: "/Megamix-Cover.png",
     tags: ["EDM", "Techno", "House"],
     releaseDate: "2026-01-12",
     youtubeUrl: "https://youtu.be/9C9JfqOdQNQ",
@@ -175,8 +164,7 @@ export const beats: Beat[] = [
     bpm: 150,
     key: "Db",
     price: 1949.99,
-    cover:
-      "https://images.unsplash.com/photo-1493225255756-d9584f8606e9?q=80&w=1000&auto=format&fit=crop",
+    cover: "/Megamix-Cover.png",
     tags: ["EDM", "Dubstep", "Techno"],
     releaseDate: "2026-01-12",
     youtubeUrl: "https://youtu.be/9C9JfqOdQNQ",

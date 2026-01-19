@@ -374,7 +374,7 @@ const InfoPage = () => {
 
                   {/* Artist Image - Left side, text wraps around */}
                   <img
-                    src="/placeholder-artist.jpg"
+                    src="/3LIXIR_logo.png"
                     alt="DJ 3LIXIR"
                     className="w-64 h-auto rounded-xl border border-white/10 float-left mr-6 mb-4"
                   />
