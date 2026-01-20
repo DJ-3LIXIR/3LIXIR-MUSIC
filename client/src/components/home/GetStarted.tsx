@@ -22,7 +22,7 @@ export function GetStarted() {
                 <span className="text-purple-400 font-semibold">$50</span>, with
                 just{" "}
                 <span className="text-pink-400 font-semibold">
-                  40% of revenue
+                  60% of revenue
                 </span>{" "}
                 from your version of the track going to us.
               </p>

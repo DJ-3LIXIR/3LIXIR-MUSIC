@@ -4,7 +4,7 @@ hidden = [".config", ".git", "generated-icon.png", "node_modules", "dist"]
 
 [nix]
 channel = "stable-24_05"
-packages = ["mullvad", "lsof", "psmisc", "nano"]
+packages = ["mullvad", "lsof", "psmisc", "nano", "supabase-cli"]
 
 [deployment]
 deploymentTarget = "cloudrun"
@@ -68,3 +68,8 @@ waitForPort = 5000
 
 [agent]
 mockupState = "MOCKUP"
+
+[userenv]
+
+[userenv.shared]
+SUPABASE_ACCESS_TOKEN = "sbp_44986793ca672f9de5f46dad99adc0f554b229f8"

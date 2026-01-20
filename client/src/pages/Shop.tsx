@@ -103,6 +103,35 @@ export default function Shop() {
     return () => clearInterval(checkPopup);
   }, [stripePopup]);
 
+  const validItems = items.filter(
+    (item) => item && typeof item.price === "number",
+  );
+
+  const tax = 0;
+  const total = subtotal;
+
+  const beatItems = validItems.filter(
+    (item) =>
+      item.id !== "royalty-token" && !item.id.startsWith("subscription-"),
+  );
+  const totalBeats = beatItems.reduce(
+    (sum, item) => sum + (item.quantity || 0),
+    0,
+  );
+
+  const hasSubscription = validItems.some((item) =>
+    item.id.startsWith("subscription-"),
+  );
+
+  const isCryptoDisabled = hasSubscription;
+
+  // Auto-switch from crypto to stripe if subscription added to cart
+  useEffect(() => {
+    if (selectedPaymentMethod === "crypto" && hasSubscription) {
+      setSelectedPaymentMethod("stripe");
+    }
+  }, [hasSubscription, selectedPaymentMethod]);
+
   const checkStripePaymentStatus = async () => {
     const paymentSuccess = localStorage.getItem("stripe_payment_success");
     const sessionId = localStorage.getItem("stripe_session_id");
@@ -128,26 +157,6 @@ export default function Shop() {
     window.addEventListener("message", handleMessage);
     return () => window.removeEventListener("message", handleMessage);
   }, []);
-
-  const validItems = items.filter(
-    (item) => item && typeof item.price === "number",
-  );
-
-  const tax = 0;
-  const total = subtotal;
-
-  const beatItems = validItems.filter(
-    (item) =>
-      item.id !== "royalty-token" && !item.id.startsWith("subscription-"),
-  );
-  const totalBeats = beatItems.reduce(
-    (sum, item) => sum + (item.quantity || 0),
-    0,
-  );
-
-  const hasSubscription = validItems.some((item) =>
-    item.id.startsWith("subscription-"),
-  );
 
   const royaltyTokens = validItems.find((item) => item.id === "royalty-token");
   const tokenCount = royaltyTokens ? royaltyTokens.quantity : 0;
@@ -486,18 +495,76 @@ export default function Shop() {
   };
 
   const handleCryptoCheckout = async () => {
-    console.log("Crypto checkout initiated");
-    alert("Crypto payment integration coming soon!");
+    try {
+      console.log("Crypto checkout initiated");
+
+      const response = await fetch(
+        "https://tciugratutxxrdtbsxim.supabase.co/functions/v1/create-coinbase-checkout",
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization:
+              "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InRjaXVncmF0dXR4eHJkdGJzeGltIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Njc0NzYwMDgsImV4cCI6MjA4MzA1MjAwOH0.-yif_fwvYOwE6kG4nkSc1HXyF-cHTlZGWGJ91YXsPuM",
+          },
+          body: JSON.stringify({
+            amount: total,
+            description: `3LIXIR MUSIC - ${totalBeats} beat${totalBeats > 1 ? "s" : ""}`,
+            userId: user?.id,
+            userEmail: user?.email,
+            items: validItems,
+            metadata: {
+              orderType: "beat_purchase",
+            },
+          }),
+        },
+      );
+
+      console.log("Response received:", response.status);
+      console.log("About to parse JSON");
+      const data = await response.json();
+      console.log("Data received:", data);
+
+      if (data.error) {
+        throw new Error(data.error);
+      }
+
+      if (data.hostedUrl) {
+        // Open Coinbase Commerce checkout in new window
+        const width = 500;
+        const height = 700;
+        const left = (window.screen.width - width) / 2;
+        const top = (window.screen.height - height) / 2;
+
+        window.open(
+          data.hostedUrl,
+          "coinbase-checkout",
+          `width=${width},height=${height},left=${left},top=${top},toolbar=no,location=no,status=no,menubar=no,scrollbars=yes,resizable=yes`,
+        );
+
+        setShowPaymentModal(false);
+
+        // Show a message that payment is processing
+        alert(
+          "Complete your payment in the Coinbase Commerce window. You'll be redirected back when done.",
+        );
+      }
+    } catch (error: any) {
+      console.error("Crypto checkout error:", error);
+      alert(`Payment failed: ${error.message}`);
+    }
   };
 
   const handleCheckout = () => {
     if (!user) {
       openAuthModal();
-    } else if (totalBeats > 0 && !hasProperLicensing) {
-      setShowLicenseModal(true);
-    } else {
-      setShowPaymentModal(true);
+      return;
     }
+    if (!hasProperLicensing) {
+      setShowLicenseModal(true);
+      return;
+    }
+    setShowPaymentModal(true);
   };
 
   return (
@@ -506,7 +573,7 @@ export default function Shop() {
 
       {/* Licensing Required Modal */}
       {showLicenseModal && (
-        <div className="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+        <div className="fixed inset-0 bg-black/80 backdrop-blur-sm z-100 flex items-center justify-center p-4">
           <div className="bg-background border border-white/10 rounded-2xl p-8 max-w-md w-full relative">
             <button
               onClick={() => setShowLicenseModal(false)}
@@ -569,6 +636,21 @@ export default function Shop() {
             </button>
 
             <h2 className="text-2xl font-bold mb-6">Complete Payment</h2>
+
+            {hasSubscription && (
+              <div className="mb-4 p-3 bg-blue-500/10 border border-blue-500/20 rounded-lg flex items-start gap-3">
+                <AlertCircle className="w-5 h-5 text-blue-400 mt-0.5 flex-shrink-0" />
+                <div className="text-sm">
+                  <p className="font-semibold text-blue-400 mb-1">
+                    Subscription in Cart
+                  </p>
+                  <p className="text-blue-300">
+                    Cryptocurrency payments are not available for subscriptions.
+                    Please use Stripe or PayPal for automatic recurring billing.
+                  </p>
+                </div>
+              </div>
+            )}
 
             <div className="mb-6 p-4 bg-white/5 rounded-lg">
               <div className="flex justify-between mb-2">
@@ -666,31 +748,50 @@ export default function Shop() {
                 </button>
 
                 <button
-                  onClick={() => setSelectedPaymentMethod("crypto")}
+                  onClick={() =>
+                    !isCryptoDisabled && setSelectedPaymentMethod("crypto")
+                  }
+                  disabled={isCryptoDisabled}
                   className={`w-full p-4 rounded-lg border-2 transition-all flex items-center gap-4 ${
-                    selectedPaymentMethod === "crypto"
-                      ? "border-[hsl(var(--gold))] bg-[hsl(var(--gold))]/5"
-                      : "border-white/10 hover:border-white/20"
+                    isCryptoDisabled
+                      ? "border-white/5 bg-white/5 opacity-50 cursor-not-allowed"
+                      : selectedPaymentMethod === "crypto"
+                        ? "border-[hsl(var(--gold))] bg-[hsl(var(--gold))]/5"
+                        : "border-white/10 hover:border-white/20"
                   }`}
                 >
                   <div
                     className={`w-5 h-5 rounded-full border-2 flex items-center justify-center ${
-                      selectedPaymentMethod === "crypto"
+                      selectedPaymentMethod === "crypto" && !isCryptoDisabled
                         ? "border-[hsl(var(--gold))]"
                         : "border-white/30"
                     }`}
                   >
-                    {selectedPaymentMethod === "crypto" && (
-                      <div className="w-2.5 h-2.5 rounded-full bg-[hsl(var(--gold))]"></div>
-                    )}
+                    {selectedPaymentMethod === "crypto" &&
+                      !isCryptoDisabled && (
+                        <div className="w-2.5 h-2.5 rounded-full bg-[hsl(var(--gold))]"></div>
+                      )}
                   </div>
-                  <Wallet className="w-6 h-6 text-[hsl(var(--gold))]" />
+                  <Wallet
+                    className={`w-6 h-6 ${isCryptoDisabled ? "text-white/30" : "text-[hsl(var(--gold))]"}`}
+                  />
                   <div className="flex-grow text-left">
-                    <div className="font-semibold">Cryptocurrency</div>
+                    <div
+                      className={`font-semibold ${isCryptoDisabled ? "text-white/50" : ""}`}
+                    >
+                      Cryptocurrency
+                    </div>
                     <div className="text-sm text-muted-foreground">
-                      BTC, ETH, USDC & more
+                      {isCryptoDisabled
+                        ? "Not available for subscriptions"
+                        : "BTC, ETH, USDC & more"}
                     </div>
                   </div>
+                  {isCryptoDisabled && (
+                    <div className="px-2 py-1 bg-red-500/10 border border-red-500/20 rounded text-xs text-red-400 font-medium">
+                      Disabled
+                    </div>
+                  )}
                 </button>
               </div>
             </div>
@@ -720,20 +821,43 @@ export default function Shop() {
               )}
 
               {selectedPaymentMethod === "crypto" && (
-                <div className="text-center py-8">
-                  <Wallet className="w-16 h-16 text-[hsl(var(--gold))] mx-auto mb-4" />
-                  <p className="text-muted-foreground mb-6">
-                    Pay with Bitcoin, Ethereum, USDC, and other cryptocurrencies
-                  </p>
-                  <Button
-                    onClick={handleCryptoCheckout}
-                    className="w-full bg-[hsl(var(--gold))] text-black hover:bg-[hsl(var(--gold))]/90 rounded-full py-6 text-sm font-bold uppercase tracking-widest"
-                  >
-                    Continue with Crypto
-                  </Button>
-                  <p className="text-xs text-muted-foreground text-center mt-4">
-                    Powered by Coinbase Commerce
-                  </p>
+                <div>
+                  {isCryptoDisabled ? (
+                    <div className="text-center py-8">
+                      <AlertCircle className="w-16 h-16 text-red-400 mx-auto mb-4" />
+                      <h3 className="text-lg font-bold mb-2">
+                        Crypto Not Available
+                      </h3>
+                      <p className="text-muted-foreground mb-6">
+                        Cryptocurrency payments are only available for one-time
+                        purchases. Subscriptions require Stripe or PayPal for
+                        automatic billing.
+                      </p>
+                      <Button
+                        onClick={() => setSelectedPaymentMethod("stripe")}
+                        className="bg-[hsl(var(--gold))] text-black hover:bg-[hsl(var(--gold))]/90 rounded-full px-8"
+                      >
+                        Use Stripe Instead
+                      </Button>
+                    </div>
+                  ) : (
+                    <div className="text-center py-8">
+                      <Wallet className="w-16 h-16 text-[hsl(var(--gold))] mx-auto mb-4" />
+                      <p className="text-muted-foreground mb-6">
+                        Pay with Bitcoin, Ethereum, USDC, and other
+                        cryptocurrencies
+                      </p>
+                      <Button
+                        onClick={handleCryptoCheckout}
+                        className="w-full bg-[hsl(var(--gold))] text-black hover:bg-[hsl(var(--gold))]/90 rounded-full py-6 text-sm font-bold uppercase tracking-widest"
+                      >
+                        Continue with Crypto
+                      </Button>
+                      <p className="text-xs text-muted-foreground text-center mt-4">
+                        Powered by Coinbase Commerce
+                      </p>
+                    </div>
+                  )}
                 </div>
               )}
             </div>
@@ -743,7 +867,6 @@ export default function Shop() {
 
       <main className="pt-20">
         <div className="container mx-auto px-6 py-12">
-          {/* NEW: Toggle Buttons */}
           <div className="mb-8 flex gap-4">
             <button
               onClick={() => setViewMode("cart")}
@@ -769,7 +892,6 @@ export default function Shop() {
             </button>
           </div>
 
-          {/* CART VIEW */}
           {viewMode === "cart" && (
             <>
               <h1 className="text-5xl md:text-7xl font-display font-bold tracking-tighter mb-12">
@@ -943,7 +1065,6 @@ export default function Shop() {
             </>
           )}
 
-          {/* FAVORITES VIEW */}
           {viewMode === "favorites" && (
             <>
               <h1 className="text-5xl md:text-7xl font-display font-bold tracking-tighter mb-12">
@@ -1017,7 +1138,8 @@ export default function Shop() {
           )}
         </div>
       </main>
-      <footer className="relative z-50 py-20 border-t border-yellow-500/20 bg-black-500/5">
+
+      <footer className="relative z-10 py-20 border-t border-yellow-500/20 bg-black-500/5">
         <div className="container px-6 mx-auto">
           <div className="text-center mb-8">
             <h2 className="text-3xl font-display font-bold tracking-tighter text-white">
