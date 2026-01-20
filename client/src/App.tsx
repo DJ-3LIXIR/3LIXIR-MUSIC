@@ -17,11 +17,11 @@ import StripeSuccess from "@/pages/stripe-success";
 import Downloads from "@/pages/Downloads";
 import VIPPage from "@/pages/VIPPage";
 import Favorites from "@/pages/Favorites";
+import Search from "@/pages/Search";
 import NotFound from "@/pages/not-found";
 import ProfileManager from "@/components/ProfileManager";
 import AdminDashboard from "@/components/AdminDashboard";
 import CustomerSupport from "@/pages/CustomerSupport";
-
 // IT Support Components
 import Dashboard from "@/components/Dashboard";
 import ChatInterface from "@/components/ChatInterface";
@@ -47,7 +47,10 @@ function Router() {
       <Route path="/admin" component={AdminDashboard} />
       <Route path="/support" component={CustomerSupport} />
 
-      {/* IT Support Routes - NEW */}
+      {/* Search Route */}
+      <Route path="/search" component={Search} />
+
+      {/* IT Support Routes */}
       <Route path="/support/dashboard" component={Dashboard} />
       <Route path="/support/chat" component={ChatInterface} />
       <Route path="/support/chat/:conversationId" component={ChatInterface} />

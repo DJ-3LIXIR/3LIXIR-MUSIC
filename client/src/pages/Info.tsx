@@ -33,39 +33,64 @@ const InfoPage = () => {
   const [location] = useLocation();
 
   useEffect(() => {
-    const searchParams = new URLSearchParams(window.location.search);
-    const section = searchParams.get("section");
+    const handleUrlChange = () => {
+      const searchParams = new URLSearchParams(window.location.search);
+      const section = searchParams.get("section");
+      const hash = window.location.hash.slice(1); // Get hash without the #
 
-    if (section) {
-      // Check if it's a policy subsection (terms, privacy, licensing, refund, copyright, faq)
-      const policySubsections = [
-        "terms",
-        "privacy",
-        "licensing",
-        "refund",
-        "copyright",
-        "faq",
-      ];
+      if (section) {
+        // Check if it's a policy subsection (terms, privacy, licensing, refund, copyright, faq)
+        const policySubsections = [
+          "terms",
+          "privacy",
+          "licensing",
+          "refund",
+          "copyright",
+          "faq",
+        ];
 
-      if (policySubsections.includes(section)) {
-        setActiveSection("policy");
-        setActivePolicySection(section);
-      } else {
-        // It's a main section (about, artist, policy, contact)
-        setActiveSection(section);
-      }
-    }
+        if (policySubsections.includes(section)) {
+          setActiveSection("policy");
+          setActivePolicySection(section);
+        } else {
+          // It's a main section (about, artist, policy, contact)
+          setActiveSection(section);
 
-    // Handle hash scrolling after section loads
-    if (window.location.hash) {
-      setTimeout(() => {
-        const element = document.querySelector(window.location.hash);
-        if (element) {
-          element.scrollIntoView({ behavior: "smooth", block: "start" });
+          // Handle About subsections
+          if (section === "about" && hash) {
+            setActiveAboutSection(hash); // e.g., "story", "mission", "offer"
+          } else if (section === "about") {
+            setActiveAboutSection("story"); // Default to story
+          }
+
+          // Handle Artist subsections
+          if (section === "artist" && hash) {
+            setActiveArtistSection(hash); // e.g., "dj3lixir", "future"
+          } else if (section === "artist") {
+            setActiveArtistSection("dj3lixir"); // Default to dj3lixir
+          }
         }
-      }, 300);
-    }
-  }, [location]);
+      }
+
+      // Handle hash scrolling after section loads
+      if (window.location.hash) {
+        setTimeout(() => {
+          const element = document.querySelector(window.location.hash);
+          if (element) {
+            element.scrollIntoView({ behavior: "smooth", block: "start" });
+          }
+        }, 300);
+      }
+    };
+
+    // Run on mount and when location changes
+    handleUrlChange();
+
+    // Listen for URL changes from navbar (popstate events)
+    window.addEventListener("popstate", handleUrlChange);
+
+    return () => window.removeEventListener("popstate", handleUrlChange);
+  }, [location]); // This dependency ensures it runs when the URL changes
   const sections = [
     { id: "about", title: "About Us", icon: FileText },
     { id: "artist", title: "Artist", icon: Music },
