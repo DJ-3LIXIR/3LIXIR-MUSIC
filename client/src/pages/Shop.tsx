@@ -294,7 +294,6 @@ export default function Shop() {
           product_data: {
             name: item.title || "Unknown Item",
             description: `By ${item.artist || "Unknown Artist"}`,
-            images: item.cover ? [item.cover] : [],
           },
           unit_amount: Math.round((item.price || 0) * 100),
           tax_behavior: "exclusive",
@@ -330,8 +329,8 @@ export default function Shop() {
             userId: user?.id,
             userEmail: user?.email,
             items: validItems,
-            successUrl: `${window.location.origin}/stripe-success?session_id={CHECKOUT_SESSION_ID}`,
-            cancelUrl: `${window.location.origin}/shop?payment=cancelled`,
+            successUrl: `http://localhost:3000/success?session_id={CHECKOUT_SESSION_ID}`,
+            cancelUrl: `http://localhost:3000/cancel`,
           }),
         },
       );
