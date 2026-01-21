@@ -2,9 +2,7 @@ import { useState, useEffect } from "react";
 import { supabase, Profile } from "../supabaseClient";
 import { Navbar } from "@/components/layout/Navbar";
 import CustomerSupport from "@/pages/CustomerSupport";
-import ManageSubscription, {
-  Subscription as SubscriptionType,
-} from "@/components/Profile/ManageSubscription";
+import ManageSubscription from "@/components/Profile/ManageSubscription";
 import {
   User,
   Lock,
@@ -14,7 +12,7 @@ import {
   Camera,
   Download,
   Crown,
-  MessageSquare, // ← Add this if not already there
+  MessageSquare,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useLocation } from "wouter";
@@ -51,10 +49,6 @@ export default function ProfileManager() {
   const [profileColor, setProfileColor] = useState("#f59e0b");
   const [orders, setOrders] = useState<Order[]>([]);
   const [loadingOrders, setLoadingOrders] = useState(false);
-  const [subscription, setSubscription] = useState<SubscriptionType | null>(
-    null,
-  );
-  const [loadingSubscription, setLoadingSubscription] = useState(false);
   const [, setLocation] = useLocation();
 
   const colorOptions = [
@@ -101,7 +95,7 @@ export default function ProfileManager() {
         "purchases",
         "subscription",
         "settings",
-        "support", // ← ADD THIS LINE
+        "support",
       ].includes(section)
     ) {
       setActiveSection(section as Section);
@@ -113,13 +107,12 @@ export default function ProfileManager() {
     const handleStripeSuccess = async () => {
       const params = new URLSearchParams(window.location.search);
       const paymentStatus = params.get("payment");
-      const sessionId = params.get("session_id"); // Stripe adds this parameter
+      const sessionId = params.get("session_id");
 
       if (paymentStatus === "success" && sessionId) {
         setMessage("Processing your payment...");
 
         try {
-          // Retrieve the session details from Stripe
           const response = await fetch(
             "https://tciugratutxxrdtbsxim.supabase.co/functions/v1/retrieve-stripe-session",
             {
@@ -141,12 +134,10 @@ export default function ProfileManager() {
 
           setMessage("Payment successful! Your order has been processed.");
 
-          // Reload orders to show the new purchase
           if (activeSection === "purchases") {
             await loadOrders();
           }
 
-          // Clean up URL
           window.history.replaceState({}, "", "/profile?section=purchases");
         } catch (error: any) {
           console.error("Error processing payment:", error);
@@ -157,15 +148,10 @@ export default function ProfileManager() {
 
     handleStripeSuccess();
   }, [activeSection]);
+
   useEffect(() => {
     if (activeSection === "purchases" && profile) {
       loadOrders();
-    }
-  }, [activeSection, profile]);
-
-  useEffect(() => {
-    if (activeSection === "subscription" && profile) {
-      loadSubscription();
     }
   }, [activeSection, profile]);
 
@@ -219,34 +205,6 @@ export default function ProfileManager() {
       setMessage(`Error loading orders: ${error.message}`);
     } finally {
       setLoadingOrders(false);
-    }
-  };
-
-  const loadSubscription = async () => {
-    if (!profile) return;
-
-    setLoadingSubscription(true);
-    try {
-      const { data, error } = await supabase
-        .from("subscriptions")
-        .select("*")
-        .eq("user_id", profile.id)
-        .eq("status", "active")
-        .order("created_at", { ascending: false })
-        .limit(1)
-        .single();
-
-      if (error && error.code !== "PGRST116") {
-        // PGRST116 is "no rows returned"
-        throw error;
-      }
-
-      setSubscription(data || null);
-    } catch (error: any) {
-      console.error("Error loading subscription:", error);
-      setMessage(`Error loading subscription: ${error.message}`);
-    } finally {
-      setLoadingSubscription(false);
     }
   };
 
@@ -783,9 +741,9 @@ export default function ProfileManager() {
                     Manage Your Subscriptions
                   </h2>
                   <ManageSubscription
-                    subscription={subscription}
-                    loading={loadingSubscription}
-                    onRefresh={loadSubscription}
+                    subscriptionTier={profile.subscription_tier}
+                    loading={loading}
+                    onRefresh={loadProfile}
                     userId={profile.id}
                     userEmail={profile.email || ""}
                   />
