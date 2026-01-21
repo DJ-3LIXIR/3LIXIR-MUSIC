@@ -329,8 +329,8 @@ export default function Shop() {
             userId: user?.id,
             userEmail: user?.email,
             items: validItems,
-            successUrl: `http://localhost:3000/success?session_id={CHECKOUT_SESSION_ID}`,
-            cancelUrl: `http://localhost:3000/cancel`,
+            successUrl: `${window.location.origin}/stripe-success?session_id={CHECKOUT_SESSION_ID}`,
+            cancelUrl: `${window.location.origin}/cancel`,
           }),
         },
       );

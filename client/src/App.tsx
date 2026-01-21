@@ -14,6 +14,7 @@ import Info from "@/pages/Info";
 import Licenses from "@/pages/Licenses";
 import Shop from "@/pages/Shop";
 import StripeSuccess from "@/pages/stripe-success";
+import Cancel from "@/pages/Cancel";
 import Downloads from "@/pages/Downloads";
 import VIPPage from "@/pages/VIPPage";
 import Favorites from "@/pages/Favorites";
@@ -40,6 +41,7 @@ function Router() {
       <Route path="/licenses" component={Licenses} />
       <Route path="/shop" component={Shop} />
       <Route path="/stripe-success" component={StripeSuccess} />
+      <Route path="/cancel" component={Cancel} />
       <Route path="/downloads" component={Downloads} />
       <Route path="/favorites" component={Favorites} />
       <Route path="/vip" component={VIPPage} />
