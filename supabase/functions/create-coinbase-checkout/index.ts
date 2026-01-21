@@ -19,6 +19,9 @@ serve(async (req) => {
 
     console.log("Creating Coinbase charge:", { amount, description, userId });
 
+    // Get origin from request or use default
+    const origin = req.headers.get("origin") || "https://your-domain.com";
+
     // Create charge with Coinbase Commerce API
     const response = await fetch("https://api.commerce.coinbase.com/charges", {
       method: "POST",
@@ -41,8 +44,8 @@ serve(async (req) => {
           items: JSON.stringify(items),
           ...metadata,
         },
-        redirect_url: `${req.headers.get("origin")}/shop?payment=success`,
-        cancel_url: `${req.headers.get("origin")}/shop?payment=cancelled`,
+        redirect_url: `${origin}/shop?payment=success`,
+        cancel_url: `${origin}/shop?payment=cancelled`,
       }),
     });
 

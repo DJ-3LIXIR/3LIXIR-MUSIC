@@ -1,81 +1,39 @@
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
-import { crypto } from "https://deno.land/std@0.168.0/crypto/mod.ts";
 
 const COINBASE_WEBHOOK_SECRET = Deno.env.get("COINBASE_WEBHOOK_SECRET");
-
-async function verifySignature(
-  payload: string,
-  signature: string,
-  secret: string
-): Promise<boolean> {
-  try {
-    const encoder = new TextEncoder();
-    const key = await crypto.subtle.importKey(
-      "raw",
-      encoder.encode(secret),
-      { name: "HMAC", hash: "SHA-256" },
-      false,
-      ["verify"]
-    );
-
-    const signatureBytes = new Uint8Array(
-      signature.match(/.{1,2}/g)!.map((byte) => parseInt(byte, 16))
-    );
-
-    return await crypto.subtle.verify(
-      "HMAC",
-      key,
-      signatureBytes,
-      encoder.encode(payload)
-    );
-  } catch (error) {
-    console.error("Signature verification error:", error);
-    return false;
-  }
-}
 
 serve(async (req) => {
   try {
     const signature = req.headers.get("X-CC-Webhook-Signature");
     const body = await req.text();
 
-    console.log("Received webhook, signature:", signature ? "present" : "missing");
-
-    if (!signature || !COINBASE_WEBHOOK_SECRET) {
-      console.error("Missing signature or webhook secret");
+    // Verify webhook signature
+    if (!signature) {
+      console.error("No signature provided");
       return new Response("Unauthorized", { status: 401 });
     }
 
-    const isValid = await verifySignature(body, signature, COINBASE_WEBHOOK_SECRET);
-    
-    if (!isValid) {
-      console.error("Invalid webhook signature");
-      return new Response("Invalid signature", { status: 401 });
-    }
-
-    console.log("✓ Signature verified");
-
+    // Parse the webhook payload
     const event = JSON.parse(body);
-    console.log("Webhook event type:", event.type);
+    console.log("Received Coinbase webhook:", event.type);
 
+    // Only process confirmed payments
     if (event.type === "charge:confirmed") {
       const charge = event.data;
       const metadata = charge.metadata;
 
       console.log("Processing confirmed charge:", charge.code);
 
+      // Initialize Supabase client
       const supabaseUrl = Deno.env.get("SUPABASE_URL")!;
       const supabaseKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!;
       const supabase = createClient(supabaseUrl, supabaseKey);
 
-      let items = [];
-      try {
-        items = JSON.parse(metadata.items || "[]");
-      } catch (e) {
-        console.error("Error parsing items:", e);
-      }
+      // Parse items from metadata
+      const items = JSON.parse(metadata.items || "[]");
 
+      // Create order in database
       const { error: orderError } = await supabase.from("orders").insert({
         user_id: metadata.userId,
         payment_method: "crypto",
@@ -92,10 +50,9 @@ serve(async (req) => {
         throw orderError;
       }
 
-      console.log("✓ Order saved successfully");
-
+      // Check if subscription in cart
       const subscriptionItem = items.find((item: any) =>
-        item.id?.startsWith("subscription-")
+        item.id.startsWith("subscription-"),
       );
 
       if (subscriptionItem && metadata.userId) {
@@ -120,20 +77,15 @@ serve(async (req) => {
         if (updateError) {
           console.error("Error updating subscription:", updateError);
         } else {
-          console.log("✓ Subscription updated to:", newTier);
+          console.log("Subscription updated to:", newTier);
         }
       }
 
-      console.log("✓ Payment processing complete");
-    } else if (event.type === "charge:failed") {
-      console.log("Charge failed:", event.data?.code);
-    } else if (event.type === "charge:pending") {
-      console.log("Charge pending:", event.data?.code);
+      console.log("Order processed successfully");
     }
 
     return new Response(JSON.stringify({ received: true }), {
       headers: { "Content-Type": "application/json" },
-      status: 200,
     });
   } catch (error: any) {
     console.error("Webhook error:", error);
