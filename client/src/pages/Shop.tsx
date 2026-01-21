@@ -1286,3 +1286,4 @@ console.log("Valid items in cart:", validItems);
     </div>
   );
 }
+ 
