@@ -27,8 +27,16 @@ type ViewMode = "cart" | "favorites";
 
 // Initialize Stripe
 const stripePromise = loadStripe(
+
   "pk_test_51Spw6HG4NUYiO6WbvkHI9nZxHSWSGUho6J9ZXinBUCpEt3BCdN78JffsCnPetEJIXTtwE6jRDdO7DIrlvMvZZlP1008shelj29",
 );
+
+// PayPal Plan IDs
+const PAYPAL_PLAN_IDS = {
+  "subscription-gold": "P-8TB217137C5239323NFYYM3A",
+  "subscription-diamond": "P-21R441231G465062UNFYYM3A",
+  "subscription-platinum": "P-57S62040C6306434YNFYYM3I",
+};
 
 // Add global type for PayPal
 declare global {
@@ -160,7 +168,84 @@ export default function Shop() {
 
   const royaltyTokens = validItems.find((item) => item.id === "royalty-token");
   const tokenCount = royaltyTokens ? royaltyTokens.quantity : 0;
+useEffect(() => {
+    if (
+      showPaymentModal &&
+      selectedPaymentMethod === "paypal" &&
+      paypalRef.current &&
+      window.paypal &&
+      validItems.length > 0
+    ) {
+      paypalRef.current.innerHTML = "";
 
+      const subscriptionItem = validItems.find((item) =>
+        item.id.startsWith("subscription-"),
+      );
+
+      if (subscriptionItem) {
+        // PayPal Subscription Flow
+        const planId = PAYPAL_PLAN_IDS[subscriptionItem.id as keyof typeof PAYPAL_PLAN_IDS];
+
+        if (!planId) {
+          console.error("Invalid subscription type for PayPal");
+          return;
+        }
+
+        window.paypal
+          .Buttons({
+            createSubscription: (data: any, actions: any) => {
+              return actions.subscription.create({
+                plan_id: planId,
+              });
+            },
+            onApprove: async (data: any, actions: any) => {
+              await handlePayPalSubscriptionSuccess(data.subscriptionID, subscriptionItem);
+            },
+            onError: (err: any) => {
+              console.error("PayPal Subscription Error:", err);
+              alert("PayPal subscription failed. Please try again.");
+            },
+          })
+          .render(paypalRef.current);
+      } else {
+        // Original one-time payment flow
+        window.paypal
+          .Buttons({
+            createOrder: (data: any, actions: any) => {
+              return actions.order.create({
+                purchase_units: [
+                  {
+                    amount: {
+                      value: total.toFixed(2),
+                      breakdown: {
+                        item_total: {
+                          value: subtotal.toFixed(2),
+                          currency_code: "USD",
+                        },
+                      },
+                    },
+                    items: validItems.map((item) => ({
+                      name: item.title || "Unknown Item",
+                      description: `By ${item.artist || "Unknown Artist"}`,
+                      unit_amount: {
+                        value: (item.price || 0).toFixed(2),
+                        currency_code: "USD",
+                      },
+                      quantity: item.quantity || 1,
+                    })),
+                  },
+                ],
+              });
+            },
+            onApprove: async (data: any, actions: any) => {
+              const order = await actions.order.capture();
+              await handlePaymentSuccess(order.id, "paypal");
+            },
+          })
+          .render(paypalRef.current);
+      }
+    }
+  }, [showPaymentModal, selectedPaymentMethod, total, validItems, subtotal]);
   const hasActiveMembership =
     userProfile?.subscription_tier &&
     userProfile.subscription_tier !== "tier_zero";
@@ -214,6 +299,57 @@ export default function Shop() {
         .render(paypalRef.current);
     }
   }, [showPaymentModal, selectedPaymentMethod, total, validItems, subtotal]);
+
+  const handlePayPalSubscriptionSuccess = async (
+    subscriptionId: string,
+    subscriptionItem: any,
+  ) => {
+    try {
+      const {
+        data: { user },
+      } = await supabase.auth.getUser();
+
+      if (user) {
+        let newTier = "tier_zero";
+
+        if (subscriptionItem.id === "subscription-gold") {
+          newTier = "gold";
+        } else if (subscriptionItem.id === "subscription-diamond") {
+          newTier = "diamond";
+        } else if (subscriptionItem.id === "subscription-platinum") {
+          newTier = "platinum";
+        }
+
+        const { error: updateError } = await supabase
+          .from("profiles")
+          .update({
+            subscription_tier: newTier,
+            paypal_subscription_id: subscriptionId,
+            subscription_provider: "paypal",
+            updated_at: new Date().toISOString(),
+          })
+          .eq("id", user.id);
+
+        if (updateError) {
+          console.error("Error updating subscription tier:", updateError);
+          alert("Subscription created but failed to update profile. Please contact support.");
+          return;
+        }
+
+        console.log("PayPal subscription created:", subscriptionId);
+      }
+    } catch (error) {
+      console.error("Error processing PayPal subscription:", error);
+      alert("There was an error processing your subscription. Please contact support.");
+      return;
+    }
+
+    clearCart();
+    setShowPaymentModal(false);
+    alert("Subscription successful! Your membership is now active.");
+    setLocation("/profile");
+  };
+
 
   const handlePaymentSuccess = async (
     transactionId: string,
