@@ -137,7 +137,64 @@ serve(async (req) => {
       console.log("Order approved (pending capture):", event.resource?.id);
       // Order is approved but not yet captured - stays pending
     }
+// Handle subscription events
+    else if (event.event_type === "BILLING.SUBSCRIPTION.ACTIVATED") {
+      const subscription = event.resource;
+      const subscriptionId = subscription.id;
+      
+      console.log("Subscription activated:", subscriptionId);
 
+      // Find user by subscription ID
+      const { data: profile, error: findError } = await supabase
+        .from("profiles")
+        .select("id, subscription_tier")
+        .eq("paypal_subscription_id", subscriptionId)
+        .single();
+
+      if (findError || !profile) {
+        console.error("Could not find profile for subscription:", subscriptionId);
+        return new Response(JSON.stringify({ received: true }), {
+          headers: { "Content-Type": "application/json" },
+          status: 200,
+        });
+      }
+
+      // Subscription is already activated during checkout, just log
+      console.log("✓ Subscription already active for user:", profile.id);
+    } 
+    else if (event.event_type === "BILLING.SUBSCRIPTION.CANCELLED" || 
+             event.event_type === "BILLING.SUBSCRIPTION.SUSPENDED" ||
+             event.event_type === "BILLING.SUBSCRIPTION.EXPIRED") {
+      const subscription = event.resource;
+      const subscriptionId = subscription.id;
+      
+      console.log("Subscription cancelled/suspended/expired:", subscriptionId);
+
+      const { error } = await supabase
+        .from("profiles")
+        .update({ 
+          subscription_tier: "tier_zero",
+          updated_at: new Date().toISOString()
+        })
+        .eq("paypal_subscription_id", subscriptionId);
+
+      if (error) {
+        console.error("Error updating subscription tier:", error);
+        throw error;
+      }
+
+      console.log("✓ Subscription tier reset to tier_zero");
+    }
+    else if (event.event_type === "PAYMENT.SALE.COMPLETED") {
+      // Recurring payment completed
+      const sale = event.resource;
+      const subscriptionId = sale.billing_agreement_id;
+      
+      console.log("Recurring payment completed for subscription:", subscriptionId);
+      
+      // Subscription stays active - no action needed
+      console.log("✓ Recurring payment processed");
+    }
     return new Response(JSON.stringify({ received: true }), {
       headers: { "Content-Type": "application/json" },
       status: 200,

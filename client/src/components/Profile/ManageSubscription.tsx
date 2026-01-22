@@ -15,6 +15,8 @@ interface ManageSubscriptionProps {
   onRefresh: () => Promise<void>;
   userId: string;
   userEmail: string;
+  paypalSubscriptionId?: string | null;
+  updatedAt?: string | null;
 }
 
 export default function ManageSubscription({
@@ -23,8 +25,13 @@ export default function ManageSubscription({
   onRefresh,
   userId,
   userEmail,
+  paypalSubscriptionId,
+  updatedAt,
 }: ManageSubscriptionProps) {
   const [, setLocation] = useLocation();
+
+  // Detect if this is a PayPal subscription
+  const isPayPalSubscription = !!paypalSubscriptionId;
 
   // Map plan IDs to their card images
   const licenseCards = {
@@ -138,16 +145,27 @@ export default function ManageSubscription({
             <div className="flex-grow">
               <h3 className="font-bold text-lg mb-1">Payment Method</h3>
               <p className="text-muted-foreground mb-3">
-                Managed through Stripe
+                Managed through {isPayPalSubscription ? "PayPal" : "Stripe"}
               </p>
-              <a
-                href="https://billing.stripe.com/p/login/test_6oE6qL1wPbwk5Zm288"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="text-[hsl(var(--gold))] hover:underline text-sm"
-              >
-                Update payment method →
-              </a>
+              {isPayPalSubscription ? (
+                <a
+                  href="https://www.paypal.com/myaccount/autopay/"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="text-[hsl(var(--gold))] hover:underline text-sm"
+                >
+                  Manage PayPal subscription →
+                </a>
+              ) : (
+                <a
+                  href="https://billing.stripe.com/p/login/test_6oE6qL1wPbwk5Zm288"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="text-[hsl(var(--gold))] hover:underline text-sm"
+                >
+                  Update payment method →
+                </a>
+              )}
             </div>
           </div>
         </div>
