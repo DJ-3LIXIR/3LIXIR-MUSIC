@@ -27,7 +27,6 @@ type ViewMode = "cart" | "favorites";
 
 // Initialize Stripe
 const stripePromise = loadStripe(
-
   "pk_test_51Spw6HG4NUYiO6WbvkHI9nZxHSWSGUho6J9ZXinBUCpEt3BCdN78JffsCnPetEJIXTtwE6jRDdO7DIrlvMvZZlP1008shelj29",
 );
 
@@ -168,90 +167,14 @@ export default function Shop() {
 
   const royaltyTokens = validItems.find((item) => item.id === "royalty-token");
   const tokenCount = royaltyTokens ? royaltyTokens.quantity : 0;
-useEffect(() => {
-    if (
-      showPaymentModal &&
-      selectedPaymentMethod === "paypal" &&
-      paypalRef.current &&
-      window.paypal &&
-      validItems.length > 0
-    ) {
-      paypalRef.current.innerHTML = "";
-
-      const subscriptionItem = validItems.find((item) =>
-        item.id.startsWith("subscription-"),
-      );
-
-      if (subscriptionItem) {
-        // PayPal Subscription Flow
-        const planId = PAYPAL_PLAN_IDS[subscriptionItem.id as keyof typeof PAYPAL_PLAN_IDS];
-
-        if (!planId) {
-          console.error("Invalid subscription type for PayPal");
-          return;
-        }
-
-        window.paypal
-          .Buttons({
-            createSubscription: (data: any, actions: any) => {
-              return actions.subscription.create({
-                plan_id: planId,
-              });
-            },
-            onApprove: async (data: any, actions: any) => {
-              await handlePayPalSubscriptionSuccess(data.subscriptionID, subscriptionItem);
-            },
-            onError: (err: any) => {
-              console.error("PayPal Subscription Error:", err);
-              alert("PayPal subscription failed. Please try again.");
-            },
-          })
-          .render(paypalRef.current);
-      } else {
-        // Original one-time payment flow
-        window.paypal
-          .Buttons({
-            createOrder: (data: any, actions: any) => {
-              return actions.order.create({
-                purchase_units: [
-                  {
-                    amount: {
-                      value: total.toFixed(2),
-                      breakdown: {
-                        item_total: {
-                          value: subtotal.toFixed(2),
-                          currency_code: "USD",
-                        },
-                      },
-                    },
-                    items: validItems.map((item) => ({
-                      name: item.title || "Unknown Item",
-                      description: `By ${item.artist || "Unknown Artist"}`,
-                      unit_amount: {
-                        value: (item.price || 0).toFixed(2),
-                        currency_code: "USD",
-                      },
-                      quantity: item.quantity || 1,
-                    })),
-                  },
-                ],
-              });
-            },
-            onApprove: async (data: any, actions: any) => {
-              const order = await actions.order.capture();
-              await handlePaymentSuccess(order.id, "paypal");
-            },
-          })
-          .render(paypalRef.current);
-      }
-    }
-  }, [showPaymentModal, selectedPaymentMethod, total, validItems, subtotal]);
   const hasActiveMembership =
     userProfile?.subscription_tier &&
     userProfile.subscription_tier !== "tier_zero";
 
   const hasProperLicensing =
     hasActiveMembership || hasSubscription || tokenCount >= totalBeats;
+
+  // Replace the duplicate PayPal useEffect hooks with this single one:
 
   useEffect(() => {
     if (
@@ -261,10 +184,54 @@ useEffect(() => {
       window.paypal &&
       validItems.length > 0
     ) {
+      // Clear any existing PayPal buttons
       paypalRef.current.innerHTML = "";
 
-      window.paypal
-        .Buttons({
+      const subscriptionItem = validItems.find((item) =>
+        item.id.startsWith("subscription-"),
+      );
+
+      if (subscriptionItem) {
+        // PayPal Subscription Flow
+        const planId =
+          PAYPAL_PLAN_IDS[subscriptionItem.id as keyof typeof PAYPAL_PLAN_IDS];
+
+        if (!planId) {
+          console.error("Invalid subscription type for PayPal");
+          return;
+        }
+
+        const buttons = window.paypal.Buttons({
+          createSubscription: (data: any, actions: any) => {
+            return actions.subscription.create({
+              plan_id: planId,
+            });
+          },
+          onApprove: async (data: any, actions: any) => {
+            await handlePayPalSubscriptionSuccess(
+              data.subscriptionID,
+              subscriptionItem,
+            );
+          },
+          onError: (err: any) => {
+            console.error("PayPal Subscription Error:", err);
+            alert("PayPal subscription failed. Please try again.");
+          },
+        });
+
+        buttons.render(paypalRef.current).catch((err: any) => {
+          console.error("PayPal button render error:", err);
+        });
+
+        // Cleanup function to prevent DOM errors
+        return () => {
+          if (paypalRef.current) {
+            paypalRef.current.innerHTML = "";
+          }
+        };
+      } else {
+        // Original one-time payment flow
+        const buttons = window.paypal.Buttons({
           createOrder: (data: any, actions: any) => {
             return actions.order.create({
               purchase_units: [
@@ -295,8 +262,23 @@ useEffect(() => {
             const order = await actions.order.capture();
             await handlePaymentSuccess(order.id, "paypal");
           },
-        })
-        .render(paypalRef.current);
+          onError: (err: any) => {
+            console.error("PayPal Error:", err);
+            alert("PayPal payment failed. Please try again.");
+          },
+        });
+
+        buttons.render(paypalRef.current).catch((err: any) => {
+          console.error("PayPal button render error:", err);
+        });
+
+        // Cleanup function to prevent DOM errors
+        return () => {
+          if (paypalRef.current) {
+            paypalRef.current.innerHTML = "";
+          }
+        };
+      }
     }
   }, [showPaymentModal, selectedPaymentMethod, total, validItems, subtotal]);
 
@@ -332,7 +314,9 @@ useEffect(() => {
 
         if (updateError) {
           console.error("Error updating subscription tier:", updateError);
-          alert("Subscription created but failed to update profile. Please contact support.");
+          alert(
+            "Subscription created but failed to update profile. Please contact support.",
+          );
           return;
         }
 
@@ -340,7 +324,9 @@ useEffect(() => {
       }
     } catch (error) {
       console.error("Error processing PayPal subscription:", error);
-      alert("There was an error processing your subscription. Please contact support.");
+      alert(
+        "There was an error processing your subscription. Please contact support.",
+      );
       return;
     }
 
@@ -349,7 +335,6 @@ useEffect(() => {
     alert("Subscription successful! Your membership is now active.");
     setLocation("/profile");
   };
-
 
   const handlePaymentSuccess = async (
     transactionId: string,
@@ -424,10 +409,10 @@ useEffect(() => {
         return;
       }
 
-console.log("Valid items in cart:", validItems);
+      console.log("Valid items in cart:", validItems);
       // Check if cart contains a subscription
       const subscriptionItem = validItems.find((item) =>
-        item.id.startsWith("subscription-")
+        item.id.startsWith("subscription-"),
       );
 
       // If there's a subscription, use the subscription checkout
@@ -464,7 +449,7 @@ console.log("Valid items in cart:", validItems);
               successUrl: `${window.location.origin}/stripe-success?session_id={CHECKOUT_SESSION_ID}`,
               cancelUrl: `${window.location.origin}/shop`,
             }),
-          }
+          },
         );
 
         const data = await response.json();
@@ -1422,4 +1407,3 @@ console.log("Valid items in cart:", validItems);
     </div>
   );
 }
- 
