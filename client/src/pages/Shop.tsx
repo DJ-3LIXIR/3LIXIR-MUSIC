@@ -19,6 +19,7 @@ import { useAuth } from "@/contexts/AuthContext";
 import { supabase } from "@/supabaseClient";
 import { loadStripe } from "@stripe/stripe-js";
 import { BeatCard } from "@/components/store/BeatCard";
+import ContractModal from "@/components/Shop/ContractModal";
 import { beats } from "@/lib/data";
 import { motion } from "framer-motion";
 
@@ -59,6 +60,8 @@ export default function Shop() {
   // NEW: View mode state and favorites
   const [viewMode, setViewMode] = useState<ViewMode>("cart");
   const [favoriteBeats, setFavoriteBeats] = useState<any[]>([]);
+  const [showContractModal, setShowContractModal] = useState(false);
+  const [contractAccepted, setContractAccepted] = useState(false);
   const [loadingFavorites, setLoadingFavorites] = useState(false);
 
   // NEW: Fetch favorites when user changes or view switches to favorites
@@ -742,7 +745,37 @@ export default function Shop() {
     }
   };
 
+  const handleContractAccept = async (emailSubscription: boolean) => {
+    setContractAccepted(true);
+    setShowContractModal(false);
+    
+    try {
+      await fetch("/api/store-agreement", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          userId: user?.id,
+          timestamp: new Date().toISOString(),
+          emailSubscription,
+          beatsPurchased: beatItems.map(item => item.title)
+        })
+      });
+    } catch (error) {
+      console.error("Error storing agreement:", error);
+    }
+    
+    setShowPaymentModal(true);
+  };
+
+
   const handleCheckout = () => {
+    const hasBeats = beatItems.length > 0;
+    
+    if (hasBeats) {
+      setContractAccepted(false);
+      setShowContractModal(true);
+      return;
+    }
     if (!user) {
       openAuthModal();
       return;
@@ -751,12 +784,20 @@ export default function Shop() {
       setShowLicenseModal(true);
       return;
     }
-    setShowPaymentModal(true);
+    // setShowPaymentModal(true); // Now handled by contract modal
   };
 
   return (
     <div className="min-h-screen bg-background text-foreground">
       <Navbar />
+
+      {/* Contract Modal */}
+      <ContractModal
+        isOpen={showContractModal}
+        onClose={() => setShowContractModal(false)}
+        onAccept={handleContractAccept}
+        beatTitles={beatItems.map(item => item.title)}
+      />
 
       {/* Licensing Required Modal */}
       {showLicenseModal && (

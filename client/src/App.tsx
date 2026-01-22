@@ -23,6 +23,15 @@ import NotFound from "@/pages/not-found";
 import ProfileManager from "@/components/ProfileManager";
 import AdminDashboard from "@/components/AdminDashboard";
 import CustomerSupport from "@/pages/CustomerSupport";
+
+// Contract Pages
+import Terms from "@/components/Shop/Contract/Terms";
+import BeatLicense from "@/components/Shop/Contract/BeatLicense";
+import Privacy from "@/components/Shop/Contract/Privacy";
+import Refund from "@/components/Shop/Contract/Refund";
+import PurchaseAgreement from "@/components/Shop/Contract/PurchaseAgreement";
+import Dmca from "@/components/Shop/Contract/Dmca";
+
 // IT Support Components
 import Dashboard from "@/components/Dashboard";
 import ChatInterface from "@/components/ChatInterface";
@@ -51,6 +60,17 @@ function Router() {
 
       {/* Search Route */}
       <Route path="/search" component={Search} />
+
+      {/* Contract/Legal Routes */}
+      <Route path="/shop/contract/terms" component={Terms} />
+      <Route path="/shop/contract/beat-license" component={BeatLicense} />
+      <Route path="/shop/contract/privacy" component={Privacy} />
+      <Route path="/shop/contract/refund" component={Refund} />
+      <Route
+        path="/shop/contract/purchase-agreement"
+        component={PurchaseAgreement}
+      />
+      <Route path="/shop/contract/dmca" component={Dmca} />
 
       {/* IT Support Routes */}
       <Route path="/support/dashboard" component={Dashboard} />

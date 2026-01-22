@@ -30,6 +30,13 @@ const stripePromise = loadStripe(
   "pk_test_51Spw6HG4NUYiO6WbvkHI9nZxHSWSGUho6J9ZXinBUCpEt3BCdN78JffsCnPetEJIXTtwE6jRDdO7DIrlvMvZZlP1008shelj29",
 );
 
+// PayPal Plan IDs
+const PAYPAL_PLAN_IDS = {
+  "subscription-gold": "P-398129005T965961NNFYZVCI",
+  "subscription-diamond": "P-55L371070A602070FNFYZVCQ",
+  "subscription-platinum": "P-1MY38620WT494822WNFYZVCY",
+};
+
 // Add global type for PayPal
 declare global {
   interface Window {
@@ -160,7 +167,6 @@ export default function Shop() {
 
   const royaltyTokens = validItems.find((item) => item.id === "royalty-token");
   const tokenCount = royaltyTokens ? royaltyTokens.quantity : 0;
-
   const hasActiveMembership =
     userProfile?.subscription_tier &&
     userProfile.subscription_tier !== "tier_zero";
@@ -168,6 +174,7 @@ export default function Shop() {
   const hasProperLicensing =
     hasActiveMembership || hasSubscription || tokenCount >= totalBeats;
 
+  // FIXED: PayPal useEffect with corrected cleanup and dependencies
   useEffect(() => {
     if (
       showPaymentModal &&
@@ -176,44 +183,150 @@ export default function Shop() {
       window.paypal &&
       validItems.length > 0
     ) {
+      // Clear any existing PayPal buttons
       paypalRef.current.innerHTML = "";
 
-      window.paypal
-        .Buttons({
-          createOrder: (data: any, actions: any) => {
-            return actions.order.create({
-              purchase_units: [
-                {
-                  amount: {
-                    value: total.toFixed(2),
-                    breakdown: {
-                      item_total: {
-                        value: subtotal.toFixed(2),
-                        currency_code: "USD",
+      const subscriptionItem = validItems.find((item) =>
+        item.id.startsWith("subscription-"),
+      );
+
+      if (subscriptionItem) {
+        // PayPal Subscription Flow
+        const planId =
+          PAYPAL_PLAN_IDS[subscriptionItem.id as keyof typeof PAYPAL_PLAN_IDS];
+
+        if (!planId) {
+          console.error("Invalid subscription type for PayPal");
+          return;
+        }
+
+        window.paypal
+          .Buttons({
+            createSubscription: (data: any, actions: any) => {
+              return actions.subscription.create({
+                plan_id: planId,
+              });
+            },
+            onApprove: async (data: any, actions: any) => {
+              await handlePayPalSubscriptionSuccess(
+                data.subscriptionID,
+                subscriptionItem,
+              );
+            },
+            onError: (err: any) => {
+              console.error("PayPal Subscription Error:", err);
+              alert("PayPal subscription failed. Please try again.");
+            },
+          })
+          .render(paypalRef.current);
+      } else {
+        // Original one-time payment flow
+        window.paypal
+          .Buttons({
+            createOrder: (data: any, actions: any) => {
+              return actions.order.create({
+                purchase_units: [
+                  {
+                    amount: {
+                      value: total.toFixed(2),
+                      breakdown: {
+                        item_total: {
+                          value: subtotal.toFixed(2),
+                          currency_code: "USD",
+                        },
                       },
                     },
+                    items: validItems.map((item) => ({
+                      name: item.title || "Unknown Item",
+                      description: `By ${item.artist || "Unknown Artist"}`,
+                      unit_amount: {
+                        value: (item.price || 0).toFixed(2),
+                        currency_code: "USD",
+                      },
+                      quantity: item.quantity || 1,
+                    })),
                   },
-                  items: validItems.map((item) => ({
-                    name: item.title || "Unknown Item",
-                    description: `By ${item.artist || "Unknown Artist"}`,
-                    unit_amount: {
-                      value: (item.price || 0).toFixed(2),
-                      currency_code: "USD",
-                    },
-                    quantity: item.quantity || 1,
-                  })),
-                },
-              ],
-            });
-          },
-          onApprove: async (data: any, actions: any) => {
-            const order = await actions.order.capture();
-            await handlePaymentSuccess(order.id, "paypal");
-          },
-        })
-        .render(paypalRef.current);
+                ],
+              });
+            },
+            onApprove: async (data: any, actions: any) => {
+              const order = await actions.order.capture();
+              await handlePaymentSuccess(order.id, "paypal");
+            },
+            onError: (err: any) => {
+              console.error("PayPal Error:", err);
+              alert("PayPal payment failed. Please try again.");
+            },
+          })
+          .render(paypalRef.current);
+      }
     }
-  }, [showPaymentModal, selectedPaymentMethod, total, validItems, subtotal]);
+
+    // FIXED: Only cleanup when modal closes or payment method changes
+    return () => {
+      if (
+        paypalRef.current &&
+        (!showPaymentModal || selectedPaymentMethod !== "paypal")
+      ) {
+        paypalRef.current.innerHTML = "";
+      }
+    };
+  }, [showPaymentModal, selectedPaymentMethod, validItems.length]);
+  // FIXED: Removed 'total' and 'subtotal' from dependencies
+
+  const handlePayPalSubscriptionSuccess = async (
+    subscriptionId: string,
+    subscriptionItem: any,
+  ) => {
+    try {
+      const {
+        data: { user },
+      } = await supabase.auth.getUser();
+
+      if (user) {
+        let newTier = "tier_zero";
+
+        if (subscriptionItem.id === "subscription-gold") {
+          newTier = "gold";
+        } else if (subscriptionItem.id === "subscription-diamond") {
+          newTier = "diamond";
+        } else if (subscriptionItem.id === "subscription-platinum") {
+          newTier = "platinum";
+        }
+
+        const { error: updateError } = await supabase
+          .from("profiles")
+          .update({
+            subscription_tier: newTier,
+            paypal_subscription_id: subscriptionId,
+            subscription_provider: "paypal",
+            updated_at: new Date().toISOString(),
+          })
+          .eq("id", user.id);
+
+        if (updateError) {
+          console.error("Error updating subscription tier:", updateError);
+          alert(
+            "Subscription created but failed to update profile. Please contact support.",
+          );
+          return;
+        }
+
+        console.log("PayPal subscription created:", subscriptionId);
+      }
+    } catch (error) {
+      console.error("Error processing PayPal subscription:", error);
+      alert(
+        "There was an error processing your subscription. Please contact support.",
+      );
+      return;
+    }
+
+    clearCart();
+    setShowPaymentModal(false);
+    alert("Subscription successful! Your membership is now active.");
+    setLocation("/profile");
+  };
 
   const handlePaymentSuccess = async (
     transactionId: string,
@@ -288,81 +401,156 @@ export default function Shop() {
         return;
       }
 
-      const lineItems = validItems.map((item) => ({
-        price_data: {
-          currency: "usd",
-          product_data: {
-            name: item.title || "Unknown Item",
-            description: `By ${item.artist || "Unknown Artist"}`,
-          },
-          unit_amount: Math.round((item.price || 0) * 100),
-          tax_behavior: "exclusive",
-        },
-        quantity: item.quantity || 1,
-      }));
-
-      const cartBackup = {
-        items: validItems,
-        subtotal: subtotal,
-        timestamp: Date.now(),
-      };
-      localStorage.setItem("stripe_cart_backup", JSON.stringify(cartBackup));
-
-      console.log("Sending checkout request with:", {
-        lineItems,
-        userId: user?.id,
-        userEmail: user?.email,
-        items: validItems,
-      });
-
-      const response = await fetch(
-        "https://tciugratutxxrdtbsxim.supabase.co/functions/v1/create-stripe-checkout",
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-            Authorization:
-              "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InRjaXVncmF0dXR4eHJkdGJzeGltIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Njc0NzYwMDgsImV4cCI6MjA4MzA1MjAwOH0.-yif_fwvYOwE6kG4nkSc1HXyF-cHTlZGWGJ91YXsPuM",
-          },
-          body: JSON.stringify({
-            lineItems,
-            userId: user?.id,
-            userEmail: user?.email,
-            items: validItems,
-            successUrl: `${window.location.origin}/stripe-success?session_id={CHECKOUT_SESSION_ID}`,
-            cancelUrl: `${window.location.origin}/cancel`,
-          }),
-        },
+      console.log("Valid items in cart:", validItems);
+      // Check if cart contains a subscription
+      const subscriptionItem = validItems.find((item) =>
+        item.id.startsWith("subscription-"),
       );
 
-      const data = await response.json();
-      console.log("Stripe response:", data);
+      // If there's a subscription, use the subscription checkout
+      if (subscriptionItem) {
+        // Map subscription IDs to Stripe Price IDs
+        const priceIdMap: { [key: string]: string } = {
+          "subscription-gold": "price_1Ss6foG4NUYiO6WbQSJZ9s7O",
+          "subscription-diamond": "price_1Ss6myG4NUYiO6Wbd8f2yjTW",
+          "subscription-platinum": "price_1Ss6pYG4NUYiO6WbLyD6dqjf",
+        };
 
-      if (data.error) {
-        console.error("Stripe error details:", data.error);
-        throw new Error(data.error);
-      }
+        const priceId = priceIdMap[subscriptionItem.id];
 
-      if (data.url) {
-        const width = 600;
-        const height = 800;
-        const left = (window.screen.width - width) / 2;
-        const top = (window.screen.height - height) / 2;
+        if (!priceId) {
+          alert("Invalid subscription type");
+          return;
+        }
 
-        const popup = window.open(
-          data.url,
-          "stripe-checkout",
-          `width=${width},height=${height},left=${left},top=${top},toolbar=no,location=no,status=no,menubar=no,scrollbars=yes,resizable=yes`,
+        console.log("Creating subscription checkout for:", subscriptionItem.id);
+
+        const response = await fetch(
+          "https://tciugratutxxrdtbsxim.supabase.co/functions/v1/create-stripe-subscription",
+          {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+              Authorization:
+                "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InRjaXVncmF0dXR4eHJkdGJzeGltIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Njc0NzYwMDgsImV4cCI6MjA4MzA1MjAwOH0.-yif_fwvYOwE6kG4nkSc1HXyF-cHTlZGWGJ91YXsPuM",
+            },
+            body: JSON.stringify({
+              priceId: priceId,
+              userId: user?.id,
+              userEmail: user?.email,
+              successUrl: `${window.location.origin}/stripe-success?session_id={CHECKOUT_SESSION_ID}`,
+              cancelUrl: `${window.location.origin}/shop`,
+            }),
+          },
         );
 
-        if (popup) {
-          setStripePopup(popup);
-          setShowPaymentModal(false);
+        const data = await response.json();
+        console.log("Subscription response:", data);
+
+        if (data.error) {
+          console.error("Subscription error:", data.error);
+          throw new Error(data.error);
+        }
+
+        if (data.url) {
+          const width = 600;
+          const height = 800;
+          const left = (window.screen.width - width) / 2;
+          const top = (window.screen.height - height) / 2;
+
+          const popup = window.open(
+            data.url,
+            "stripe-checkout",
+            `width=${width},height=${height},left=${left},top=${top},toolbar=no,location=no,status=no,menubar=no,scrollbars=yes,resizable=yes`,
+          );
+
+          if (popup) {
+            setStripePopup(popup);
+            setShowPaymentModal(false);
+          } else {
+            alert("Please allow popups to complete checkout");
+          }
         } else {
-          alert("Please allow popups to complete checkout");
+          throw new Error("No checkout URL returned from server");
         }
       } else {
-        throw new Error("No checkout URL returned from server");
+        // Original one-time payment checkout logic
+        const lineItems = validItems.map((item) => ({
+          price_data: {
+            currency: "usd",
+            product_data: {
+              name: item.title || "Unknown Item",
+              description: `By ${item.artist || "Unknown Artist"}`,
+            },
+            unit_amount: Math.round((item.price || 0) * 100),
+            tax_behavior: "exclusive",
+          },
+          quantity: item.quantity || 1,
+        }));
+
+        const cartBackup = {
+          items: validItems,
+          subtotal: subtotal,
+          timestamp: Date.now(),
+        };
+        localStorage.setItem("stripe_cart_backup", JSON.stringify(cartBackup));
+
+        console.log("Sending checkout request with:", {
+          lineItems,
+          userId: user?.id,
+          userEmail: user?.email,
+          items: validItems,
+        });
+
+        const response = await fetch(
+          "https://tciugratutxxrdtbsxim.supabase.co/functions/v1/create-stripe-checkout",
+          {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+              Authorization:
+                "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InRjaXVncmF0dXR4eHJkdGJzeGltIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Njc0NzYwMDgsImV4cCI6MjA4MzA1MjAwOH0.-yif_fwvYOwE6kG4nkSc1HXyF-cHTlZGWGJ91YXsPuM",
+            },
+            body: JSON.stringify({
+              lineItems,
+              userId: user?.id,
+              userEmail: user?.email,
+              items: validItems,
+              successUrl: `${window.location.origin}/stripe-success?session_id={CHECKOUT_SESSION_ID}`,
+              cancelUrl: `${window.location.origin}/cancel`,
+            }),
+          },
+        );
+
+        const data = await response.json();
+        console.log("Stripe response:", data);
+
+        if (data.error) {
+          console.error("Stripe error details:", data.error);
+          throw new Error(data.error);
+        }
+
+        if (data.url) {
+          const width = 600;
+          const height = 800;
+          const left = (window.screen.width - width) / 2;
+          const top = (window.screen.height - height) / 2;
+
+          const popup = window.open(
+            data.url,
+            "stripe-checkout",
+            `width=${width},height=${height},left=${left},top=${top},toolbar=no,location=no,status=no,menubar=no,scrollbars=yes,resizable=yes`,
+          );
+
+          if (popup) {
+            setStripePopup(popup);
+            setShowPaymentModal(false);
+          } else {
+            alert("Please allow popups to complete checkout");
+          }
+        } else {
+          throw new Error("No checkout URL returned from server");
+        }
       }
     } catch (error: any) {
       console.error("Stripe checkout error:", error);
