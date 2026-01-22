@@ -8,6 +8,7 @@ import {
   XCircle,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { supabase } from "@/supabaseClient";
 
 interface ManageSubscriptionProps {
   subscriptionTier: string | null;
@@ -29,6 +30,7 @@ export default function ManageSubscription({
   updatedAt,
 }: ManageSubscriptionProps) {
   const [, setLocation] = useLocation();
+  const [cancelling, setCancelling] = useState(false);
 
   // Detect if this is a PayPal subscription
   const isPayPalSubscription = !!paypalSubscriptionId;
@@ -50,6 +52,41 @@ export default function ManageSubscription({
     gold: "$10.00",
     diamond: "$15.00",
     platinum: "$20.00",
+  };
+
+  const handleCancelSubscription = async () => {
+    if (
+      !confirm(
+        "Are you sure you want to cancel your subscription? You will lose access to all premium features at the end of your billing period.",
+      )
+    ) {
+      return;
+    }
+
+    setCancelling(true);
+    try {
+      // Update the database to mark subscription as cancelled
+      const { error } = await supabase
+        .from("profiles")
+        .update({
+          subscription_tier: "black",
+          paypal_subscription_id: null,
+          updated_at: new Date().toISOString(),
+        })
+        .eq("id", userId);
+
+      if (error) throw error;
+
+      alert(
+        "Subscription cancelled successfully. You will retain access until the end of your current billing period.",
+      );
+      await onRefresh();
+    } catch (error: any) {
+      console.error("Error cancelling subscription:", error);
+      alert("Failed to cancel subscription. Please contact support.");
+    } finally {
+      setCancelling(false);
+    }
   };
 
   if (loading) {
@@ -180,25 +217,22 @@ export default function ManageSubscription({
           Change Plan
         </Button>
         <Button
-          onClick={() => {
-            if (
-              confirm("Please contact support to cancel your subscription.")
-            ) {
-              window.location.href = "/profile?section=support";
-            }
-          }}
+          onClick={handleCancelSubscription}
+          disabled={cancelling}
           variant="outline"
           className="border-red-500 text-red-500 hover:bg-red-500/10 rounded-full px-8 py-6 text-lg font-bold uppercase tracking-wider"
         >
-          Cancel Subscription
+          {cancelling ? "Cancelling..." : "Cancel Subscription"}
         </Button>
       </div>
 
       {/* Important Notice */}
       <div className="w-full max-w-2xl p-4 bg-yellow-500/10 border border-yellow-500/20 rounded-xl">
         <p className="text-sm text-yellow-500 text-center">
-          <strong>Note:</strong> To manage billing details or cancel your
-          subscription, please contact our support team.
+          <strong>Note:</strong> Cancelling your subscription will remove your
+          access to premium features.
+          {isPayPalSubscription &&
+            " For PayPal subscriptions, you can also manage your subscription directly through PayPal."}
         </p>
       </div>
     </div>

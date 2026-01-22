@@ -32,9 +32,9 @@ const stripePromise = loadStripe(
 
 // PayPal Plan IDs
 const PAYPAL_PLAN_IDS = {
-  "subscription-gold": "P-8TB217137C5239323NFYYM3A",
-  "subscription-diamond": "P-21R441231G465062UNFYYM3A",
-  "subscription-platinum": "P-57S62040C6306434YNFYYM3I",
+  "subscription-gold": "P-398129005T965961NNFYZVCI",
+  "subscription-diamond": "P-55L371070A602070FNFYZVCQ",
+  "subscription-platinum": "P-1MY38620WT494822WNFYZVCY",
 };
 
 // Add global type for PayPal
