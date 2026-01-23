@@ -658,7 +658,7 @@ const handleStripeSuccess = async (sessionId: string) => {
       console.log("Saving order with items:", cartItems);
 
       const { data: orderData, error } = await supabase.from("orders").insert({
-        user_id: currentUser.id,
+        user_id: user.id,
         payment_method: "stripe",
         transaction_id: sessionId,
         items: cartItems,
@@ -688,7 +688,7 @@ const handleStripeSuccess = async (sessionId: string) => {
           const { error: legalError } = await supabase
             .from('legal_acceptances')
             .insert({
-              user_id: currentUser.id,
+              user_id: user.id,
               order_id: orderData.id,
               tos_accepted: parsedAcceptance.tos_accepted,
               privacy_accepted: parsedAcceptance.privacy_accepted,
@@ -712,7 +712,7 @@ const handleStripeSuccess = async (sessionId: string) => {
       }
       // Update profile with order_id
       if (orderData) {
-        await updateProfileWithOrderId(currentUser.id, orderData.id);
+        await updateProfileWithOrderId(user.id, orderData.id);
       }
 
       const subscriptionItem = cartItems.find((item: any) =>
@@ -736,7 +736,7 @@ const handleStripeSuccess = async (sessionId: string) => {
             subscription_tier: newTier,
             updated_at: new Date().toISOString(),
           })
-          .eq("id", currentUser.id);
+          .eq("id", user.id);
 
         if (updateError) {
           console.error("Error updating subscription tier:", updateError);
