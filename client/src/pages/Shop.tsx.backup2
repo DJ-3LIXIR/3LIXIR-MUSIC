@@ -696,16 +696,10 @@ export default function Shop() {
 
       if (error) {
         console.error("Error saving Stripe order:", error);
-        // Check if this is a duplicate transaction error (unique constraint violation)
-        if (error.code === "23505" || error.message?.includes("unique_transaction_id")) {
-          console.log("Order already exists for this transaction, skipping duplicate");
-          // Continue as if successful - order already exists
-        } else {
-          alert(
-            "Payment successful but there was an error saving your order. Please contact support.",
-          );
-          return;
-        }
+        alert(
+          "Payment successful but there was an error saving your order. Please contact support.",
+        );
+        return;
       }
 
       console.log("Order saved successfully!");
