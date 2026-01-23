@@ -22,7 +22,26 @@ import {
 
 export default function Dashboard() {
   const { user } = useAuth();
-  const [stats, setStats] = useState<TicketStats | null>(null);
+  const [stats, setStats] = useState<TicketStats>({
+    total: 0,
+    open: 0,
+    "in-progress": 0,
+    resolved: 0,
+    closed: 0,
+    byPriority: {
+      low: 0,
+      medium: 0,
+      high: 0,
+      urgent: 0,
+    },
+    byCategory: {
+      hardware: 0,
+      software: 0,
+      network: 0,
+      account: 0,
+      other: 0,
+    },
+  });
   const [conversationCount, setConversationCount] = useState(0);
   const [loading, setLoading] = useState(true);
 
@@ -30,10 +49,11 @@ export default function Dashboard() {
     const fetchDashboardData = async () => {
       try {
         setLoading(true);
-
         // Fetch ticket stats
         const ticketStats = await ticketService.getTicketStats();
-        setStats(ticketStats);
+        // Handle both wrapped and unwrapped responses
+        const statsData = ticketStats.data || ticketStats;
+        setStats(statsData);
 
         // Fetch conversation count
         const conversations = await chatService.getConversations();
@@ -137,7 +157,7 @@ export default function Dashboard() {
             <CardHeader className="pb-3">
               <CardDescription>Total Tickets</CardDescription>
               <CardTitle className="text-4xl text-white">
-                {stats?.total || 0}
+                {stats.total}
               </CardTitle>
             </CardHeader>
           </Card>
@@ -146,7 +166,7 @@ export default function Dashboard() {
             <CardHeader className="pb-3">
               <CardDescription>Open Tickets</CardDescription>
               <CardTitle className="text-4xl text-yellow-500">
-                {stats?.open || 0}
+                {stats.open}
               </CardTitle>
             </CardHeader>
           </Card>
@@ -155,7 +175,7 @@ export default function Dashboard() {
             <CardHeader className="pb-3">
               <CardDescription>In Progress</CardDescription>
               <CardTitle className="text-4xl text-blue-500">
-                {stats?.in_progress || 0}
+                {stats["in-progress"]}
               </CardTitle>
             </CardHeader>
           </Card>

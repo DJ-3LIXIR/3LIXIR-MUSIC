@@ -85,6 +85,29 @@ router.get("/stats", async (req, res, next) => {
 });
 
 /**
+ * GET /api/tickets/my-tickets
+ * Get all tickets for current user (alias endpoint)
+ */
+router.get("/my-tickets", async (req, res, next) => {
+  try {
+    const userId = req.user.id;
+    const { status, priority, category } = req.query;
+
+    const filters = {};
+    if (status) filters.status = status;
+    if (priority) filters.priority = priority;
+    if (category) filters.category = category;
+
+    const tickets = await ticketService.getUserTickets(userId, filters);
+
+    // Return array directly to match frontend expectations
+    res.json(tickets);
+  } catch (error) {
+    next(error);
+  }
+});
+
+/**
  * GET /api/tickets/search
  * Search tickets
  */

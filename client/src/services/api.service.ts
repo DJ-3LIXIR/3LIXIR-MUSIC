@@ -76,9 +76,22 @@ export interface KnowledgeBaseArticle {
 export interface TicketStats {
   total: number;
   open: number;
-  in_progress: number;
+  "in-progress": number;
   resolved: number;
   closed: number;
+  byPriority: {
+    low: number;
+    medium: number;
+    high: number;
+    urgent: number;
+  };
+  byCategory: {
+    hardware: number;
+    software: number;
+    network: number;
+    account: number;
+    other: number;
+  };
 }
 
 // Create axios instance with default config
@@ -256,8 +269,11 @@ export const ticketService = {
 
   // Get ticket statistics
   getTicketStats: async (): Promise<TicketStats> => {
-    const response = await api.get<TicketStats>("/tickets/stats");
-    return response.data;
+    const response = await api.get<{ success: boolean; data: TicketStats }>(
+      "/tickets/stats",
+    );
+    // Unwrap the data from the success wrapper
+    return response.data.data;
   },
 };
 
