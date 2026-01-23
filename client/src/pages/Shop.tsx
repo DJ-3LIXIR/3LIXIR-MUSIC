@@ -1,4 +1,7 @@
 import { useState, useEffect, useRef } from "react";
+// Prevent duplicate order processing
+const processingStripeOrders = new Set<string>();
+
 import { Navbar } from "@/components/layout/Navbar";
 import {
   Trash2,
@@ -107,7 +110,7 @@ export default function Shop() {
       if (stripePopup.closed) {
         clearInterval(checkPopup);
         setStripePopup(null);
-    //         checkStripePaymentStatus();
+        //         checkStripePaymentStatus();
       }
     }, 500);
 
@@ -143,23 +146,16 @@ export default function Shop() {
     }
   }, [hasSubscription, selectedPaymentMethod]);
 
-  const checkStripePaymentStatus = async () => {
-    const paymentSuccess = localStorage.getItem("stripe_payment_success");
-    const sessionId = localStorage.getItem("stripe_session_id");
-
-    if (paymentSuccess === "true" && sessionId) {
-      console.log("Stripe payment success detected");
-      localStorage.removeItem("stripe_payment_success");
-      localStorage.removeItem("stripe_session_id");
-      await handleStripeSuccess(sessionId);
-    }
-  };
 
   useEffect(() => {
     const handleMessage = async (event: MessageEvent) => {
       if (event.origin !== window.location.origin) return;
 
       if (event.data.type === "STRIPE_PAYMENT_SUCCESS") {
+        console.log(
+          "[DEBUG] Message listener triggered with sessionId:",
+          event.data.sessionId,
+        );
         console.log("Received payment success message from popup");
         await handleStripeSuccess(event.data.sessionId);
       }
@@ -332,96 +328,101 @@ export default function Shop() {
     setLocation("/profile");
   };
 
-        const handlePaymentSuccess = async (
-          transactionId: string,
-          method: PaymentMethod,
-        ) => {
-          try {
-            const {
-              data: { user },
-            } = await supabase.auth.getUser();
+  const handlePaymentSuccess = async (
+    transactionId: string,
+    method: PaymentMethod,
+  ) => {
+    try {
+      const {
+        data: { user },
+      } = await supabase.auth.getUser();
 
-            if (user) {
-              // Create the order first
-              const { data: orderData, error } = await supabase.from("orders").insert({
+      if (user) {
+        // Create the order first
+        const { data: orderData, error } = await supabase
+          .from("orders")
+          .insert({
+            user_id: user.id,
+            payment_method: method,
+            transaction_id: transactionId,
+            items: validItems,
+            subtotal: subtotal,
+            tax: tax,
+            total: total,
+            status: "completed",
+          })
+          .select()
+          .single();
+
+        if (error) {
+          console.error("Error saving order:", error);
+        }
+
+        // NEW: Insert legal acceptance record
+        if (orderData) {
+          const acceptanceData = sessionStorage.getItem(
+            "pending_legal_acceptance",
+          );
+
+          if (acceptanceData) {
+            const parsedAcceptance = JSON.parse(acceptanceData);
+
+            const { error: legalError } = await supabase
+              .from("legal_acceptances")
+              .insert({
                 user_id: user.id,
-                payment_method: method,
-                transaction_id: transactionId,
-                items: validItems,
-                subtotal: subtotal,
-                tax: tax,
-                total: total,
-                status: "completed",
-              })
-              .select().single();
+                order_id: orderData.id,
+                tos_accepted: parsedAcceptance.tos_accepted,
+                privacy_accepted: parsedAcceptance.privacy_accepted,
+                refund_policy_accepted: parsedAcceptance.refund_policy_accepted,
+                licensing_accepted: parsedAcceptance.licensing_accepted,
+                accepted_at: parsedAcceptance.accepted_at,
+                tos_version: parsedAcceptance.tos_version,
+                privacy_version: parsedAcceptance.privacy_version,
+                refund_policy_version: parsedAcceptance.refund_policy_version,
+                licensing_version: parsedAcceptance.licensing_version,
+                user_agent: parsedAcceptance.user_agent,
+                ip_address: "client-side", // Will be updated by backend if needed
+              });
 
-              if (error) {
-                console.error("Error saving order:", error);
-              }
+            if (legalError) {
+              console.error("Error saving legal acceptance:", legalError);
+            } else {
+              console.log("Legal acceptance saved successfully");
+              sessionStorage.removeItem("pending_legal_acceptance");
+            }
+          }
+        }
 
-              // NEW: Insert legal acceptance record
-              if (orderData) {
-                const acceptanceData = sessionStorage.getItem('pending_legal_acceptance');
+        const subscriptionItem = validItems.find((item) =>
+          item.id.startsWith("subscription-"),
+        );
 
-                if (acceptanceData) {
-                  const parsedAcceptance = JSON.parse(acceptanceData);
+        if (subscriptionItem) {
+          let newTier = "tier_zero";
 
-                  const { error: legalError } = await supabase
-                    .from('legal_acceptances')
-                    .insert({
-                      user_id: user.id,
-                      order_id: orderData.id,
-                      tos_accepted: parsedAcceptance.tos_accepted,
-                      privacy_accepted: parsedAcceptance.privacy_accepted,
-                      refund_policy_accepted: parsedAcceptance.refund_policy_accepted,
-                      licensing_accepted: parsedAcceptance.licensing_accepted,
-                      accepted_at: parsedAcceptance.accepted_at,
-                      tos_version: parsedAcceptance.tos_version,
-                      privacy_version: parsedAcceptance.privacy_version,
-                      refund_policy_version: parsedAcceptance.refund_policy_version,
-                      licensing_version: parsedAcceptance.licensing_version,
-                      user_agent: parsedAcceptance.user_agent,
-                      ip_address: 'client-side', // Will be updated by backend if needed
-                    });
+          if (subscriptionItem.id === "subscription-gold") {
+            newTier = "gold";
+          } else if (subscriptionItem.id === "subscription-diamond") {
+            newTier = "diamond";
+          } else if (subscriptionItem.id === "subscription-platinum") {
+            newTier = "platinum";
+          }
 
-                  if (legalError) {
-                    console.error('Error saving legal acceptance:', legalError);
-                  } else {
-                    console.log('Legal acceptance saved successfully');
-                    sessionStorage.removeItem('pending_legal_acceptance');
-                  }
-                }
-              }
+          const { error: updateError } = await supabase
+            .from("profiles")
+            .update({
+              subscription_tier: newTier,
+              updated_at: new Date().toISOString(),
+            })
+            .eq("id", user.id);
 
-              const subscriptionItem = validItems.find((item) =>
-                item.id.startsWith("subscription-"),
-              );
-
-              if (subscriptionItem) {
-                let newTier = "tier_zero";
-
-                if (subscriptionItem.id === "subscription-gold") {
-                  newTier = "gold";
-                } else if (subscriptionItem.id === "subscription-diamond") {
-                  newTier = "diamond";
-                } else if (subscriptionItem.id === "subscription-platinum") {
-                  newTier = "platinum";
-                }
-
-                const { error: updateError } = await supabase
-                  .from("profiles")
-                  .update({
-                    subscription_tier: newTier,
-                    updated_at: new Date().toISOString(),
-                  })
-                  .eq("id", user.id);
-
-                if (updateError) {
-                  console.error("Error updating subscription tier:", updateError);
-                } else {
-                  console.log("Subscription tier updated to:", newTier);
-                }
-              }
+          if (updateError) {
+            console.error("Error updating subscription tier:", updateError);
+          } else {
+            console.log("Subscription tier updated to:", newTier);
+          }
+        }
       }
     } catch (error) {
       console.error("Error saving order:", error);
@@ -598,23 +599,25 @@ export default function Shop() {
     }
   };
 
-const handleStripeSuccess = async (sessionId: string) => {
+  const handleStripeSuccess = async (sessionId: string) => {
+    console.log(
+      "[DEBUG] handleStripeSuccess called with sessionId:",
+      sessionId,
+    );
     try {
-      // Prevent double processing
-      if (processingPayment) {
-        console.log("Payment already being processed, skipping");
-        return;
-      }
-      
+      // Prevent double processing - check both memory and storage
       const processedKey = `stripe_processed_${sessionId}`;
-      if (sessionStorage.getItem(processedKey)) {
-        console.log("Payment already processed, skipping");
+      if (
+        processingStripeOrders.has(sessionId) ||
+        sessionStorage.getItem(processedKey)
+      ) {
+        console.log("[DEBUG] Already processing this session, skipping");
         return;
       }
-      
-      setProcessingPayment(true);
-      sessionStorage.setItem(processedKey, 'true');
 
+      processingStripeOrders.add(sessionId);
+      console.log("[DEBUG] Added session to processing set:", sessionId);
+      sessionStorage.setItem(processedKey, "true");
 
       let cartItems = [];
       let calculatedSubtotal = 0;
@@ -665,17 +668,20 @@ const handleStripeSuccess = async (sessionId: string) => {
 
       console.log("Saving order with items:", cartItems);
 
-      const { data: orderData, error } = await supabase.from("orders").insert({
-        user_id: user.id,
-        payment_method: "stripe",
-        transaction_id: sessionId,
-        items: cartItems,
-        subtotal: calculatedSubtotal,
-        tax: 0,
-        total: calculatedSubtotal,
-        status: "completed",
-      })
-      .select().single();
+      const { data: orderData, error } = await supabase
+        .from("orders")
+        .insert({
+          user_id: user.id,
+          payment_method: "stripe",
+          transaction_id: sessionId,
+          items: cartItems,
+          subtotal: calculatedSubtotal,
+          tax: 0,
+          total: calculatedSubtotal,
+          status: "completed",
+        })
+        .select()
+        .single();
 
       if (error) {
         console.error("Error saving Stripe order:", error);
@@ -690,11 +696,13 @@ const handleStripeSuccess = async (sessionId: string) => {
       // Update profile with order_id  console.log("Order saved successfully!");
       // Save legal acceptance record
       if (orderData) {
-        const acceptanceData = sessionStorage.getItem('pending_legal_acceptance');
+        const acceptanceData = sessionStorage.getItem(
+          "pending_legal_acceptance",
+        );
         if (acceptanceData) {
           const parsedAcceptance = JSON.parse(acceptanceData);
           const { error: legalError } = await supabase
-            .from('legal_acceptances')
+            .from("legal_acceptances")
             .insert({
               user_id: user.id,
               order_id: orderData.id,
@@ -708,13 +716,13 @@ const handleStripeSuccess = async (sessionId: string) => {
               refund_policy_version: parsedAcceptance.refund_policy_version,
               licensing_version: parsedAcceptance.licensing_version,
               user_agent: parsedAcceptance.user_agent,
-              ip_address: 'client-side',
+              ip_address: "client-side",
             });
           if (legalError) {
-            console.error('Error saving legal acceptance:', legalError);
+            console.error("Error saving legal acceptance:", legalError);
           } else {
-            console.log('Legal acceptance saved successfully');
-            sessionStorage.removeItem('pending_legal_acceptance');
+            console.log("Legal acceptance saved successfully");
+            sessionStorage.removeItem("pending_legal_acceptance");
           }
         }
       }
@@ -825,88 +833,88 @@ const handleStripeSuccess = async (sessionId: string) => {
     }
   };
 
-          const handleContractAccept = async (emailSubscription: boolean) => {
-            setContractAccepted(true);
-            setShowContractModal(false);
+  const handleContractAccept = async (emailSubscription: boolean) => {
+    setContractAccepted(true);
+    setShowContractModal(false);
 
-            try {
-              // Get user agent and IP (IP will be captured on backend)
-              const userAgent = navigator.userAgent;
+    try {
+      // Get user agent and IP (IP will be captured on backend)
+      const userAgent = navigator.userAgent;
 
-              // Store acceptance data temporarily to use after order creation
-              const acceptanceData = {
-                tos_accepted: true,
-                refund_policy_accepted: true,
-                licensing_accepted: true,
-                privacy_accepted: true,
-                accepted_at: new Date().toISOString(),
-                tos_version: '1.0',
-                privacy_version: '1.0',
-                refund_policy_version: '1.0',
-                licensing_version: '1.0',
-                user_agent: userAgent,
-              };
+      // Store acceptance data temporarily to use after order creation
+      const acceptanceData = {
+        tos_accepted: true,
+        refund_policy_accepted: true,
+        licensing_accepted: true,
+        privacy_accepted: true,
+        accepted_at: new Date().toISOString(),
+        tos_version: "1.0",
+        privacy_version: "1.0",
+        refund_policy_version: "1.0",
+        licensing_version: "1.0",
+        user_agent: userAgent,
+      };
 
-              // Store in sessionStorage to use after order creation
-              sessionStorage.setItem('pending_legal_acceptance', JSON.stringify(acceptanceData));
+      // Store in sessionStorage to use after order creation
+      sessionStorage.setItem(
+        "pending_legal_acceptance",
+        JSON.stringify(acceptanceData),
+      );
 
-              console.log('Legal acceptance data stored, will be saved with order');
- setProcessingPayment(false);           
- } catch (error) {
-              console.error("Error storing agreement:", error);
-            }
+      console.log("Legal acceptance data stored, will be saved with order");
+      setProcessingPayment(false);
+    } catch (error) {
+      console.error("Error storing agreement:", error);
+    }
 
-            setShowPaymentModal(true);
-          };
-
-
-
+    setShowPaymentModal(true);
+  };
 
   const updateProfileWithOrderId = async (userId: string, orderId: string) => {
     try {
       const { data: profiles, error: fetchError } = await supabase
-        .from('profile')
-        .select('id')
-        .eq('user_id', userId)
-        .is('order_id', null)
-        .order('created_at', { ascending: false })
+        .from("profile")
+        .select("id")
+        .eq("user_id", userId)
+        .is("order_id", null)
+        .order("created_at", { ascending: false })
         .limit(1);
 
       if (fetchError) {
-        console.error('Error fetching profile:', fetchError);
+        console.error("Error fetching profile:", fetchError);
         return;
       }
 
       if (profiles && profiles.length > 0) {
         const { error: updateError } = await supabase
-          .from('profile')
+          .from("profile")
           .update({ order_id: orderId })
-          .eq('id', profiles[0].id);
+          .eq("id", profiles[0].id);
 
         if (updateError) {
-          console.error('Error updating profile with order_id:', updateError);
+          console.error("Error updating profile with order_id:", updateError);
         } else {
-          console.log('Profile updated with order_id successfully');
+          console.log("Profile updated with order_id successfully");
         }
       }
     } catch (error) {
-      console.error('Error in updateProfileWithOrderId:', error);
+      console.error("Error in updateProfileWithOrderId:", error);
     }
   };
 
-   const handleCheckout = () => {
+  const handleCheckout = () => {
     if (!user) {
       openAuthModal();
       return;
     }
-    
+
     const hasBeats = beatItems.length > 0;
-    
+
     if (hasBeats && !hasProperLicensing) {
       setShowLicenseModal(true);
       return;
     }
-    
+
     // Always show contract modal for all purchases
     setContractAccepted(false);
     setShowContractModal(true);
@@ -921,7 +929,7 @@ const handleStripeSuccess = async (sessionId: string) => {
         isOpen={showContractModal}
         onClose={() => setShowContractModal(false)}
         onAccept={handleContractAccept}
-        beatTitles={beatItems.map(item => item.title)}
+        beatTitles={beatItems.map((item) => item.title)}
       />
 
       {/* Licensing Required Modal */}

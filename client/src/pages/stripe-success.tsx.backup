@@ -34,8 +34,8 @@ export default function StripeSuccess() {
           );
 
           // Also set localStorage as backup
-          // localStorage.setItem("stripe_payment_success", "true");
-          // localStorage.setItem("stripe_session_id", sessionId);
+          localStorage.setItem("stripe_payment_success", "true");
+          localStorage.setItem("stripe_session_id", sessionId);
 
           setStatus("success");
 
@@ -46,8 +46,8 @@ export default function StripeSuccess() {
         } else {
           // Not a popup, redirect to shop
           console.log("Not a popup, setting localStorage and redirecting");
-          // localStorage.setItem("stripe_payment_success", "true");
-          // localStorage.setItem("stripe_session_id", sessionId);
+          localStorage.setItem("stripe_payment_success", "true");
+          localStorage.setItem("stripe_session_id", sessionId);
 
           setStatus("success");
 
