@@ -680,6 +680,37 @@ export default function Shop() {
 
       console.log("Order saved successfully!");
 
+      // Update profile with order_id  console.log("Order saved successfully!");
+      // Save legal acceptance record
+      if (orderData) {
+        const acceptanceData = sessionStorage.getItem('pending_legal_acceptance');
+        if (acceptanceData) {
+          const parsedAcceptance = JSON.parse(acceptanceData);
+          const { error: legalError } = await supabase
+            .from('legal_acceptances')
+            .insert({
+              user_id: currentUser.id,
+              order_id: orderData.id,
+              tos_accepted: parsedAcceptance.tos_accepted,
+              privacy_accepted: parsedAcceptance.privacy_accepted,
+              refund_policy_accepted: parsedAcceptance.refund_policy_accepted,
+              licensing_accepted: parsedAcceptance.licensing_accepted,
+              accepted_at: parsedAcceptance.accepted_at,
+              tos_version: parsedAcceptance.tos_version,
+              privacy_version: parsedAcceptance.privacy_version,
+              refund_policy_version: parsedAcceptance.refund_policy_version,
+              licensing_version: parsedAcceptance.licensing_version,
+              user_agent: parsedAcceptance.user_agent,
+              ip_address: 'client-side',
+            });
+          if (legalError) {
+            console.error('Error saving legal acceptance:', legalError);
+          } else {
+            console.log('Legal acceptance saved successfully');
+            sessionStorage.removeItem('pending_legal_acceptance');
+          }
+        }
+      }
       // Update profile with order_id
       if (orderData) {
         await updateProfileWithOrderId(currentUser.id, orderData.id);
