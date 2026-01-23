@@ -107,7 +107,7 @@ export default function Shop() {
       if (stripePopup.closed) {
         clearInterval(checkPopup);
         setStripePopup(null);
-        checkStripePaymentStatus();
+    //         checkStripePaymentStatus();
       }
     }, 500);
 
