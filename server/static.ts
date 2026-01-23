@@ -3,12 +3,22 @@ import fs from "fs";
 import path from "path";
 
 export function serveStatic(app: Express) {
-  const distPath = path.resolve(__dirname, "public");
-  if (!fs.existsSync(distPath)) {
+  // Try multiple possible locations
+  const possiblePaths = [
+    path.resolve(__dirname, "public"),
+    path.resolve(__dirname, "../client/dist"),
+    path.resolve(__dirname, "../dist"),
+  ];
+
+  const distPath = possiblePaths.find((p) => fs.existsSync(p));
+
+  if (!distPath) {
     throw new Error(
-      `Could not find the build directory: ${distPath}, make sure to build the client first`,
+      `Could not find the build directory in any of: ${possiblePaths.join(", ")}, make sure to build the client first`,
     );
   }
+
+  console.log(`📁 Serving static files from: ${distPath}`);
 
   app.use(express.static(distPath));
 
