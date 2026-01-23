@@ -597,19 +597,18 @@ export default function Shop() {
     }
   };
 
-  const handleStripeSuccess = async (sessionId: string) => {
-    try {
-      const {
-        data: { user: currentUser },
-      } = await supabase.auth.getUser();
+const handleStripeSuccess = async (sessionId: string) => {
+    // Prevent double processing
+    const processedKey = `stripe_processed_${sessionId}`;
+    if (sessionStorage.getItem(processedKey)) {
+      console.log("Payment already processed, skipping");
+      return;
+    }
+    sessionStorage.setItem(processedKey, 'true');
 
-      if (!currentUser) {
-        console.error("No user found after payment");
-        alert("Please sign in to complete your order");
-        return;
-      }
-
+    // ... rest of the existing code
       let cartItems = [];
+    try {
       let calculatedSubtotal = 0;
 
       const backupData = localStorage.getItem("stripe_cart_backup");
