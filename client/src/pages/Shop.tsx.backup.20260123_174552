@@ -341,7 +341,7 @@ export default function Shop() {
       } = await supabase.auth.getUser();
 
       if (user) {
-        const { data: orderData, error } = await supabase.from("orders").insert({
+        const { error } = await supabase.from("orders").insert({
           user_id: user.id,
           payment_method: method,
           transaction_id: transactionId,
@@ -350,8 +350,8 @@ export default function Shop() {
           tax: tax,
           total: total,
           status: "completed",
-        })
-        .select().single();
+        });
+
         if (error) {
           console.error("Error saving order:", error);
         }
@@ -622,7 +622,7 @@ export default function Shop() {
 
       console.log("Saving order with items:", cartItems);
 
-      const { data: orderData, error } = await supabase.from("orders").insert({
+      const { error } = await supabase.from("orders").insert({
         user_id: currentUser.id,
         payment_method: "stripe",
         transaction_id: sessionId,
@@ -631,8 +631,7 @@ export default function Shop() {
         tax: 0,
         total: calculatedSubtotal,
         status: "completed",
-      })
-      .select().single();
+      });
 
       if (error) {
         console.error("Error saving Stripe order:", error);
@@ -643,11 +642,6 @@ export default function Shop() {
       }
 
       console.log("Order saved successfully!");
-
-      // Update profile with order_id
-      if (orderData) {
-        await updateProfileWithOrderId(currentUser.id, orderData.id);
-      }
 
       const subscriptionItem = cartItems.find((item: any) =>
         item.id.startsWith("subscription-"),
@@ -751,38 +745,11 @@ export default function Shop() {
     }
   };
 
-    const handleContractAccept = async (emailSubscription: boolean) => {
+  const handleContractAccept = async (emailSubscription: boolean) => {
     setContractAccepted(true);
     setShowContractModal(false);
     
     try {
-      // Get user agent
-      const userAgent = navigator.userAgent;
-      
-      // Insert into profile table (user agreements tracking)
-      if (user) {
-        const { error: profileError } = await supabase
-          .from('profile')
-          .insert({
-            user_id: user.id,
-            tos_accepted: true,
-            refund_policy_accepted: true,
-            licensing_accepted: true,
-            privacy_accepted: true,
-            accepted_at: new Date().toISOString(),
-            tos_version: '1.0',
-            privacy_version: '1.0',
-            user_agent: userAgent,
-          });
-
-        if (profileError) {
-          console.error('Error saving agreement to profile table:', profileError);
-        } else {
-          console.log('User agreements saved to profile table successfully');
-        }
-      }
-
-      // Original API call (if you still need it)
       await fetch("/api/store-agreement", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -800,40 +767,6 @@ export default function Shop() {
     setShowPaymentModal(true);
   };
 
-
-
-
-  const updateProfileWithOrderId = async (userId: string, orderId: string) => {
-    try {
-      const { data: profiles, error: fetchError } = await supabase
-        .from('profile')
-        .select('id')
-        .eq('user_id', userId)
-        .is('order_id', null)
-        .order('created_at', { ascending: false })
-        .limit(1);
-
-      if (fetchError) {
-        console.error('Error fetching profile:', fetchError);
-        return;
-      }
-
-      if (profiles && profiles.length > 0) {
-        const { error: updateError } = await supabase
-          .from('profile')
-          .update({ order_id: orderId })
-          .eq('id', profiles[0].id);
-
-        if (updateError) {
-          console.error('Error updating profile with order_id:', updateError);
-        } else {
-          console.log('Profile updated with order_id successfully');
-        }
-      }
-    } catch (error) {
-      console.error('Error in updateProfileWithOrderId:', error);
-    }
-  };
 
   const handleCheckout = () => {
     const hasBeats = beatItems.length > 0;

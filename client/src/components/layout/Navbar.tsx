@@ -379,7 +379,7 @@ export function Navbar() {
       {activeDropdown === "info" && (
         <div className="fixed top-20 left-0 right-0 z-40 shadow-2xl animate-in slide-in-from-top duration-300">
           {/* Top Banner with Main Sections */}
-          <div className="bg-black border-t-4 border-[hsl(var(--gold))] border-b-2 border-black/30">
+          <div className="bg-black border-t-4 border-[hsl(var(--gold))]/50 border-b-2 border-black/30">
             <div className="container mx-auto px-6 py-4">
               <div className="grid grid-cols-5 gap-8">
                 <button
