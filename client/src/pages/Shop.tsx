@@ -598,17 +598,16 @@ export default function Shop() {
   };
 
 const handleStripeSuccess = async (sessionId: string) => {
-    // Prevent double processing
-    const processedKey = `stripe_processed_${sessionId}`;
-    if (sessionStorage.getItem(processedKey)) {
-      console.log("Payment already processed, skipping");
-      return;
-    }
-    sessionStorage.setItem(processedKey, 'true');
-
-    // ... rest of the existing code
-      let cartItems = [];
     try {
+      // Prevent double processing
+      const processedKey = `stripe_processed_${sessionId}`;
+      if (sessionStorage.getItem(processedKey)) {
+        console.log("Payment already processed, skipping");
+        return;
+      }
+      sessionStorage.setItem(processedKey, 'true');
+
+      let cartItems = [];
       let calculatedSubtotal = 0;
 
       const backupData = localStorage.getItem("stripe_cart_backup");
