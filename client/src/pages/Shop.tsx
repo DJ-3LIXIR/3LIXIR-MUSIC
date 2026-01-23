@@ -855,23 +855,22 @@ export default function Shop() {
     }
   };
 
-  const handleCheckout = () => {
-    const hasBeats = beatItems.length > 0;
-    
-    if (hasBeats) {
-      setContractAccepted(false);
-      setShowContractModal(true);
-      return;
-    }
+   const handleCheckout = () => {
     if (!user) {
       openAuthModal();
       return;
     }
-    if (!hasProperLicensing) {
+    
+    const hasBeats = beatItems.length > 0;
+    
+    if (hasBeats && !hasProperLicensing) {
       setShowLicenseModal(true);
       return;
     }
-    // setShowPaymentModal(true); // Now handled by contract modal
+    
+    // Always show contract modal for all purchases
+    setContractAccepted(false);
+    setShowContractModal(true);
   };
 
   return (
