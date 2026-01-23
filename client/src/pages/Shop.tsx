@@ -50,6 +50,7 @@ export default function Shop() {
   const { items, removeFromCart, updateQuantity, subtotal, clearCart } =
     useCart();
   const { user, openAuthModal, userProfile } = useAuth();
+  const [processingPayment, setProcessingPayment] = useState(false);
   const [showPaymentModal, setShowPaymentModal] = useState(false);
   const [selectedPaymentMethod, setSelectedPaymentMethod] =
     useState<PaymentMethod>("stripe");
@@ -600,12 +601,20 @@ export default function Shop() {
 const handleStripeSuccess = async (sessionId: string) => {
     try {
       // Prevent double processing
+      if (processingPayment) {
+        console.log("Payment already being processed, skipping");
+        return;
+      }
+      
       const processedKey = `stripe_processed_${sessionId}`;
       if (sessionStorage.getItem(processedKey)) {
         console.log("Payment already processed, skipping");
         return;
       }
+      
+      setProcessingPayment(true);
       sessionStorage.setItem(processedKey, 'true');
+
 
       let cartItems = [];
       let calculatedSubtotal = 0;
@@ -842,7 +851,8 @@ const handleStripeSuccess = async (sessionId: string) => {
               sessionStorage.setItem('pending_legal_acceptance', JSON.stringify(acceptanceData));
 
               console.log('Legal acceptance data stored, will be saved with order');
-            } catch (error) {
+ setProcessingPayment(false);           
+ } catch (error) {
               console.error("Error storing agreement:", error);
             }
 
