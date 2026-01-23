@@ -331,60 +331,96 @@ export default function Shop() {
     setLocation("/profile");
   };
 
-  const handlePaymentSuccess = async (
-    transactionId: string,
-    method: PaymentMethod,
-  ) => {
-    try {
-      const {
-        data: { user },
-      } = await supabase.auth.getUser();
+        const handlePaymentSuccess = async (
+          transactionId: string,
+          method: PaymentMethod,
+        ) => {
+          try {
+            const {
+              data: { user },
+            } = await supabase.auth.getUser();
 
-      if (user) {
-        const { data: orderData, error } = await supabase.from("orders").insert({
-          user_id: user.id,
-          payment_method: method,
-          transaction_id: transactionId,
-          items: validItems,
-          subtotal: subtotal,
-          tax: tax,
-          total: total,
-          status: "completed",
-        })
-        .select().single();
-        if (error) {
-          console.error("Error saving order:", error);
-        }
+            if (user) {
+              // Create the order first
+              const { data: orderData, error } = await supabase.from("orders").insert({
+                user_id: user.id,
+                payment_method: method,
+                transaction_id: transactionId,
+                items: validItems,
+                subtotal: subtotal,
+                tax: tax,
+                total: total,
+                status: "completed",
+              })
+              .select().single();
 
-        const subscriptionItem = validItems.find((item) =>
-          item.id.startsWith("subscription-"),
-        );
+              if (error) {
+                console.error("Error saving order:", error);
+              }
 
-        if (subscriptionItem) {
-          let newTier = "tier_zero";
+              // NEW: Insert legal acceptance record
+              if (orderData) {
+                const acceptanceData = sessionStorage.getItem('pending_legal_acceptance');
 
-          if (subscriptionItem.id === "subscription-gold") {
-            newTier = "gold";
-          } else if (subscriptionItem.id === "subscription-diamond") {
-            newTier = "diamond";
-          } else if (subscriptionItem.id === "subscription-platinum") {
-            newTier = "platinum";
-          }
+                if (acceptanceData) {
+                  const parsedAcceptance = JSON.parse(acceptanceData);
 
-          const { error: updateError } = await supabase
-            .from("profiles")
-            .update({
-              subscription_tier: newTier,
-              updated_at: new Date().toISOString(),
-            })
-            .eq("id", user.id);
+                  const { error: legalError } = await supabase
+                    .from('legal_acceptances')
+                    .insert({
+                      user_id: user.id,
+                      order_id: orderData.id,
+                      tos_accepted: parsedAcceptance.tos_accepted,
+                      privacy_accepted: parsedAcceptance.privacy_accepted,
+                      refund_policy_accepted: parsedAcceptance.refund_policy_accepted,
+                      licensing_accepted: parsedAcceptance.licensing_accepted,
+                      accepted_at: parsedAcceptance.accepted_at,
+                      tos_version: parsedAcceptance.tos_version,
+                      privacy_version: parsedAcceptance.privacy_version,
+                      refund_policy_version: parsedAcceptance.refund_policy_version,
+                      licensing_version: parsedAcceptance.licensing_version,
+                      user_agent: parsedAcceptance.user_agent,
+                      ip_address: 'client-side', // Will be updated by backend if needed
+                    });
 
-          if (updateError) {
-            console.error("Error updating subscription tier:", updateError);
-          } else {
-            console.log("Subscription tier updated to:", newTier);
-          }
-        }
+                  if (legalError) {
+                    console.error('Error saving legal acceptance:', legalError);
+                  } else {
+                    console.log('Legal acceptance saved successfully');
+                    sessionStorage.removeItem('pending_legal_acceptance');
+                  }
+                }
+              }
+
+              const subscriptionItem = validItems.find((item) =>
+                item.id.startsWith("subscription-"),
+              );
+
+              if (subscriptionItem) {
+                let newTier = "tier_zero";
+
+                if (subscriptionItem.id === "subscription-gold") {
+                  newTier = "gold";
+                } else if (subscriptionItem.id === "subscription-diamond") {
+                  newTier = "diamond";
+                } else if (subscriptionItem.id === "subscription-platinum") {
+                  newTier = "platinum";
+                }
+
+                const { error: updateError } = await supabase
+                  .from("profiles")
+                  .update({
+                    subscription_tier: newTier,
+                    updated_at: new Date().toISOString(),
+                  })
+                  .eq("id", user.id);
+
+                if (updateError) {
+                  console.error("Error updating subscription tier:", updateError);
+                } else {
+                  console.log("Subscription tier updated to:", newTier);
+                }
+              }
       }
     } catch (error) {
       console.error("Error saving order:", error);
@@ -751,54 +787,38 @@ export default function Shop() {
     }
   };
 
-    const handleContractAccept = async (emailSubscription: boolean) => {
-    setContractAccepted(true);
-    setShowContractModal(false);
-    
-    try {
-      // Get user agent
-      const userAgent = navigator.userAgent;
-      
-      // Insert into profile table (user agreements tracking)
-      if (user) {
-        const { error: profileError } = await supabase
-          .from('profile')
-          .insert({
-            user_id: user.id,
-            tos_accepted: true,
-            refund_policy_accepted: true,
-            licensing_accepted: true,
-            privacy_accepted: true,
-            accepted_at: new Date().toISOString(),
-            tos_version: '1.0',
-            privacy_version: '1.0',
-            user_agent: userAgent,
-          });
+          const handleContractAccept = async (emailSubscription: boolean) => {
+            setContractAccepted(true);
+            setShowContractModal(false);
 
-        if (profileError) {
-          console.error('Error saving agreement to profile table:', profileError);
-        } else {
-          console.log('User agreements saved to profile table successfully');
-        }
-      }
+            try {
+              // Get user agent and IP (IP will be captured on backend)
+              const userAgent = navigator.userAgent;
 
-      // Original API call (if you still need it)
-      await fetch("/api/store-agreement", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          userId: user?.id,
-          timestamp: new Date().toISOString(),
-          emailSubscription,
-          beatsPurchased: beatItems.map(item => item.title)
-        })
-      });
-    } catch (error) {
-      console.error("Error storing agreement:", error);
-    }
-    
-    setShowPaymentModal(true);
-  };
+              // Store acceptance data temporarily to use after order creation
+              const acceptanceData = {
+                tos_accepted: true,
+                refund_policy_accepted: true,
+                licensing_accepted: true,
+                privacy_accepted: true,
+                accepted_at: new Date().toISOString(),
+                tos_version: '1.0',
+                privacy_version: '1.0',
+                refund_policy_version: '1.0',
+                licensing_version: '1.0',
+                user_agent: userAgent,
+              };
+
+              // Store in sessionStorage to use after order creation
+              sessionStorage.setItem('pending_legal_acceptance', JSON.stringify(acceptanceData));
+
+              console.log('Legal acceptance data stored, will be saved with order');
+            } catch (error) {
+              console.error("Error storing agreement:", error);
+            }
+
+            setShowPaymentModal(true);
+          };
 
 
 
