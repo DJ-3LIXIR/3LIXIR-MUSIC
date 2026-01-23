@@ -420,25 +420,25 @@ function AdminDashboard() {
   const statCards = [
     {
       label: "Open Tickets",
-      value: stats.open.toString(),
+      value: (stats.open ?? 0).toString(),
       icon: Ticket,
       color: "from-yellow-600 to-orange-600",
     },
     {
       label: "In Progress",
-      value: stats.in_progress.toString(),
+      value: (stats.in_progress ?? 0).toString(),
       icon: MessageSquare,
       color: "from-green-600 to-emerald-600",
     },
     {
       label: "Resolved",
-      value: stats.resolved.toString(),
+      value: (stats.resolved ?? 0).toString(),
       icon: Check,
       color: "from-purple-600 to-pink-600",
     },
     {
       label: "Total Tickets",
-      value: stats.total.toString(),
+      value: (stats.total ?? 0).toString(),
       icon: AlertCircle,
       color: "from-blue-600 to-cyan-600",
     },
