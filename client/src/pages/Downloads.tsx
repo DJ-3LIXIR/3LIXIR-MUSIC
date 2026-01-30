@@ -62,11 +62,51 @@ export default function Downloads() {
   }, [user]);
 
   const handleDownload = (beatTitle: string, orderId: string) => {
-    // TODO: Implement actual file download
-    console.log(`Downloading ${beatTitle} from order ${orderId}`);
-    alert(
-      "Download functionality coming soon! Files will be available here once uploaded.",
-    );
+    // Map beat titles to their R2 download URLs
+    const downloadUrls: { [key: string]: string } = {
+      ARCADE: "https://pub-478e4664fd2d4d5db031087e022e5fd1.r2.dev/ARCADE.zip",
+      SUBURBIA:
+        "https://pub-478e4664fd2d4d5db031087e022e5fd1.r2.dev/SUBURBIA.zip",
+      KINGCRAFT:
+        "https://pub-478e4664fd2d4d5db031087e022e5fd1.r2.dev/Kingcraft.zip",
+      CHRONOPHOBIA:
+        "https://pub-478e4664fd2d4d5db031087e022e5fd1.r2.dev/CHRONOPHOBIA.zip",
+      "VIBIN'":
+        "https://pub-478e4664fd2d4d5db031087e022e5fd1.r2.dev/VIBIN'.zip",
+      INCIDIOUS:
+        "https://pub-478e4664fd2d4d5db031087e022e5fd1.r2.dev/Incidious.zip",
+      THUNDERSHOCK:
+        "https://pub-478e4664fd2d4d5db031087e022e5fd1.r2.dev/Thundershock.zip",
+      SHIMMERING:
+        "https://pub-478e4664fd2d4d5db031087e022e5fd1.r2.dev/SHIMMERING.zip",
+      "SPACE CADET":
+        "https://pub-478e4664fd2d4d5db031087e022e5fd1.r2.dev/SPACE%20CADET.zip",
+      "THE CROP BUMPER":
+        "https://pub-478e4664fd2d4d5db031087e022e5fd1.r2.dev/THE%20CROP%20BUMPER.zip",
+      EVOLUTION:
+        "https://pub-478e4664fd2d4d5db031087e022e5fd1.r2.dev/EVOLUTION.zip",
+      "THE HORYZON":
+        "https://pub-478e4664fd2d4d5db031087e022e5fd1.r2.dev/THE%20HORYZON%20.zip",
+      // Add more beats here as you upload them:
+      // "THUNDERSHOCK": "https://pub-478e4664fd2d4d5db031087e022e5fd1.r2.dev/THUNDERSHOCK.zip",
+      // "EVOLUTION": "https://pub-478e4664fd2d4d5db031087e022e5fd1.r2.dev/EVOLUTION.zip",
+    };
+
+    const downloadUrl = downloadUrls[beatTitle];
+
+    if (downloadUrl) {
+      // Create a temporary link and trigger download
+      const link = document.createElement("a");
+      link.href = downloadUrl;
+      link.download = `${beatTitle}.zip`;
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+    } else {
+      alert(
+        `Download link not yet available for ${beatTitle}. Please contact support.`,
+      );
+    }
   };
 
   if (!user) {

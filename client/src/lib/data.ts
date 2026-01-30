@@ -94,7 +94,7 @@ export const beats: Beat[] = [
   },
   {
     id: "7",
-    title: "Suburbia",
+    title: "SUBURBIA",
     artist: "3LIXIR Exclusive",
     bpm: 120,
     key: "E",
@@ -107,7 +107,7 @@ export const beats: Beat[] = [
   },
   {
     id: "8",
-    title: "Arcade",
+    title: "ARCADE",
     artist: "3LIXIR Exclusive",
     bpm: 100,
     key: "D#m",
@@ -120,7 +120,7 @@ export const beats: Beat[] = [
   },
   {
     id: "9",
-    title: "Space Cadet ",
+    title: "SPACE CADET",
     artist: "3LIXIR Exclusive",
     bpm: 120,
     key: "Em",
@@ -133,7 +133,7 @@ export const beats: Beat[] = [
   },
   {
     id: "10",
-    title: "Incidous",
+    title: "INCIDIOUS",
     artist: "3LIXIR Exclusive",
     bpm: 210,
     key: "Em",
@@ -146,7 +146,7 @@ export const beats: Beat[] = [
   },
   {
     id: "11",
-    title: "Vibin'",
+    title: "VIBIN'",
     artist: "3LIXIR Exclusive",
     bpm: 120,
     key: "F#",
@@ -159,7 +159,7 @@ export const beats: Beat[] = [
   },
   {
     id: "12",
-    title: "Shimmering",
+    title: "SHIMMERING",
     artist: "3LIXIR Exclusive",
     bpm: 150,
     key: "Db",

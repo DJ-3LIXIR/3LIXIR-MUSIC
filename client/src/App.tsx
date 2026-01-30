@@ -22,6 +22,7 @@ import Search from "@/pages/Search";
 import NotFound from "@/pages/not-found";
 import ProfileManager from "@/components/ProfileManager";
 import AdminDashboard from "@/components/AdminDashboard";
+import Admin from "@/pages/Admin";
 import CustomerSupport from "@/pages/CustomerSupport";
 
 // Contract Pages
@@ -56,6 +57,7 @@ function Router() {
       <Route path="/vip" component={VIPPage} />
       <Route path="/profile" component={ProfileManager} />
       <Route path="/admin" component={AdminDashboard} />
+      <Route path="/admin/downloads" component={Admin} />
       <Route path="/support" component={CustomerSupport} />
 
       {/* Search Route */}
