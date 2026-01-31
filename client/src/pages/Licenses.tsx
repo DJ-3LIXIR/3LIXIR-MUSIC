@@ -1,29 +1,80 @@
+import { useState } from "react";
 import { Navbar } from "@/components/layout/Navbar";
-import { Check, AlertCircle } from "lucide-react";
+import { Check, AlertCircle, ShoppingCart } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useCart } from "@/contexts/CartContext";
+import { useLocation } from "wouter";
 
 export default function Licenses() {
-  const { addToCart } = useCart();
+  const { addToCart, items } = useCart();
+  const [, setLocation] = useLocation();
+  const [showBeatSelector, setShowBeatSelector] = useState(false);
+  const [selectedBeat, setSelectedBeat] = useState<string>("");
 
-  const handleAddRoyaltyToken = () => {
-    addToCart({
-      id: "royalty-token",
-      title: "Royalty Token License",
-      artist: "3LIXIR",
-      price: 50,
-      cover: "/ChatGPT%20Image%20Jan%206,%202026%20at%2009_05_34%20PM.png",
-      quantity: 1,
-    });
+  // Filter out licenses and subscriptions from cart to get only beats
+  const beatsInCart = items.filter(
+    (item) =>
+      !item.id.startsWith("license-") &&
+      !item.id.startsWith("subscription-") &&
+      item.id !== "royalty-token",
+  );
+
+  const handleBlackLicenseClick = () => {
+    // Check if there are beats in cart
+    if (beatsInCart.length === 0) {
+      // No beats in cart - show error and redirect to beats page
+      alert(
+        "You need to add a beat to your cart first before purchasing a license!",
+      );
+      setLocation("/beats");
+      return;
+    }
+
+    // If only one beat in cart, auto-select it
+    if (beatsInCart.length === 1) {
+      const beat = beatsInCart[0];
+      setLocation(
+        `/license/design?beat=${encodeURIComponent(beat.title)}&price=${beat.price}&cover=${encodeURIComponent(beat.cover || "")}`,
+      );
+      return;
+    }
+
+    // Multiple beats in cart - show selector
+    setShowBeatSelector(true);
+  };
+
+  const handleBeatSelection = () => {
+    if (!selectedBeat) {
+      alert("Please select a beat to license");
+      return;
+    }
+
+    const beat = beatsInCart.find((b) => b.id === selectedBeat);
+    if (beat) {
+      setLocation(
+        `/license/design?beat=${encodeURIComponent(beat.title)}&price=${beat.price}&cover=${encodeURIComponent(beat.cover || "")}`,
+      );
+    }
   };
 
   const handleSubscribe = (tier: { name: string; price: number }) => {
+    // Determine which card image to use based on tier
+    let cardImage = "/ChatGPT Image Jan 6, 2026 at 09_05_34 PM.png"; // default
+
+    if (tier.name === "Gold") {
+      cardImage = "/gold_card.png";
+    } else if (tier.name === "Diamond") {
+      cardImage = "/diamond_card.png";
+    } else if (tier.name === "Platinum") {
+      cardImage = "/platinum_card.png";
+    }
+
     addToCart({
       id: `subscription-${tier.name.toLowerCase()}`,
       title: `${tier.name} License Subscription`,
       artist: "3LIXIR",
       price: tier.price,
-      cover: "/ChatGPT%20Image%20Jan%206,%202026%20at%2009_05_34%20PM.png",
+      cover: cardImage,
       quantity: 1,
     });
   };
@@ -97,15 +148,15 @@ export default function Licenses() {
           </h2>
           <div className="max-w-4xl mx-auto">
             <div
-              onClick={handleAddRoyaltyToken}
+              onClick={handleBlackLicenseClick}
               className="border border-white/10 rounded-2xl p-8 md:p-12 bg-gradient-to-br from-white/5 to-transparent hover:border-[hsl(var(--gold))]/50 transition-all cursor-pointer hover:scale-[1.02] active:scale-[0.98]"
             >
               <div className="grid md:grid-cols-2 gap-8 items-center">
                 {/* License Image */}
                 <div className="aspect-square bg-white/5 rounded-xl border border-white/10 overflow-hidden">
                   <img
-                    src="/ChatGPT%20Image%20Jan%206,%202026%20at%2009_05_34%20PM.png"
-                    alt="Royalty Token License"
+                    src="ChatGPT Image Jan 6, 2026 at 09_05_34 PM.png"
+                    alt="Black License"
                     className="w-full h-full object-cover"
                   />
                 </div>
@@ -142,14 +193,80 @@ export default function Licenses() {
                       <span>Rights remain yours forever</span>
                     </li>
                   </ul>
-                  <p className="text-sm text-[hsl(var(--gold))] font-semibold">
-                    Click to add to cart →
-                  </p>
+                  {beatsInCart.length > 0 ? (
+                    <p className="text-sm text-[hsl(var(--gold))] font-semibold flex items-center gap-2">
+                      <ShoppingCart className="w-4 h-4" />
+                      {beatsInCart.length} beat
+                      {beatsInCart.length > 1 ? "s" : ""} in cart - Click to
+                      design license →
+                    </p>
+                  ) : (
+                    <p className="text-sm text-red-500 font-semibold flex items-center gap-2">
+                      <AlertCircle className="w-4 h-4" />
+                      Add a beat to cart first →
+                    </p>
+                  )}
                 </div>
               </div>
             </div>
           </div>
         </div>
+
+        {/* Beat Selector Modal */}
+        {showBeatSelector && (
+          <div className="fixed inset-0 bg-black/80 flex items-center justify-center z-50 p-4">
+            <div className="bg-background border border-white/10 rounded-2xl p-8 max-w-md w-full">
+              <h3 className="text-2xl font-bold mb-4">
+                Select a Beat to License
+              </h3>
+              <p className="text-muted-foreground mb-6">
+                You have multiple beats in your cart. Which one do you want to
+                create a license for?
+              </p>
+              <div className="space-y-3 mb-6">
+                {beatsInCart.map((beat) => (
+                  <label
+                    key={beat.id}
+                    className="flex items-center gap-3 p-4 border border-white/10 rounded-lg cursor-pointer hover:border-[hsl(var(--gold))]/50 transition-colors"
+                  >
+                    <input
+                      type="radio"
+                      name="beat"
+                      value={beat.id}
+                      checked={selectedBeat === beat.id}
+                      onChange={(e) => setSelectedBeat(e.target.value)}
+                      className="w-5 h-5 text-[hsl(var(--gold))]"
+                    />
+                    <div className="flex-grow">
+                      <p className="font-semibold">{beat.title}</p>
+                      <p className="text-sm text-muted-foreground">
+                        ${beat.price}
+                      </p>
+                    </div>
+                  </label>
+                ))}
+              </div>
+              <div className="flex gap-3">
+                <Button
+                  onClick={() => {
+                    setShowBeatSelector(false);
+                    setSelectedBeat("");
+                  }}
+                  variant="outline"
+                  className="flex-1 border-white/10 hover:bg-white/5 rounded-full"
+                >
+                  Cancel
+                </Button>
+                <Button
+                  onClick={handleBeatSelection}
+                  className="flex-1 bg-[hsl(var(--gold))] text-black hover:bg-[hsl(var(--gold))]/90 rounded-full"
+                >
+                  Continue
+                </Button>
+              </div>
+            </div>
+          </div>
+        )}
 
         {/* Subscription Plans */}
         <div>
@@ -215,7 +332,7 @@ export default function Licenses() {
           </div>
         </div>
 
-        {/* How It Works Section */}
+        {/* How It Works Section - keeping your existing content */}
         <div className="mt-20 max-w-5xl mx-auto">
           <h2 className="text-3xl font-display font-bold mb-4 text-center">
             How It Works

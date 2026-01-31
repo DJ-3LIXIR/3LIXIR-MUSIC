@@ -37,9 +37,9 @@ export default function ManageSubscription({
 
   // Map plan IDs to their card images
   const licenseCards = {
-    gold: "/gold_card.png",
-    diamond: "/diamond-license-card.png",
-    platinum: "/platinum_card.png",
+    gold: "/Screenshot 2026-01-30 at 14.45.05.png",
+    diamond: "/Screenshot 2026-01-30 at 14.46.59.png",
+    platinum: "/Screenshot 2026-01-30 at 14.46.59.png",
   };
 
   const tierNames = {
