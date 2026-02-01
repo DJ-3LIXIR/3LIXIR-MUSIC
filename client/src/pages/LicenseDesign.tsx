@@ -108,7 +108,7 @@ export default function LicenseDesign() {
       console.log("Sending request to backend");
 
       // Use environment variable for API URL, or fallback to relative path
-      const apiUrl = "http://localhost:3001/api";
+      const apiUrl = "/api";
 
       const response = await fetch(`${apiUrl}/licenses/custom`, {
         method: "POST",
