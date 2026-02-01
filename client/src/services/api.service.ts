@@ -9,15 +9,12 @@ const getAPIUrl = () => {
     return import.meta.env.VITE_API_URL;
   }
 
-  // Check if we're in production (not localhost)
-  if (
-    window.location.hostname !== "localhost" &&
-    window.location.hostname !== "127.0.0.1"
-  ) {
+  // In production mode (built by Vite), use relative path
+  if (import.meta.env.PROD) {
     return "/api";
   }
 
-  // Only use localhost:3001 when actually running locally
+  // Only use localhost:3001 when actually running locally in dev mode
   return "http://localhost:3001/api";
 };
 
