@@ -400,3 +400,4 @@ export default function LicenseDesign() {
     </div>
   );
 }
+
