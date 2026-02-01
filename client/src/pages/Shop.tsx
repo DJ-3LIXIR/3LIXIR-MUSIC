@@ -619,6 +619,14 @@ export default function Shop() {
   };
 
   const handleStripeSuccess = async (sessionId: string) => {
+      // CHECK IF USER IS LOGGED IN
+      if (!user) {
+        console.error("User not logged in after Stripe redirect");
+        alert("Please log in again to complete your order. Your payment was successful.");
+        setLocation("/login");
+        return;
+      }
+
     console.log(
       "[DEBUG] handleStripeSuccess called with sessionId:",
       sessionId,
