@@ -4,6 +4,7 @@ import { Navbar } from "@/components/layout/Navbar";
 import { Button } from "@/components/ui/button";
 import { useCart } from "@/contexts/CartContext";
 import { useAuth } from "@/contexts/AuthContext";
+import { supabase } from "@/supabaseClient";
 import { ArrowLeft, Sparkles, Check } from "lucide-react";
 
 export default function SubscriptionDesign() {
@@ -12,6 +13,7 @@ export default function SubscriptionDesign() {
   const { user } = useAuth();
 
   const [artistName, setArtistName] = useState("");
+  const [saving, setSaving] = useState(false);
 
   // Get subscription tier from URL params
   const params = new URLSearchParams(window.location.search);
@@ -83,29 +85,78 @@ export default function SubscriptionDesign() {
 
   const subscriptionDetails = getSubscriptionDetails();
 
-  const handleAddToCart = () => {
+  // Save subscription to database via API
+  const saveSubscriptionToDatabase = async (orderId?: string) => {
+    try {
+      const {
+        data: { session },
+      } = await supabase.auth.getSession();
+
+      if (!session) {
+        throw new Error("Not logged in");
+      }
+
+      const apiUrl = "/api";
+
+      const response = await fetch(`${apiUrl}/subscriptions/custom`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${session.access_token}`,
+        },
+        body: JSON.stringify({
+          artistName: artistName.trim(),
+          tier: subscriptionDetails.tierName,
+          orderId: orderId || null,
+        }),
+      });
+
+      const result = await response.json();
+
+      if (!result.success) {
+        throw new Error(result.error || "Failed to save subscription");
+      }
+
+      return result.data;
+    } catch (error) {
+      console.error("Error saving subscription:", error);
+      throw error;
+    }
+  };
+
+  const handleAddToCart = async () => {
     if (!artistName.trim()) {
       alert("Please enter your artist name");
       return;
     }
 
-    // Add SUBSCRIPTION to cart
-    addToCart({
-      id: `subscription-${tier.toLowerCase()}`,
-      title: `${subscriptionDetails.tierName} License Subscription`,
-      artist: artistName.trim(),
-      price: subscriptionDetails.price,
-      cover: subscriptionDetails.cardImage,
-      quantity: 1,
-      metadata: {
-        artistName: artistName.trim(),
-        tier: subscriptionDetails.tierName,
-        split: subscriptionDetails.split,
-      },
-    });
+    setSaving(true);
 
-    // Redirect to shop (cart page)
-    setLocation("/shop");
+    try {
+      await saveSubscriptionToDatabase();
+
+      // Add SUBSCRIPTION to cart
+      addToCart({
+        id: `subscription-${tier.toLowerCase()}`,
+        title: `${subscriptionDetails.tierName} License Subscription`,
+        artist: artistName.trim(),
+        price: subscriptionDetails.price,
+        cover: subscriptionDetails.cardImage,
+        quantity: 1,
+        metadata: {
+          artistName: artistName.trim(),
+          tier: subscriptionDetails.tierName,
+          split: subscriptionDetails.split,
+        },
+      });
+
+      // Redirect to shop (cart page)
+      setLocation("/shop");
+    } catch (error) {
+      alert("Error adding to cart. Please try again.");
+    } finally {
+      setSaving(false);
+    }
   };
 
   return (
@@ -214,10 +265,10 @@ export default function SubscriptionDesign() {
 
               <Button
                 onClick={handleAddToCart}
-                disabled={!artistName.trim()}
+                disabled={!artistName.trim() || saving}
                 className="w-full bg-[hsl(var(--gold))] text-black hover:bg-[hsl(var(--gold))]/90 rounded-full py-6 text-lg font-bold uppercase tracking-widest disabled:opacity-50 disabled:cursor-not-allowed"
               >
-                Add Subscription to Cart
+                {saving ? "Processing..." : "Add Subscription to Cart"}
               </Button>
             </div>
 
