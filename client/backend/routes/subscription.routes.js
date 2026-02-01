@@ -11,27 +11,50 @@ const router = express.Router();
  */
 router.post("/custom", authenticateUser, async (req, res) => {
   try {
-    const userId = req.user.id;
+    const userId = req.user?.id;
+
+    if (!userId) {
+      return res.status(401).json({
+        success: false,
+        error: "User not authenticated",
+      });
+    }
+
     const { artistName, tier, orderId } = req.body;
-    if (!artistName) {
+
+    if (
+      !artistName ||
+      typeof artistName !== "string" ||
+      artistName.trim() === ""
+    ) {
       return res.status(400).json({
         success: false,
         error: "Artist name is required",
       });
     }
+
+    console.log(
+      `Creating subscription for user ${userId}, artist: ${artistName}`,
+    );
+
     // Create the subscription with artistName as 'name'
     // Tier info will be stored in the cart/order metadata
     const subscription = await createSubscriptionLicense(userId, {
-      name: artistName,
-      orderId,
+      name: artistName.trim(),
+      orderId: orderId || null,
     });
-    res.status(201).json({
+
+    console.log("Subscription created successfully:", subscription.id);
+
+    return res.status(201).json({
       success: true,
       data: subscription,
     });
   } catch (error) {
     console.error("Error creating subscription license:", error);
-    res.status(500).json({
+
+    // Ensure we always return valid JSON
+    return res.status(500).json({
       success: false,
       error: error.message || "Failed to create subscription",
     });

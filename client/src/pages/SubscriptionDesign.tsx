@@ -86,7 +86,7 @@ export default function SubscriptionDesign() {
   const subscriptionDetails = getSubscriptionDetails();
 
   // Save subscription to database via API
-  const saveSubscriptionToDatabase = async (orderId?: string) => {
+  const saveSubscriptionToDatabase = async (orderId) => {
     try {
       const {
         data: { session },
@@ -111,7 +111,21 @@ export default function SubscriptionDesign() {
         }),
       });
 
-      const result = await response.json();
+      // Check if response is OK before parsing JSON
+      if (!response.ok) {
+        const errorText = await response.text();
+        console.error("API Error Response:", errorText);
+        throw new Error(`Server error: ${response.status}`);
+      }
+
+      // Try to parse JSON
+      let result;
+      try {
+        result = await response.json();
+      } catch (parseError) {
+        console.error("Failed to parse JSON response");
+        throw new Error("Invalid server response");
+      }
 
       if (!result.success) {
         throw new Error(result.error || "Failed to save subscription");
