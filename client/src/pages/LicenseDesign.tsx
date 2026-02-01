@@ -86,28 +86,17 @@ export default function LicenseDesign() {
 
   const licenseDetails = getLicenseDetails();
 
-  // NEW: Function to save license to database via API
+  // Save license to database via API
   const saveLicenseToDatabase = async (orderId?: string) => {
     try {
-      // Get the auth token
       const {
         data: { session },
       } = await supabase.auth.getSession();
+
       if (!session) {
-        alert("Not logged in!");
-        return null;
+        throw new Error("Not logged in");
       }
 
-      alert("Token retrieved, calling API...");
-
-      // ADD THIS ALERT TO SEE WHAT WE'RE SENDING
-      alert(
-        `Sending: songName="${beatName}", artistName="${artistName.trim()}"`,
-      );
-
-      console.log("Sending request to backend");
-
-      // Use environment variable for API URL, or fallback to relative path
       const apiUrl = "/api";
 
       const response = await fetch(`${apiUrl}/licenses/custom`, {
@@ -123,40 +112,16 @@ export default function LicenseDesign() {
         }),
       });
 
-      console.log(`Response Status: ${response.status} ${response.statusText}`);
-      console.log(`Response Headers:`, response.headers);
-
-      // Get response as text first
-      const responseText = await response.text();
-      console.log(
-        `Response Text (first 1000 chars):`,
-        responseText.substring(0, 1000),
-      );
-
-      // Try to parse as JSON
-      let result;
-      try {
-        result = JSON.parse(responseText);
-      } catch (e) {
-        alert(
-          `Failed to parse response as JSON. Response was: ${responseText.substring(0, 200)}`,
-        );
-        throw new Error(`Invalid JSON response: ${e.message}`);
-      }
-
-      console.log("Parsed result:", result);
+      const result = await response.json();
 
       if (!result.success) {
-        alert(`API Error: ${result.error}`);
         throw new Error(result.error || "Failed to save license");
       }
 
-      alert("✅ License saved successfully!");
       return result.data;
     } catch (error) {
       console.error("Error saving license:", error);
-      alert("Error: " + error.message);
-      return null;
+      throw error;
     }
   };
 
@@ -166,13 +131,10 @@ export default function LicenseDesign() {
       return;
     }
 
-    alert("🔵 Button clicked!");
     setSaving(true);
 
     try {
-      alert("🔵 About to save license to database...");
       await saveLicenseToDatabase();
-      alert("🔵 License saved, adding to cart...");
 
       addToCart({
         id: `license-${beatName}`,
@@ -192,7 +154,7 @@ export default function LicenseDesign() {
       // Redirect to shop (cart page)
       setLocation("/shop");
     } catch (error) {
-      alert("Error: " + error.message);
+      alert("Error adding to cart. Please try again.");
     } finally {
       setSaving(false);
     }
@@ -319,10 +281,10 @@ export default function LicenseDesign() {
 
               <Button
                 onClick={handleAddToCart}
-                disabled={!artistName.trim()}
+                disabled={!artistName.trim() || saving}
                 className="w-full bg-[hsl(var(--gold))] text-black hover:bg-[hsl(var(--gold))]/90 rounded-full py-6 text-lg font-bold uppercase tracking-widest disabled:opacity-50 disabled:cursor-not-allowed"
               >
-                Add License to Cart
+                {saving ? "Processing..." : "Add License to Cart"}
               </Button>
             </div>
 
@@ -400,4 +362,3 @@ export default function LicenseDesign() {
     </div>
   );
 }
-
