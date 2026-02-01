@@ -13,6 +13,7 @@ import BeatsLanding from "@/pages/BeatsLanding";
 import Info from "@/pages/Info";
 import Licenses from "@/pages/Licenses";
 import LicenseDesign from "@/pages/LicenseDesign";
+import SubscriptionDesign from "@/pages/SubscriptionDesign";
 import Shop from "@/pages/Shop";
 import StripeSuccess from "@/pages/stripe-success";
 import Cancel from "@/pages/Cancel";
@@ -51,6 +52,7 @@ function Router() {
       <Route path="/beats/catalog" component={Beats} />
       <Route path="/licenses" component={Licenses} />
       <Route path="/license/design" component={LicenseDesign} />
+      <Route path="/subscription/design" component={SubscriptionDesign} />
       <Route path="/shop" component={Shop} />
       <Route path="/stripe-success" component={StripeSuccess} />
       <Route path="/cancel" component={Cancel} />

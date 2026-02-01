@@ -551,9 +551,10 @@ export default function Shop() {
           lineItems,
           userId: user?.id,
           userEmail: user?.email,
-          items: validItems,
+          itemCount: validItems.length, // Changed: only send count instead of full items
         });
 
+        // FIXED: Don't send full items array, only metadata
         const response = await fetch(
           "https://tciugratutxxrdtbsxim.supabase.co/functions/v1/create-stripe-checkout",
           {
@@ -567,7 +568,14 @@ export default function Shop() {
               lineItems,
               userId: user?.id,
               userEmail: user?.email,
-              items: validItems,
+              // FIXED: Only send minimal metadata instead of full items array
+              metadata: {
+                itemCount: validItems.length,
+                totalAmount: total.toFixed(2),
+                hasLicense: validItems.some((item) =>
+                  item.id.startsWith("license-"),
+                ),
+              },
               successUrl: `${window.location.origin}/stripe-success?session_id={CHECKOUT_SESSION_ID}`,
               cancelUrl: `${window.location.origin}/cancel`,
             }),
@@ -697,8 +705,13 @@ export default function Shop() {
       if (error) {
         console.error("Error saving Stripe order:", error);
         // Check if this is a duplicate transaction error (unique constraint violation)
-        if (error.code === "23505" || error.message?.includes("unique_transaction_id")) {
-          console.log("Order already exists for this transaction, skipping duplicate");
+        if (
+          error.code === "23505" ||
+          error.message?.includes("unique_transaction_id")
+        ) {
+          console.log(
+            "Order already exists for this transaction, skipping duplicate",
+          );
           // Continue as if successful - order already exists
         } else {
           alert(

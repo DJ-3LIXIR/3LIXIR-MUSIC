@@ -58,25 +58,7 @@ export default function Licenses() {
   };
 
   const handleSubscribe = (tier: { name: string; price: number }) => {
-    // Determine which card image to use based on tier
-    let cardImage = "/ChatGPT Image Jan 6, 2026 at 09_05_34 PM.png"; // default
-
-    if (tier.name === "Gold") {
-      cardImage = "/gold_card.png";
-    } else if (tier.name === "Diamond") {
-      cardImage = "/diamond_card.png";
-    } else if (tier.name === "Platinum") {
-      cardImage = "/platinum_card.png";
-    }
-
-    addToCart({
-      id: `subscription-${tier.name.toLowerCase()}`,
-      title: `${tier.name} License Subscription`,
-      artist: "3LIXIR",
-      price: tier.price,
-      cover: cardImage,
-      quantity: 1,
-    });
+    setLocation(`/subscription/design?tier=${tier.name.toLowerCase()}`);
   };
 
   const subscriptionTiers = [
