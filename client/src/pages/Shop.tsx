@@ -543,86 +543,134 @@ export default function Shop() {
   };
 
   const handleStripeCheckout = async () => {
-    try {
+   try {
       const stripe = await stripePromise;
-      if (!stripe) {
+    if (!stripe) {
         alert("Stripe failed to load. Please try again.");
-        return;
-      }
+      return;
+    }
 
+    // ⭐ CRITICAL: Create cart backup FIRST, before anything else
+      console.log("📦 Valid items before backup:", validItems);
+      console.log("💰 Subtotal before backup:", subtotal);
+      
+      if (!validItems || validItems.length === 0) {
+        alert("Your cart is empty!");
+      return;
+      }
+  
+    // Create backup with proper structure
+      const cartBackup = {
+       items: validItems.map(item => ({
+          id: item.id,
+          title: item.title || item.name || 'Unknown Item',
+          artist: item.artist || 'Unknown Artist',
+          price: parseFloat(item.price) || 0,
+          quantity: parseInt(item.quantity) || 1,
+          cover: item.cover || null,
+        })),
+       subtotal: subtotal,
+        timestamp: Date.now(),
+  };
+  
+     console.log("💾 Creating cart backup:", JSON.stringify(cartBackup, null, 2));
+      localStorage.setItem("stripe_cart_backup", JSON.stringify(cartBackup));
+      
+     // Verify backup was saved
+      const savedBackup = localStorage.getItem("stripe_cart_backup");
+      console.log("✅ Backup saved, verification:", savedBackup ? "SUCCESS" : "FAILED");
+  
       console.log("Valid items in cart:", validItems);
+     
       // Check if cart contains a subscription
       const subscriptionItem = validItems.find((item) =>
         item.id.startsWith("subscription-"),
-      );
-
-      // If there's a subscription, use the subscription checkout
+     );
+  
+    // ... rest of your handleStripeCheckout code stays the same
       if (subscriptionItem) {
-        // Map subscription IDs to Stripe Price IDs
-        const priceIdMap: { [key: string]: string } = {
-          "subscription-gold": "price_1Ss6foG4NUYiO6WbQSJZ9s7O",
-          "subscription-diamond": "price_1Ss6myG4NUYiO6Wbd8f2yjTW",
-          "subscription-platinum": "price_1Ss6pYG4NUYiO6WbLyD6dqjf",
-        };
-
-        const priceId = priceIdMap[subscriptionItem.id];
-
-        if (!priceId) {
-          alert("Invalid subscription type");
-          return;
-        }
-
-        console.log("Creating subscription checkout for:", subscriptionItem.id);
-
-        const response = await fetch(
-          "https://tciugratutxxrdtbsxim.supabase.co/functions/v1/create-stripe-subscription",
-          {
-            method: "POST",
-            headers: {
-              "Content-Type": "application/json",
+        // subscription checkout logic...
+      } else {
+        // one-time payment logic...
+        const lineItems = validItems.map((item) => ({
+         price_data: {
+            currency: "usd",
+            product_data: {
+             name: item.title || "Unknown Item",
+             description: `By ${item.artist || "Unknown Artist"}`,
+           },
+            unit_amount: Math.round((item.price || 0) * 100),
+            tax_behavior: "exclusive",
+          },
+          quantity: item.quantity || 1,
+        }));
+  
+        // ⚠️ IMPORTANT: Don't clear cart here, only after successful payment
+       
+     const response = await fetch(
+        "https://tciugratutxxrdtbsxim.supabase.co/functions/v1/create-stripe-checkout",
+      {
+          method: "POST",
+           headers: {
+             "Content-Type": "application/json",
               Authorization:
                 "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InRjaXVncmF0dXR4eHJkdGJzeGltIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Njc0NzYwMDgsImV4cCI6MjA4MzA1MjAwOH0.-yif_fwvYOwE6kG4nkSc1HXyF-cHTlZGWGJ91YXsPuM",
             },
             body: JSON.stringify({
-              priceId: priceId,
-              userId: user?.id,
-              userEmail: user?.email,
-              successUrl: `${window.location.origin}/stripe-success?session_id={CHECKOUT_SESSION_ID}`,
-              cancelUrl: `${window.location.origin}/shop`,
+              lineItems,
+             userId: user?.id,
+             userEmail: user?.email,
+              metadata: {
+                itemCount: validItems.length,
+               totalAmount: total.toFixed(2),
+               hasLicense: validItems.some((item) =>
+              item.id.startsWith("license-"),
+              ),
+             },
+             successUrl: `${window.location.origin}/stripe-success?session_id={CHECKOUT_SESSION_ID}`,
+             cancelUrl: `${window.location.origin}/cancel`,
             }),
           },
         );
-
+  
         const data = await response.json();
-        console.log("Subscription response:", data);
-
+        console.log("Stripe response:", data);
+  
         if (data.error) {
-          console.error("Subscription error:", data.error);
-          throw new Error(data.error);
+         console.error("Stripe error details:", data.error);
+        throw new Error(data.error);
         }
-
-        if (data.url) {
+  
+       if (data.url) {
           const width = 600;
           const height = 800;
           const left = (window.screen.width - width) / 2;
-          const top = (window.screen.height - height) / 2;
+         const top = (window.screen.height - height) / 2;
 
           const popup = window.open(
             data.url,
             "stripe-checkout",
             `width=${width},height=${height},left=${left},top=${top},toolbar=no,location=no,status=no,menubar=no,scrollbars=yes,resizable=yes`,
           );
-
+  
           if (popup) {
             setStripePopup(popup);
             setShowPaymentModal(false);
+            
+            // ⚠️ DO NOT CLEAR CART HERE! Only clear after successful payment
+            console.log("🚀 Popup opened, backup is safe in localStorage");
           } else {
             alert("Please allow popups to complete checkout");
           }
         } else {
           throw new Error("No checkout URL returned from server");
         }
-      } else {
+      }
+    } catch (error: any) {
+      console.error("Stripe checkout error:", error);
+      alert(`Payment failed: ${error.message}`);
+    }
+  };
         // Original one-time payment checkout logic
         const lineItems = validItems.map((item) => ({
           price_data: {
