@@ -804,6 +804,11 @@ export default function Shop() {
 
       console.log("Order saved successfully!");
 
+
+      // Send receipt email
+      if (orderData) {
+        await sendReceiptEmail(orderData, { id: user.id, email: user.email, user_metadata: user.user_metadata });
+      }
       // Update profile with order_id  console.log("Order saved successfully!");
       // Save legal acceptance record
       if (orderData) {
