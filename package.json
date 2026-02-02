@@ -1,6 +1,9 @@
 {
-  "name": "3lixir-chat-app",
+  "name": "3lixir-music",
   "version": "1.0.0",
+  "scripts": {
+    "build": "cd client && npm run build"
+  },
   "dependencies": {
     "@anthropic-ai/sdk": "^0.32.1"
   }
