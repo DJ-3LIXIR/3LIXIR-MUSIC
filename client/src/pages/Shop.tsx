@@ -325,7 +325,7 @@ export default function Shop() {
               const order = await actions.order.capture();
               await handlePaymentSuccess(order.id, "paypal");
             // ⭐ ADD THIS: Send receipt email
-              await sendReceiptEmail(orderData, user);
+              await sendReceiptEmail(orderData, { id: user.id, email: user.email, user_metadata: user.user_metadata });
             },
             onError: (err: any) => {
               console.error("PayPal Error:", err);
@@ -407,7 +407,7 @@ export default function Shop() {
     payment_method: 'paypal',
     items: [subscriptionItem],
     total: subscriptionItem.price,
-  }, user);
+  }, { id: user.id, email: user.email, user_metadata: user.user_metadata });
   };
 
   const handlePaymentSuccess = async (
@@ -475,7 +475,7 @@ export default function Shop() {
             }
           }
         // ⭐⭐⭐ ADD THIS LINE HERE ⭐⭐⭐
-          await sendReceiptEmail(orderData, user);
+          await sendReceiptEmail(orderData, { id: user.id, email: user.email, user_metadata: user.user_metadata });
         }
 
         const subscriptionItem = validItems.find((item) =>
