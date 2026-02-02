@@ -48,6 +48,67 @@ declare global {
   }
 }
 
+// Email receipt helper function
+const sendReceiptEmail = async (orderData: any, user: any) => {
+  try {
+    console.log('Sending receipt email...');
+
+    const response = await fetch(
+      'https://tciugratutxxrdtbsxim.supabase.co/functions/v1/send-receipt-email',
+      {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': 'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InRjaXVncmF0dXR4eHJkdGJzeGltIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Njc0NzYwMDgsImV4cCI6MjA4MzA1MjAwOH0.-yif_fwvYOwE6kG4nkSc1HXyF-cHTlZGWGJ91YXsPuM',
+        },
+        body: JSON.stringify({
+          orderData: {
+            customer_email: user.email,
+            customer_name: user.user_metadata?.full_name || user.email?.split('@')[0] || 'Customer',
+            order_id: orderData.id || 'N/A',
+            order_date: new Date().toLocaleDateString('en-US', { 
+              year: 'numeric', 
+              month: 'long', 
+              day: 'numeric' 
+            }),
+            payment_method: orderData.payment_method === 'stripe' ? 'Credit Card' : 
+                           orderData.payment_method === 'paypal' ? 'PayPal' : 
+                           'Cryptocurrency',
+            total_amount: `$${orderData.total.toFixed(2)}`,
+            items: orderData.items.map((item: any) => ({
+              name: item.title || 'Unknown Item',
+              price: `$${(item.price * (item.quantity || 1)).toFixed(2)}`
+            })),
+            download_links: orderData.items
+              .filter((item: any) => !item.id.startsWith('subscription-') && !item.id.startsWith('license-'))
+              .map((item: any) => ({
+                name: item.title,
+                url: `${window.location.origin}/downloads`
+              })),
+            license_type: orderData.items.some((item: any) => item.id.startsWith('subscription-')) 
+              ? 'Subscription License - Unlimited use while active'
+              : 'Standard License - Commercial use permitted',
+            license_url: `${window.location.origin}/info?section=licensing`,
+            terms_url: `${window.location.origin}/info?section=terms`,
+            privacy_url: `${window.location.origin}/info?section=privacy`,
+            support_url: `${window.location.origin}/info?section=contact`
+          }
+        })
+      }
+    );
+
+    const result = await response.json();
+
+    if (result.success) {
+      console.log('✅ Receipt email sent successfully');
+    } else {
+      console.error('❌ Failed to send receipt email:', result.error);
+    }
+  } catch (error) {
+    console.error('❌ Error sending receipt email:', error);
+  }
+};
+
 export default function Shop() {
   const [, setLocation] = useLocation();
   const { items, removeFromCart, updateQuantity, subtotal, clearCart } =
@@ -263,6 +324,8 @@ export default function Shop() {
             onApprove: async (data: any, actions: any) => {
               const order = await actions.order.capture();
               await handlePaymentSuccess(order.id, "paypal");
+            // ⭐ ADD THIS: Send receipt email
+              await sendReceiptEmail(orderData, user);
             },
             onError: (err: any) => {
               console.error("PayPal Error:", err);
@@ -337,6 +400,14 @@ export default function Shop() {
     setShowPaymentModal(false);
     alert("Subscription successful! Your membership is now active.");
     setLocation("/profile");
+  
+    // Send receipt email for subscription
+  await sendReceiptEmail({
+    id: subscriptionId,
+    payment_method: 'paypal',
+    items: [subscriptionItem],
+    total: subscriptionItem.price,
+  }, user);
   };
 
   const handlePaymentSuccess = async (
@@ -403,6 +474,8 @@ export default function Shop() {
               sessionStorage.removeItem("pending_legal_acceptance");
             }
           }
+        // ⭐⭐⭐ ADD THIS LINE HERE ⭐⭐⭐
+          await sendReceiptEmail(orderData, user);
         }
 
         const subscriptionItem = validItems.find((item) =>
@@ -1611,3 +1684,4 @@ export default function Shop() {
     </div>
   );
 }
+
