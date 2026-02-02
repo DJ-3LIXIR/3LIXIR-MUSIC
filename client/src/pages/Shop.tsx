@@ -337,12 +337,6 @@ export default function Shop() {
             onApprove: async (data: any, actions: any) => {
               const order = await actions.order.capture();
               await handlePaymentSuccess(order.id, "paypal");
-              // ⭐ ADD THIS: Send receipt email
-              await sendReceiptEmail(orderData, {
-                id: user.id,
-                email: user.email,
-                user_metadata: user.user_metadata,
-              });
             },
             onError: (err: any) => {
               console.error("PayPal Error:", err);
@@ -426,7 +420,7 @@ export default function Shop() {
         items: [subscriptionItem],
         total: subscriptionItem.price,
       },
-      { id: user.id, email: user.email, user_metadata: user.user_metadata },
+      { id: user?.id, email: user?.email, user_metadata: user?.user_metadata },
     );
   };
 
@@ -441,13 +435,19 @@ export default function Shop() {
 
       if (user) {
         // Create the order first
+        // Ensure items have a name property
+        const itemsToSave = validItems.map((item) => ({
+          ...item,
+          name: item.name || item.title || "Unknown Item",
+        }));
+
         const { data: orderData, error } = await supabase
           .from("orders")
           .insert({
             user_id: user.id,
             payment_method: method,
             transaction_id: transactionId,
-            items: validItems,
+            items: itemsToSave,
             subtotal: subtotal,
             tax: tax,
             total: total,
@@ -543,122 +543,160 @@ export default function Shop() {
   };
 
   const handleStripeCheckout = async () => {
-   try {
+    try {
       const stripe = await stripePromise;
-    if (!stripe) {
+      if (!stripe) {
         alert("Stripe failed to load. Please try again.");
-      return;
-    }
-
-    // ⭐ CRITICAL: Create cart backup FIRST, before anything else
-      console.log("📦 Valid items before backup:", validItems);
-      console.log("💰 Subtotal before backup:", subtotal);
-      
-      if (!validItems || validItems.length === 0) {
-        alert("Your cart is empty!");
-      return;
+        return;
       }
-  
-    // Create backup with proper structure
-      const cartBackup = {
-       items: validItems.map(item => ({
-          id: item.id,
-          title: item.title || item.name || 'Unknown Item',
-          artist: item.artist || 'Unknown Artist',
-          price: parseFloat(item.price) || 0,
-          quantity: parseInt(item.quantity) || 1,
-          cover: item.cover || null,
-        })),
-       subtotal: subtotal,
-        timestamp: Date.now(),
-  };
-  
-     console.log("💾 Creating cart backup:", JSON.stringify(cartBackup, null, 2));
-      localStorage.setItem("stripe_cart_backup", JSON.stringify(cartBackup));
-      
-     // Verify backup was saved
-      const savedBackup = localStorage.getItem("stripe_cart_backup");
-      console.log("✅ Backup saved, verification:", savedBackup ? "SUCCESS" : "FAILED");
-  
+
       console.log("Valid items in cart:", validItems);
-     
       // Check if cart contains a subscription
       const subscriptionItem = validItems.find((item) =>
         item.id.startsWith("subscription-"),
-     );
-  
-    // ... rest of your handleStripeCheckout code stays the same
+      );
+
+      // If there's a subscription, use the subscription checkout
       if (subscriptionItem) {
-        // subscription checkout logic...
-      } else {
-        // one-time payment logic...
-        const lineItems = validItems.map((item) => ({
-         price_data: {
-            currency: "usd",
-            product_data: {
-             name: item.title || "Unknown Item",
-             description: `By ${item.artist || "Unknown Artist"}`,
-           },
-            unit_amount: Math.round((item.price || 0) * 100),
-            tax_behavior: "exclusive",
-          },
-          quantity: item.quantity || 1,
-        }));
-  
-        // ⚠️ IMPORTANT: Don't clear cart here, only after successful payment
-       
-     const response = await fetch(
-        "https://tciugratutxxrdtbsxim.supabase.co/functions/v1/create-stripe-checkout",
-      {
-          method: "POST",
-           headers: {
-             "Content-Type": "application/json",
+        // Map subscription IDs to Stripe Price IDs
+        const priceIdMap: { [key: string]: string } = {
+          "subscription-gold": "price_1Ss6foG4NUYiO6WbQSJZ9s7O",
+          "subscription-diamond": "price_1Ss6myG4NUYiO6Wbd8f2yjTW",
+          "subscription-platinum": "price_1Ss6pYG4NUYiO6WbLyD6dqjf",
+        };
+
+        const priceId = priceIdMap[subscriptionItem.id];
+
+        if (!priceId) {
+          alert("Invalid subscription type");
+          return;
+        }
+
+        console.log("Creating subscription checkout for:", subscriptionItem.id);
+
+        const response = await fetch(
+          "https://tciugratutxxrdtbsxim.supabase.co/functions/v1/create-stripe-subscription",
+          {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
               Authorization:
                 "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InRjaXVncmF0dXR4eHJkdGJzeGltIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Njc0NzYwMDgsImV4cCI6MjA4MzA1MjAwOH0.-yif_fwvYOwE6kG4nkSc1HXyF-cHTlZGWGJ91YXsPuM",
             },
             body: JSON.stringify({
-              lineItems,
-             userId: user?.id,
-             userEmail: user?.email,
-              metadata: {
-                itemCount: validItems.length,
-               totalAmount: total.toFixed(2),
-               hasLicense: validItems.some((item) =>
-              item.id.startsWith("license-"),
-              ),
-             },
-             successUrl: `${window.location.origin}/stripe-success?session_id={CHECKOUT_SESSION_ID}`,
-             cancelUrl: `${window.location.origin}/cancel`,
+              priceId: priceId,
+              userId: user?.id,
+              userEmail: user?.email,
+              successUrl: `${window.location.origin}/stripe-success?session_id={CHECKOUT_SESSION_ID}`,
+              cancelUrl: `${window.location.origin}/shop`,
             }),
           },
         );
-  
+
         const data = await response.json();
-        console.log("Stripe response:", data);
-  
+        console.log("Subscription response:", data);
+
         if (data.error) {
-         console.error("Stripe error details:", data.error);
-        throw new Error(data.error);
+          console.error("Subscription error:", data.error);
+          throw new Error(data.error);
         }
-  
-       if (data.url) {
+
+        if (data.url) {
           const width = 600;
           const height = 800;
           const left = (window.screen.width - width) / 2;
-         const top = (window.screen.height - height) / 2;
+          const top = (window.screen.height - height) / 2;
 
           const popup = window.open(
             data.url,
             "stripe-checkout",
             `width=${width},height=${height},left=${left},top=${top},toolbar=no,location=no,status=no,menubar=no,scrollbars=yes,resizable=yes`,
           );
-  
+
           if (popup) {
             setStripePopup(popup);
             setShowPaymentModal(false);
-            
-            // ⚠️ DO NOT CLEAR CART HERE! Only clear after successful payment
-            console.log("🚀 Popup opened, backup is safe in localStorage");
+          } else {
+            alert("Please allow popups to complete checkout");
+          }
+        } else {
+          throw new Error("No checkout URL returned from server");
+        }
+      } else {
+        // Original one-time payment checkout logic
+        const lineItems = validItems.map((item) => ({
+          price_data: {
+            currency: "usd",
+            product_data: {
+              name: item.title || "Unknown Item",
+              description: `By ${item.artist || "Unknown Artist"}`,
+            },
+            unit_amount: Math.round((item.price || 0) * 100),
+            tax_behavior: "exclusive",
+          },
+          quantity: item.quantity || 1,
+        }));
+
+        const cartBackup = {
+          items: validItems,
+          subtotal: subtotal,
+          timestamp: Date.now(),
+        };
+        localStorage.setItem("stripe_cart_backup", JSON.stringify(cartBackup));
+
+        console.log("Sending checkout request with:", {
+          lineItems,
+          userId: user?.id,
+          userEmail: user?.email,
+          items: validItems,
+        });
+
+        const response = await fetch(
+          "https://tciugratutxxrdtbsxim.supabase.co/functions/v1/create-stripe-checkout",
+          {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+              Authorization:
+                "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InRjaXVncmF0dXR4eHJkdGJzeGltIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Njc0NzYwMDgsImV4cCI6MjA4MzA1MjAwOH0.-yif_fwvYOwE6kG4nkSc1HXyF-cHTlZGWGJ91YXsPuM",
+            },
+            body: JSON.stringify({
+              lineItems,
+              userId: user?.id,
+              userEmail: user?.email,
+              items: validItems.map((item) => ({
+                ...item,
+                name: item.name || item.title || "Unknown Item",
+              })),
+              successUrl: `${window.location.origin}/stripe-success?session_id={CHECKOUT_SESSION_ID}`,
+              cancelUrl: `${window.location.origin}/cancel`,
+            }),
+          },
+        );
+
+        const data = await response.json();
+        console.log("Stripe response:", data);
+
+        if (data.error) {
+          console.error("Stripe error details:", data.error);
+          throw new Error(data.error);
+        }
+
+        if (data.url) {
+          const width = 600;
+          const height = 800;
+          const left = (window.screen.width - width) / 2;
+          const top = (window.screen.height - height) / 2;
+
+          const popup = window.open(
+            data.url,
+            "stripe-checkout",
+            `width=${width},height=${height},left=${left},top=${top},toolbar=no,location=no,status=no,menubar=no,scrollbars=yes,resizable=yes`,
+          );
+
+          if (popup) {
+            setStripePopup(popup);
+            setShowPaymentModal(false);
           } else {
             alert("Please allow popups to complete checkout");
           }
@@ -671,8 +709,12 @@ export default function Shop() {
       alert(`Payment failed: ${error.message}`);
     }
   };
-  const handleStripeSuccess = async (sessionId: string) => {
 
+  const handleStripeSuccess = async (sessionId: string) => {
+    console.log(
+      "[DEBUG] handleStripeSuccess called with sessionId:",
+      sessionId,
+    );
     try {
       // Prevent double processing - check both memory and storage
       const processedKey = `stripe_processed_${sessionId}`;
@@ -688,43 +730,24 @@ export default function Shop() {
       console.log("[DEBUG] Added session to processing set:", sessionId);
       sessionStorage.setItem(processedKey, "true");
 
-      // ⭐ CRITICAL FIX: Get fresh user data instead of relying on stale 'user' variable
+      // FIX: Get fresh user data to ensure we have a valid ID
       const {
         data: { user: currentUser },
       } = await supabase.auth.getUser();
+      const userId = currentUser?.id;
 
-      // If still no user, try to refresh the session
-      if (!currentUser) {
-        console.log("[DEBUG] No user found, attempting to refresh session...");
-        const {
-          data: { session },
-        } = await supabase.auth.refreshSession();
-
-        if (!session?.user) {
-          console.error(
-            "User not logged in after Stripe redirect and refresh failed",
-          );
+      if (!userId) {
+        console.error("User not authenticated during Stripe success handling");
+        // Try to use the context user as backup, though it might be stale
+        if (!user?.id) {
           alert(
-            "Please log in again to complete your order. Your payment was successful. Contact support with session ID: " +
-              sessionId,
+            "Authentication error. Please log in and contact support if your order doesn't appear.",
           );
-          setLocation("/login");
           return;
         }
       }
 
-      // Use the fresh user data
-      const userId =
-        currentUser?.id || (await supabase.auth.getUser()).data.user?.id;
-
-      if (!userId) {
-        console.error("Could not get user ID");
-        alert(
-          "Authentication error. Please contact support with session ID: " +
-            sessionId,
-        );
-        return;
-      }
+      const finalUserId = userId || user?.id;
 
       let cartItems = [];
       let calculatedSubtotal = 0;
@@ -736,7 +759,7 @@ export default function Shop() {
           cartItems = backup.items;
           calculatedSubtotal = backup.subtotal;
           console.log("Retrieved cart from backup:", cartItems);
-          localStorage.removeItem("stripe_cart_backup");
+          // Only remove backup after successful save
         } catch (e) {
           console.error("Error parsing backup:", e);
         }
@@ -775,14 +798,22 @@ export default function Shop() {
 
       console.log("Saving order with items:", cartItems);
 
-      // ⭐ CRITICAL FIX: Use the fresh userId instead of stale user.id
-      const { data: orderData, error } = await supabase
+      // Ensure items have a name property (map title to name if needed)
+      const itemsToSave = cartItems.map((item: any) => ({
+        ...item,
+        name: item.name || item.title || "Unknown Item",
+      }));
+
+      let orderData = null;
+      let orderError = null;
+
+      const { data, error } = await supabase
         .from("orders")
         .insert({
-          user_id: userId,
+          user_id: finalUserId,
           payment_method: "stripe",
           transaction_id: sessionId,
-          items: cartItems,
+          items: itemsToSave,
           subtotal: calculatedSubtotal,
           tax: 0,
           total: calculatedSubtotal,
@@ -791,35 +822,103 @@ export default function Shop() {
         .select()
         .single();
 
-      if (error) {
-        console.error("Error saving Stripe order:", error);
-        if (
-          error.code === "23505" ||
-          error.message?.includes("unique_transaction_id")
-        ) {
-          console.log(
-            "Order already exists for this transaction, skipping duplicate",
-          );
-        } else {
-          alert(
-            "Payment successful but there was an error saving your order. Please contact support with error: " +
-              error.message,
-          );
+      orderData = data;
+      orderError = error;
+
+      if (orderError) {
+        // Handle duplicate key error gracefully
+        if (orderError.code === "23505") {
+          console.log("Order already exists, fetching existing order...");
+          const { data: existingOrder, error: fetchError } = await supabase
+            .from("orders")
+            .select()
+            .eq("transaction_id", sessionId)
+            .single();
+
+          if (fetchError || !existingOrder) {
+            console.error("Error fetching existing order:", fetchError);
+            alert("Order processing error. Please contact support.");
+            return;
+          }
+
+          // FIX: If the existing order has empty items (created by webhook), update it with our local data
+          if (!existingOrder.items || existingOrder.items.length === 0) {
+            console.log(
+              "Existing order has empty items. Updating with local cart data...",
+            );
+            const { error: updateError } = await supabase
+              .from("orders")
+              .update({
+                items: itemsToSave,
+                subtotal: calculatedSubtotal,
+                total: calculatedSubtotal,
+              })
+              .eq("id", existingOrder.id);
+
+            if (updateError) {
+              console.error("Failed to update existing order:", updateError);
+            } else {
+              console.log("Successfully updated existing order with items.");
+              // Update the orderData reference so legal acceptance can use it
+              orderData = { ...existingOrder, items: itemsToSave };
+            }
+          } else {
+            // Order exists and has items, so we're good
+            console.log("Found existing order with items, completing process");
+            orderData = existingOrder;
+          }
+
+          // If we have orderData now (either fetched or updated), ensure legal acceptance is recorded
+          if (orderData) {
+            const acceptanceData = sessionStorage.getItem(
+              "pending_legal_acceptance",
+            );
+            if (acceptanceData) {
+              try {
+                const parsedAcceptance = JSON.parse(acceptanceData);
+                // Try to insert legal acceptance (ignore if it fails/duplicates)
+                await supabase.from("legal_acceptances").insert({
+                  user_id: finalUserId,
+                  order_id: orderData.id,
+                  tos_accepted: parsedAcceptance.tos_accepted,
+                  privacy_accepted: parsedAcceptance.privacy_accepted,
+                  refund_policy_accepted:
+                    parsedAcceptance.refund_policy_accepted,
+                  licensing_accepted: parsedAcceptance.licensing_accepted,
+                  accepted_at: parsedAcceptance.accepted_at,
+                  tos_version: parsedAcceptance.tos_version,
+                  privacy_version: parsedAcceptance.privacy_version,
+                  refund_policy_version: parsedAcceptance.refund_policy_version,
+                  licensing_version: parsedAcceptance.licensing_version,
+                  user_agent: parsedAcceptance.user_agent,
+                  ip_address: "client-side",
+                });
+                sessionStorage.removeItem("pending_legal_acceptance");
+              } catch (err) {
+                console.log(
+                  "Legal acceptance might already exist, ignoring error:",
+                  err,
+                );
+              }
+            }
+          }
+
+          clearCart();
+          localStorage.removeItem("stripe_cart_backup");
+          setLocation("/downloads");
           return;
         }
+
+        console.error("Error saving Stripe order:", orderError);
+        alert(
+          "Payment successful but there was an error saving your order. Please contact support.",
+        );
+        return;
       }
 
       console.log("Order saved successfully!");
 
-      // Send receipt email
-      if (orderData && currentUser) {
-        await sendReceiptEmail(orderData, {
-          id: currentUser.id,
-          email: currentUser.email,
-          user_metadata: currentUser.user_metadata,
-        });
-      }
-
+      // Update profile with order_id  console.log("Order saved successfully!");
       // Save legal acceptance record
       if (orderData) {
         const acceptanceData = sessionStorage.getItem(
@@ -830,7 +929,7 @@ export default function Shop() {
           const { error: legalError } = await supabase
             .from("legal_acceptances")
             .insert({
-              user_id: userId,
+              user_id: finalUserId,
               order_id: orderData.id,
               tos_accepted: parsedAcceptance.tos_accepted,
               privacy_accepted: parsedAcceptance.privacy_accepted,
@@ -851,11 +950,17 @@ export default function Shop() {
             sessionStorage.removeItem("pending_legal_acceptance");
           }
         }
-      }
 
+        // Send receipt email
+        await sendReceiptEmail(orderData, {
+          id: finalUserId,
+          email: currentUser?.email || user?.email,
+          user_metadata: currentUser?.user_metadata || user?.user_metadata,
+        });
+      }
       // Update profile with order_id
       if (orderData) {
-        await updateProfileWithOrderId(userId, orderData.id);
+        await updateProfileWithOrderId(finalUserId, orderData.id);
       }
 
       const subscriptionItem = cartItems.find((item: any) =>
@@ -879,7 +984,7 @@ export default function Shop() {
             subscription_tier: newTier,
             updated_at: new Date().toISOString(),
           })
-          .eq("id", userId);
+          .eq("id", finalUserId);
 
         if (updateError) {
           console.error("Error updating subscription tier:", updateError);
@@ -889,6 +994,7 @@ export default function Shop() {
       }
 
       clearCart();
+      localStorage.removeItem("stripe_cart_backup");
       alert("Payment successful! Your purchase has been completed.");
       setLocation("/downloads");
     } catch (error) {
@@ -917,7 +1023,10 @@ export default function Shop() {
             description: `3LIXIR MUSIC - ${totalBeats} beat${totalBeats > 1 ? "s" : ""}`,
             userId: user?.id,
             userEmail: user?.email,
-            items: validItems,
+            items: validItems.map((item) => ({
+              ...item,
+              name: item.name || item.title || "Unknown Item",
+            })),
             metadata: {
               orderType: "beat_purchase",
             },
