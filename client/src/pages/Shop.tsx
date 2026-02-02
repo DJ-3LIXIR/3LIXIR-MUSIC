@@ -54,7 +54,7 @@ const sendReceiptEmail = async (orderData: any, user: any) => {
     console.log("Sending receipt email...");
 
     const response = await fetch(
-      "https://tciugratutxxrdtbsxim.supabase.co/functions/v1/send-receipt-email",
+      `${window.location.origin}/api/send-receipt-email`,
       {
         method: "POST",
         headers: {
