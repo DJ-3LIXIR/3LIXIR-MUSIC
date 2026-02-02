@@ -60,9 +60,7 @@ const sendReceiptEmail = async (orderData: any, user: any) => {
         headers: {
           "Content-Type": "application/json",
         },
-        headers: {
-          "Content-Type": "application/json",
-          Authorization:
+        body: JSON.stringify({
           orderData: {
             customer_email: user.email,
             customer_name:
@@ -576,13 +574,8 @@ export default function Shop() {
           "https://tciugratutxxrdtbsxim.supabase.co/functions/v1/create-stripe-subscription",
           {
             method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
             headers: {
               "Content-Type": "application/json",
-              Authorization:
-                "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InRjaXVncmF0dXR4eHJkdGJzeGltIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Njc0NzYwMDgsImV4cCI6MjA4MzA1MjAwOH0.-yif_fwvYOwE6kG4nkSc1HXyF-cHTlZGWGJ91YXsPuM",
             },
             body: JSON.stringify({
               priceId: priceId,
@@ -656,13 +649,8 @@ export default function Shop() {
           "https://tciugratutxxrdtbsxim.supabase.co/functions/v1/create-stripe-checkout",
           {
             method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
             headers: {
               "Content-Type": "application/json",
-              Authorization:
-                "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InRjaXVncmF0dXR4eHJkdGJzeGltIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Njc0NzYwMDgsImV4cCI6MjA4MzA1MjAwOH0.-yif_fwvYOwE6kG4nkSc1HXyF-cHTlZGWGJ91YXsPuM",
             },
             body: JSON.stringify({
               lineItems,
@@ -1023,13 +1011,8 @@ export default function Shop() {
         "https://tciugratutxxrdtbsxim.supabase.co/functions/v1/create-coinbase-checkout",
         {
           method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
           headers: {
             "Content-Type": "application/json",
-            Authorization:
-              "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InRjaXVncmF0dXR4eHJkdGJzeGltIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Njc0NzYwMDgsImV4cCI6MjA4MzA1MjAwOH0.-yif_fwvYOwE6kG4nkSc1HXyF-cHTlZGWGJ91YXsPuM",
           },
           body: JSON.stringify({
             amount: total,
