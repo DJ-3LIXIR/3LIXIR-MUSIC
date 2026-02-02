@@ -135,14 +135,14 @@ export default function Shop() {
   const [stripePopup, setStripePopup] = useState<Window | null>(null);
   const paypalRef = useRef<HTMLDivElement>(null);
 
-  // NEW: View mode state and favorites
+  // View mode state and favorites
   const [viewMode, setViewMode] = useState<ViewMode>("cart");
   const [favoriteBeats, setFavoriteBeats] = useState<any[]>([]);
   const [showContractModal, setShowContractModal] = useState(false);
   const [contractAccepted, setContractAccepted] = useState(false);
   const [loadingFavorites, setLoadingFavorites] = useState(false);
 
-  // NEW: Fetch favorites when user changes or view switches to favorites
+  // Fetch favorites when user changes or view switches to favorites
   useEffect(() => {
     if (viewMode === "favorites" && user) {
       fetchFavorites();
@@ -184,7 +184,6 @@ export default function Shop() {
       if (stripePopup.closed) {
         clearInterval(checkPopup);
         setStripePopup(null);
-        //         checkStripePaymentStatus();
       }
     }, 500);
 
@@ -259,7 +258,7 @@ export default function Shop() {
   const hasProperLicensing =
     hasActiveMembership || hasSubscription || tokenCount >= totalBeats;
 
-  // FIXED: PayPal useEffect with corrected cleanup and dependencies
+  // PayPal useEffect
   useEffect(() => {
     if (
       showPaymentModal &&
@@ -347,7 +346,6 @@ export default function Shop() {
       }
     }
 
-    // FIXED: Only cleanup when modal closes or payment method changes
     return () => {
       if (
         paypalRef.current &&
@@ -357,7 +355,6 @@ export default function Shop() {
       }
     };
   }, [showPaymentModal, selectedPaymentMethod, validItems.length]);
-  // FIXED: Removed 'total' and 'subtotal' from dependencies
 
   const handlePayPalSubscriptionSuccess = async (
     subscriptionId: string,
@@ -460,7 +457,7 @@ export default function Shop() {
           console.error("Error saving order:", error);
         }
 
-        // NEW: Insert legal acceptance record
+        // Insert legal acceptance record
         if (orderData) {
           const acceptanceData = sessionStorage.getItem(
             "pending_legal_acceptance",
@@ -484,7 +481,7 @@ export default function Shop() {
                 refund_policy_version: parsedAcceptance.refund_policy_version,
                 licensing_version: parsedAcceptance.licensing_version,
                 user_agent: parsedAcceptance.user_agent,
-                ip_address: "client-side", // Will be updated by backend if needed
+                ip_address: "client-side",
               });
 
             if (legalError) {
@@ -494,7 +491,8 @@ export default function Shop() {
               sessionStorage.removeItem("pending_legal_acceptance");
             }
           }
-          // ⭐⭐⭐ ADD THIS LINE HERE ⭐⭐⭐
+
+          // Send Receipt Email
           await sendReceiptEmail(orderData, {
             id: user.id,
             email: user.email,
@@ -903,6 +901,15 @@ export default function Shop() {
             }
           }
 
+          // FIX: Send receipt email even if it was a duplicate/existing order
+          if (orderData) {
+            await sendReceiptEmail(orderData, {
+              id: finalUserId,
+              email: currentUser?.email || user?.email,
+              user_metadata: currentUser?.user_metadata || user?.user_metadata,
+            });
+          }
+
           clearCart();
           localStorage.removeItem("stripe_cart_backup");
           setLocation("/downloads");
@@ -918,8 +925,7 @@ export default function Shop() {
 
       console.log("Order saved successfully!");
 
-      // Update profile with order_id  console.log("Order saved successfully!");
-      // Save legal acceptance record
+      // Update profile with order_id
       if (orderData) {
         const acceptanceData = sessionStorage.getItem(
           "pending_legal_acceptance",
@@ -957,9 +963,7 @@ export default function Shop() {
           email: currentUser?.email || user?.email,
           user_metadata: currentUser?.user_metadata || user?.user_metadata,
         });
-      }
-      // Update profile with order_id
-      if (orderData) {
+
         await updateProfileWithOrderId(finalUserId, orderData.id);
       }
 
