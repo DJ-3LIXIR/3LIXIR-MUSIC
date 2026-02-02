@@ -6,6 +6,12 @@ const anthropic = new Anthropic({
 
 const SYSTEM_PROMPT = `You are the customer support agent for 3LIXIR Music, a premium beat marketplace and production platform created by DJ 3LIXIR. You are knowledgeable, professional, empathetic, and passionate about supporting independent artists.
 
+# GREETING
+When starting a NEW conversation (when there are no previous messages), greet the user with:
+"Hey! Welcome to 3LIXIR Music. I'm here to help you with any questions about beats, licensing, or anything else. What can I do for you today?"
+
+Keep it simple, friendly, and conversational. Don't overexplain or list options unless asked.
+
 # BRAND IDENTITY & MISSION
 
 3LIXIR Music was born from a belief: great music deserves intention, not shortcuts. We create sound with purpose—tracks that artists can feel, build on, and turn into something timeless.
@@ -351,12 +357,6 @@ const TOOLS = [
 ];
 
 class ClaudeService {
-  /**
-   * Send a message to Claude and get a response
-   * @param {Array} messages - Conversation history in Anthropic format
-   * @param {Function} toolHandler - Callback to handle tool use
-   * @returns {Object} { response: Claude's response, messages: updated messages array }
-   */
   async sendMessage(messages, toolHandler) {
     try {
       let response = await anthropic.messages.create({
@@ -367,7 +367,6 @@ class ClaudeService {
         messages: messages,
       });
 
-      // Handle tool use loop
       while (response.stop_reason === "tool_use") {
         const toolUse = response.content.find(
           (block) => block.type === "tool_use",
@@ -375,10 +374,8 @@ class ClaudeService {
 
         if (!toolUse) break;
 
-        // Execute the tool via callback
         const toolResult = await toolHandler(toolUse.name, toolUse.input);
 
-        // Add assistant's tool use and tool result to messages
         messages.push({
           role: "assistant",
           content: response.content,
@@ -395,7 +392,6 @@ class ClaudeService {
           ],
         });
 
-        // Continue conversation with tool result
         response = await anthropic.messages.create({
           model: "claude-sonnet-4-20250514",
           max_tokens: 4096,
@@ -405,7 +401,6 @@ class ClaudeService {
         });
       }
 
-      // Return both the response and the updated messages array
       return { response, messages };
     } catch (error) {
       console.error("Claude API Error:", error);
@@ -413,11 +408,6 @@ class ClaudeService {
     }
   }
 
-  /**
-   * Format messages for Claude API (convert from DB format)
-   * @param {Array} dbMessages - Messages from database
-   * @returns {Array} Formatted messages for Claude
-   */
   formatMessagesForClaude(dbMessages) {
     return dbMessages.map((msg) => ({
       role: msg.role,
@@ -425,30 +415,15 @@ class ClaudeService {
     }));
   }
 
-  /**
-   * Extract text response from Claude's response
-   * @param {Object} response - Claude API response
-   * @returns {string} Text content
-   */
   extractTextResponse(response) {
     const textBlock = response.content.find((block) => block.type === "text");
     return textBlock ? textBlock.text : "";
   }
 
-  /**
-   * Check if response contains tool use
-   * @param {Object} response - Claude API response
-   * @returns {boolean}
-   */
   hasToolUse(response) {
     return response.content.some((block) => block.type === "tool_use");
   }
 
-  /**
-   * Get tool use details from response
-   * @param {Object} response - Claude API response
-   * @returns {Object|null} Tool use details
-   */
   getToolUse(response) {
     return response.content.find((block) => block.type === "tool_use") || null;
   }
