@@ -51,61 +51,74 @@ declare global {
 // Email receipt helper function
 const sendReceiptEmail = async (orderData: any, user: any) => {
   try {
-    console.log('Sending receipt email...');
+    console.log("Sending receipt email...");
 
     const response = await fetch(
-      'https://tciugratutxxrdtbsxim.supabase.co/functions/v1/send-receipt-email',
+      "https://tciugratutxxrdtbsxim.supabase.co/functions/v1/send-receipt-email",
       {
-        method: 'POST',
+        method: "POST",
         headers: {
-          'Content-Type': 'application/json',
-          'Authorization': 'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InRjaXVncmF0dXR4eHJkdGJzeGltIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Njc0NzYwMDgsImV4cCI6MjA4MzA1MjAwOH0.-yif_fwvYOwE6kG4nkSc1HXyF-cHTlZGWGJ91YXsPuM',
+          "Content-Type": "application/json",
+          Authorization:
+            "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InRjaXVncmF0dXR4eHJkdGJzeGltIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Njc0NzYwMDgsImV4cCI6MjA4MzA1MjAwOH0.-yif_fwvYOwE6kG4nkSc1HXyF-cHTlZGWGJ91YXsPuM",
         },
         body: JSON.stringify({
           orderData: {
             customer_email: user.email,
-            customer_name: user.user_metadata?.full_name || user.email?.split('@')[0] || 'Customer',
-            order_id: orderData.id || 'N/A',
-            order_date: new Date().toLocaleDateString('en-US', { 
-              year: 'numeric', 
-              month: 'long', 
-              day: 'numeric' 
+            customer_name:
+              user.user_metadata?.full_name ||
+              user.email?.split("@")[0] ||
+              "Customer",
+            order_id: orderData.id || "N/A",
+            order_date: new Date().toLocaleDateString("en-US", {
+              year: "numeric",
+              month: "long",
+              day: "numeric",
             }),
-            payment_method: orderData.payment_method === 'stripe' ? 'Credit Card' : 
-                           orderData.payment_method === 'paypal' ? 'PayPal' : 
-                           'Cryptocurrency',
+            payment_method:
+              orderData.payment_method === "stripe"
+                ? "Credit Card"
+                : orderData.payment_method === "paypal"
+                  ? "PayPal"
+                  : "Cryptocurrency",
             total_amount: `$${orderData.total.toFixed(2)}`,
             items: orderData.items.map((item: any) => ({
-              name: item.title || 'Unknown Item',
-              price: `$${(item.price * (item.quantity || 1)).toFixed(2)}`
+              name: item.title || "Unknown Item",
+              price: `$${(item.price * (item.quantity || 1)).toFixed(2)}`,
             })),
             download_links: orderData.items
-              .filter((item: any) => !item.id.startsWith('subscription-') && !item.id.startsWith('license-'))
+              .filter(
+                (item: any) =>
+                  !item.id.startsWith("subscription-") &&
+                  !item.id.startsWith("license-"),
+              )
               .map((item: any) => ({
                 name: item.title,
-                url: `${window.location.origin}/downloads`
+                url: `${window.location.origin}/downloads`,
               })),
-            license_type: orderData.items.some((item: any) => item.id.startsWith('subscription-')) 
-              ? 'Subscription License - Unlimited use while active'
-              : 'Standard License - Commercial use permitted',
+            license_type: orderData.items.some((item: any) =>
+              item.id.startsWith("subscription-"),
+            )
+              ? "Subscription License - Unlimited use while active"
+              : "Standard License - Commercial use permitted",
             license_url: `${window.location.origin}/info?section=licensing`,
             terms_url: `${window.location.origin}/info?section=terms`,
             privacy_url: `${window.location.origin}/info?section=privacy`,
-            support_url: `${window.location.origin}/info?section=contact`
-          }
-        })
-      }
+            support_url: `${window.location.origin}/info?section=contact`,
+          },
+        }),
+      },
     );
 
     const result = await response.json();
 
     if (result.success) {
-      console.log('✅ Receipt email sent successfully');
+      console.log("✅ Receipt email sent successfully");
     } else {
-      console.error('❌ Failed to send receipt email:', result.error);
+      console.error("❌ Failed to send receipt email:", result.error);
     }
   } catch (error) {
-    console.error('❌ Error sending receipt email:', error);
+    console.error("❌ Error sending receipt email:", error);
   }
 };
 
@@ -324,8 +337,12 @@ export default function Shop() {
             onApprove: async (data: any, actions: any) => {
               const order = await actions.order.capture();
               await handlePaymentSuccess(order.id, "paypal");
-            // ⭐ ADD THIS: Send receipt email
-              await sendReceiptEmail(orderData, { id: user.id, email: user.email, user_metadata: user.user_metadata });
+              // ⭐ ADD THIS: Send receipt email
+              await sendReceiptEmail(orderData, {
+                id: user.id,
+                email: user.email,
+                user_metadata: user.user_metadata,
+              });
             },
             onError: (err: any) => {
               console.error("PayPal Error:", err);
@@ -400,14 +417,17 @@ export default function Shop() {
     setShowPaymentModal(false);
     alert("Subscription successful! Your membership is now active.");
     setLocation("/profile");
-  
+
     // Send receipt email for subscription
-  await sendReceiptEmail({
-    id: subscriptionId,
-    payment_method: 'paypal',
-    items: [subscriptionItem],
-    total: subscriptionItem.price,
-  }, { id: user.id, email: user.email, user_metadata: user.user_metadata });
+    await sendReceiptEmail(
+      {
+        id: subscriptionId,
+        payment_method: "paypal",
+        items: [subscriptionItem],
+        total: subscriptionItem.price,
+      },
+      { id: user.id, email: user.email, user_metadata: user.user_metadata },
+    );
   };
 
   const handlePaymentSuccess = async (
@@ -474,8 +494,12 @@ export default function Shop() {
               sessionStorage.removeItem("pending_legal_acceptance");
             }
           }
-        // ⭐⭐⭐ ADD THIS LINE HERE ⭐⭐⭐
-          await sendReceiptEmail(orderData, { id: user.id, email: user.email, user_metadata: user.user_metadata });
+          // ⭐⭐⭐ ADD THIS LINE HERE ⭐⭐⭐
+          await sendReceiptEmail(orderData, {
+            id: user.id,
+            email: user.email,
+            user_metadata: user.user_metadata,
+          });
         }
 
         const subscriptionItem = validItems.find((item) =>
@@ -692,18 +716,11 @@ export default function Shop() {
   };
 
   const handleStripeSuccess = async (sessionId: string) => {
-      // CHECK IF USER IS LOGGED IN
-      if (!user) {
-        console.error("User not logged in after Stripe redirect");
-        alert("Please log in again to complete your order. Your payment was successful.");
-        setLocation("/login");
-        return;
-      }
-
     console.log(
       "[DEBUG] handleStripeSuccess called with sessionId:",
       sessionId,
     );
+
     try {
       // Prevent double processing - check both memory and storage
       const processedKey = `stripe_processed_${sessionId}`;
@@ -718,6 +735,44 @@ export default function Shop() {
       processingStripeOrders.add(sessionId);
       console.log("[DEBUG] Added session to processing set:", sessionId);
       sessionStorage.setItem(processedKey, "true");
+
+      // ⭐ CRITICAL FIX: Get fresh user data instead of relying on stale 'user' variable
+      const {
+        data: { user: currentUser },
+      } = await supabase.auth.getUser();
+
+      // If still no user, try to refresh the session
+      if (!currentUser) {
+        console.log("[DEBUG] No user found, attempting to refresh session...");
+        const {
+          data: { session },
+        } = await supabase.auth.refreshSession();
+
+        if (!session?.user) {
+          console.error(
+            "User not logged in after Stripe redirect and refresh failed",
+          );
+          alert(
+            "Please log in again to complete your order. Your payment was successful. Contact support with session ID: " +
+              sessionId,
+          );
+          setLocation("/login");
+          return;
+        }
+      }
+
+      // Use the fresh user data
+      const userId =
+        currentUser?.id || (await supabase.auth.getUser()).data.user?.id;
+
+      if (!userId) {
+        console.error("Could not get user ID");
+        alert(
+          "Authentication error. Please contact support with session ID: " +
+            sessionId,
+        );
+        return;
+      }
 
       let cartItems = [];
       let calculatedSubtotal = 0;
@@ -768,10 +823,11 @@ export default function Shop() {
 
       console.log("Saving order with items:", cartItems);
 
+      // ⭐ CRITICAL FIX: Use the fresh userId instead of stale user.id
       const { data: orderData, error } = await supabase
         .from("orders")
         .insert({
-          user_id: user.id,
+          user_id: userId,
           payment_method: "stripe",
           transaction_id: sessionId,
           items: cartItems,
@@ -785,7 +841,6 @@ export default function Shop() {
 
       if (error) {
         console.error("Error saving Stripe order:", error);
-        // Check if this is a duplicate transaction error (unique constraint violation)
         if (
           error.code === "23505" ||
           error.message?.includes("unique_transaction_id")
@@ -793,10 +848,10 @@ export default function Shop() {
           console.log(
             "Order already exists for this transaction, skipping duplicate",
           );
-          // Continue as if successful - order already exists
         } else {
           alert(
-            "Payment successful but there was an error saving your order. Please contact support.",
+            "Payment successful but there was an error saving your order. Please contact support with error: " +
+              error.message,
           );
           return;
         }
@@ -804,12 +859,15 @@ export default function Shop() {
 
       console.log("Order saved successfully!");
 
-
       // Send receipt email
-      if (orderData) {
-        await sendReceiptEmail(orderData, { id: user.id, email: user.email, user_metadata: user.user_metadata });
+      if (orderData && currentUser) {
+        await sendReceiptEmail(orderData, {
+          id: currentUser.id,
+          email: currentUser.email,
+          user_metadata: currentUser.user_metadata,
+        });
       }
-      // Update profile with order_id  console.log("Order saved successfully!");
+
       // Save legal acceptance record
       if (orderData) {
         const acceptanceData = sessionStorage.getItem(
@@ -820,7 +878,7 @@ export default function Shop() {
           const { error: legalError } = await supabase
             .from("legal_acceptances")
             .insert({
-              user_id: user.id,
+              user_id: userId,
               order_id: orderData.id,
               tos_accepted: parsedAcceptance.tos_accepted,
               privacy_accepted: parsedAcceptance.privacy_accepted,
@@ -842,9 +900,10 @@ export default function Shop() {
           }
         }
       }
+
       // Update profile with order_id
       if (orderData) {
-        await updateProfileWithOrderId(user.id, orderData.id);
+        await updateProfileWithOrderId(userId, orderData.id);
       }
 
       const subscriptionItem = cartItems.find((item: any) =>
@@ -868,7 +927,7 @@ export default function Shop() {
             subscription_tier: newTier,
             updated_at: new Date().toISOString(),
           })
-          .eq("id", user.id);
+          .eq("id", userId);
 
         if (updateError) {
           console.error("Error updating subscription tier:", updateError);
@@ -1689,4 +1748,3 @@ export default function Shop() {
     </div>
   );
 }
-
