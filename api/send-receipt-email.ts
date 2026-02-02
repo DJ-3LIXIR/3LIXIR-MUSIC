@@ -100,8 +100,8 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
       port: 587,
       secure: false,
       auth: {
-        user: process.env.ZOHO_EMAIL || 'support@3lixirmusic.com',
-        pass: process.env.ZOHO_PASSWORD || 'G7KPtMtXZAD5',
+        user: process.env.ZOHO_EMAIL_RECEIPT || 'support@3lixirmusic.com',
+        pass: process.env.ZOHO_PASSWORD_RECEIPT || 'G7KPtMtXZAD5',
       },
     });
 
@@ -135,7 +135,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
       .replace(/{{year}}/g, new Date().getFullYear().toString());
 
     await transporter.sendMail({
-      from: process.env.ZOHO_EMAIL || 'support@3lixirmusic.com',
+      from: process.env.ZOHO_EMAIL_RECEIPT || 'support@3lixirmusic.com',
       to: orderData.customer_email,
       subject: `3LIXIR - Order Receipt #${orderData.order_id || 'N/A'}`,
       html: emailHtml,
