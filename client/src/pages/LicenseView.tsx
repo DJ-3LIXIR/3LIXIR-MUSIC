@@ -84,10 +84,20 @@ export default function LicenseView() {
             .eq("id", user.id)
             .single();
 
+          // Fetch the subscription license to get the correct name
+          const { data: subLicense } = await supabase
+            .from("subscription_licenses")
+            .select("*")
+            .eq("user_id", user.id)
+            .order("created_at", { ascending: false })
+            .limit(1)
+            .maybeSingle();
+
           setLicenseData({
             type: "subscription",
             tier: profile?.subscription_tier || "tier_zero",
-            artistName: user.user_metadata?.full_name || "Artist",
+            artistName:
+              subLicense?.name || user.user_metadata?.full_name || "Artist",
             status: "active", // Assumed active if they just bought it
             expiresAt: null,
           });
