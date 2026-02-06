@@ -664,9 +664,12 @@ export default function Shop() {
               lineItems,
               userId: user?.id,
               userEmail: user?.email,
+              // Send minimal item data to avoid 500 char limit in metadata
               items: validItems.map((item) => ({
-                ...item,
-                name: item.name || item.title || "Unknown Item",
+                id: item.id,
+                type: item.id.startsWith("subscription")
+                  ? "subscription"
+                  : "beat",
               })),
               successUrl: `${window.location.origin}/stripe-success?session_id={CHECKOUT_SESSION_ID}`,
               cancelUrl: `${window.location.origin}/cancel`,
