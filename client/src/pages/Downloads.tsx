@@ -5,6 +5,7 @@ import { Button } from "@/components/ui/button";
 import { useAuth } from "@/contexts/AuthContext";
 import { supabase } from "@/supabaseClient";
 import { useLocation } from "wouter";
+import { beats } from "@/lib/data";
 
 interface OrderItem {
   id: string;
@@ -233,16 +234,32 @@ export default function Downloads() {
           item.id !== "royalty-token" && !item.id.startsWith("subscription-")
         );
       })
-      .map((item) => ({
-        ...item,
-        // Provide defaults for missing properties
-        title: item.title || "Unknown Beat",
-        artist: item.artist || "Unknown Artist",
-        price: item.price || 0,
-        quantity: item.quantity || 1,
-        orderId: order.id,
-        orderDate: order.created_at,
-      }));
+      .map((item) => {
+        // Try to find the beat in our local data to fill in missing gaps
+        const localBeat = beats.find(
+          (b) => b.id === item.id || b.title === item.title,
+        );
+
+        return {
+          ...item,
+          // Use local data if order data is missing/unknown, or prioritize local data for static assets like cover
+          title:
+            item.title &&
+            item.title !== "Unknown Beat" &&
+            item.title !== "Unknown Item"
+              ? item.title
+              : localBeat?.title || "Unknown Beat",
+          artist:
+            item.artist && item.artist !== "Unknown Artist"
+              ? item.artist
+              : localBeat?.artist || "Unknown Artist",
+          cover: localBeat?.cover || item.cover, // Always prefer local cover if available as it's more reliable
+          price: item.price || 0,
+          quantity: item.quantity || 1,
+          orderId: order.id,
+          orderDate: order.created_at,
+        };
+      });
   });
 
   return (
