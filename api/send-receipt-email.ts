@@ -1,5 +1,10 @@
 import nodemailer from "nodemailer";
 import type { VercelRequest, VercelResponse } from "@vercel/node";
+import { createClient } from "@supabase/supabase-js";
+
+const supabaseUrl = process.env.SUPABASE_URL || "";
+const supabaseKey = process.env.SUPABASE_SERVICE_ROLE_KEY || "";
+const supabase = createClient(supabaseUrl, supabaseKey);
 
 const emailTemplate = `<!DOCTYPE html>
 <html lang="en">
@@ -59,10 +64,7 @@ const emailTemplate = `<!DOCTYPE html>
                 <div class="total-section"><div class="total"><span>Total:</span><span>{{total_amount}}</span></div></div>
             </div>
             <div class="download-section"><div class="download-header">Download Your Beats</div>{{download_links_html}}</div>
-            <div class="license-section">
-                <div class="license-header">📄 Your License</div>
-                <div class="license-text">{{license_type}}<br><br><a href="{{license_url}}" style="color: #FFA500; font-weight: 600;">View Full License Agreement →</a></div>
-            </div>
+            {{license_section_html}}
             <div class="legal-links">
                 <a href="{{terms_url}}" class="legal-link">Terms of Service</a>
                 <span style="color: #666666;">|</span>
@@ -78,6 +80,100 @@ const emailTemplate = `<!DOCTYPE html>
     </div>
 </body>
 </html>`;
+
+interface LicenseInfo {
+  type: "custom" | "subscription" | "standard" | "none";
+  licenseText: string;
+  licenseUrl: string;
+}
+
+async function determineLicenseForOrder(
+  userId: string,
+  orderId: string,
+  items: any[],
+): Promise<LicenseInfo> {
+  // Check if order contains beats (not subscription or license products)
+  const beatItems = items.filter(
+    (item: any) =>
+      !item.id.startsWith("subscription-") && !item.id.startsWith("license-"),
+  );
+
+  // If this is a subscription purchase (no beats, just subscription)
+  const subscriptionItem = items.find((item: any) =>
+    item.id.startsWith("subscription-"),
+  );
+
+  if (subscriptionItem && beatItems.length === 0) {
+    // This is a subscription purchase - show subscription license
+    return {
+      type: "subscription",
+      licenseText:
+        "Subscription License - Unlimited use while your subscription is active. You can download and view your personalized license card anytime.",
+      licenseUrl: `${process.env.SITE_URL || "https://3lixir.com"}/license/subscription`,
+    };
+  }
+
+  // If no beats in order, no license section needed
+  if (beatItems.length === 0) {
+    return {
+      type: "none",
+      licenseText: "",
+      licenseUrl: "",
+    };
+  }
+
+  // For beat purchases, check each beat for custom license
+  for (const beat of beatItems) {
+    const beatName = beat.title || beat.name;
+
+    // Check if a custom license exists for this beat
+    const { data: customLicense, error: customLicenseError } = await supabase
+      .from("custom_licenses")
+      .select("*")
+      .eq("user_id", userId)
+      .eq("song_name", beatName)
+      .eq("order_id", orderId)
+      .maybeSingle();
+
+    if (!customLicenseError && customLicense) {
+      // Custom license exists for this beat
+      return {
+        type: "custom",
+        licenseText: `Custom License - A personalized license has been created for "${beatName}". Click below to view and download your custom license certificate.`,
+        licenseUrl: `${process.env.SITE_URL || "https://3lixir.com"}/license/custom/${customLicense.id}`,
+      };
+    }
+  }
+
+  // No custom license found, check if user has active subscription
+  const { data: profile, error: profileError } = await supabase
+    .from("profiles")
+    .select("subscription_tier")
+    .eq("id", userId)
+    .single();
+
+  if (
+    !profileError &&
+    profile &&
+    profile.subscription_tier &&
+    profile.subscription_tier !== "tier_zero"
+  ) {
+    // User has active subscription
+    return {
+      type: "subscription",
+      licenseText: `Subscription License - As a ${profile.subscription_tier.replace("tier_", "").toUpperCase()} member, your beats are covered under your subscription license. View and download your license card anytime.`,
+      licenseUrl: `${process.env.SITE_URL || "https://3lixir.com"}/license/subscription`,
+    };
+  }
+
+  // Default to standard license
+  return {
+    type: "standard",
+    licenseText:
+      "Standard License - Commercial use permitted with attribution. View the full license agreement for details on usage rights and restrictions.",
+    licenseUrl: `${process.env.SITE_URL || "https://3lixir.com"}/info?section=licensing`,
+  };
+}
 
 export default async function handler(req: VercelRequest, res: VercelResponse) {
   res.setHeader("Access-Control-Allow-Origin", "*");
@@ -109,6 +205,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
       },
     });
 
+    // Build items HTML
     let itemsHtml = "";
     if (orderData.items && orderData.items.length > 0) {
       orderData.items.forEach((item: any) => {
@@ -116,6 +213,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
       });
     }
 
+    // Build download links HTML
     let downloadLinksHtml = "";
     if (orderData.download_links && orderData.download_links.length > 0) {
       orderData.download_links.forEach((link: any) => {
@@ -123,6 +221,29 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
       });
     }
 
+    // Determine which license to show
+    const licenseInfo = await determineLicenseForOrder(
+      orderData.user_id,
+      orderData.order_id,
+      orderData.items || [],
+    );
+
+    // Build license section HTML
+    let licenseSectionHtml = "";
+    if (licenseInfo.type !== "none") {
+      licenseSectionHtml = `
+        <div class="license-section">
+          <div class="license-header">📄 Your License</div>
+          <div class="license-text">
+            ${licenseInfo.licenseText}
+            <br><br>
+            <a href="${licenseInfo.licenseUrl}" style="color: #FFA500; font-weight: 600;">View & Download License →</a>
+          </div>
+        </div>
+      `;
+    }
+
+    // Replace template variables
     const emailHtml = emailTemplate
       .replace(/{{customer_name}}/g, orderData.customer_name || "Customer")
       .replace(/{{order_id}}/g, orderData.order_id || "")
@@ -134,14 +255,22 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
       .replace(/{{total_amount}}/g, orderData.total_amount || "$0.00")
       .replace(/{{items_html}}/g, itemsHtml)
       .replace(/{{download_links_html}}/g, downloadLinksHtml)
+      .replace(/{{license_section_html}}/g, licenseSectionHtml)
       .replace(
-        /{{license_type}}/g,
-        orderData.license_type || "Standard License",
+        /{{terms_url}}/g,
+        orderData.terms_url ||
+          `${process.env.SITE_URL || "https://3lixir.com"}/shop/contract/terms`,
       )
-      .replace(/{{license_url}}/g, orderData.license_url || "#")
-      .replace(/{{terms_url}}/g, orderData.terms_url || "#")
-      .replace(/{{privacy_url}}/g, orderData.privacy_url || "#")
-      .replace(/{{support_url}}/g, orderData.support_url || "#")
+      .replace(
+        /{{privacy_url}}/g,
+        orderData.privacy_url ||
+          `${process.env.SITE_URL || "https://3lixir.com"}/info?section=privacy`,
+      )
+      .replace(
+        /{{support_url}}/g,
+        orderData.support_url ||
+          `${process.env.SITE_URL || "https://3lixir.com"}/support`,
+      )
       .replace(/{{year}}/g, new Date().getFullYear().toString());
 
     await transporter.sendMail({

@@ -14,6 +14,7 @@ import Info from "@/pages/Info";
 import Licenses from "@/pages/Licenses";
 import LicenseDesign from "@/pages/LicenseDesign";
 import SubscriptionDesign from "@/pages/SubscriptionDesign";
+import LicenseView from "@/pages/LicenseView";
 import Shop from "@/pages/Shop";
 import StripeSuccess from "@/pages/stripe-success";
 import Cancel from "@/pages/Cancel";
@@ -53,6 +54,7 @@ function Router() {
       <Route path="/licenses" component={Licenses} />
       <Route path="/license/design" component={LicenseDesign} />
       <Route path="/subscription/design" component={SubscriptionDesign} />
+      <Route path="/license/:type/:id?" component={LicenseView} />
       <Route path="/shop" component={Shop} />
       <Route path="/stripe-success" component={StripeSuccess} />
       <Route path="/cancel" component={Cancel} />
