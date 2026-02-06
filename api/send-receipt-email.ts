@@ -11,7 +11,7 @@ const emailTemplate = `<!DOCTYPE html>
         body { margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif; background-color: #000000; }
         .email-container { max-width: 600px; margin: 0 auto; background-color: #000000; }
         .top-banner { background: linear-gradient(135deg, #FFD700 0%, #FFA500 100%); height: 12px; }
-        .header { background: linear-gradient(135deg, #FFD700 0%, #FFA500 100%); padding: 40px 20px; text-align: center; }
+        .header { background: linear-gradient(135deg, #FFD700 0%, #FFA500 100%); padding: 50px 20px; text-align: center; border-bottom: 4px solid #FFA500; }
         .logo { font-size: 32px; font-weight: bold; color: #000000; letter-spacing: 2px; }
         .content { padding: 40px 30px; }
         .greeting { font-size: 24px; font-weight: 600; color: #ffffff; margin-bottom: 20px; }
@@ -36,9 +36,9 @@ const emailTemplate = `<!DOCTYPE html>
         .license-text { font-size: 14px; color: #cccccc; line-height: 1.6; }
         .legal-links { margin-top: 20px; padding-top: 20px; border-top: 1px solid #333333; text-align: center; }
         .legal-link { color: #FFA500; text-decoration: none; font-size: 13px; margin: 0 10px; }
-        .footer { background-color: #0a0a0a; color: #ffffff; padding: 30px; text-align: center; border-top: 1px solid #333333; }
-        .footer-text { font-size: 13px; color: #cccccc; line-height: 1.6; }
-        .footer-logo { font-size: 20px; font-weight: bold; color: #FFD700; letter-spacing: 2px; margin-bottom: 15px; }
+        .footer { background: linear-gradient(135deg, #FFD700 0%, #FFA500 100%); color: #000000; padding: 30px; text-align: center; }
+        .footer-text { font-size: 13px; color: #000000; line-height: 1.6; }
+        .footer-logo { font-size: 20px; font-weight: bold; color: #000000; letter-spacing: 2px; margin-bottom: 15px; }
     </style>
 </head>
 <body>
