@@ -99,7 +99,7 @@ const sendReceiptEmail = async (orderData: any, user: any) => {
             )
               ? "Subscription License - Unlimited use while active"
               : "Standard License - Commercial use permitted",
-            license_url: `${window.location.origin}/info?section=licensing`,
+            license_url: `${window.location.origin}/downloads`,
             terms_url: `${window.location.origin}/info?section=terms`,
             privacy_url: `${window.location.origin}/info?section=privacy`,
             support_url: `${window.location.origin}/info?section=contact`,
@@ -857,68 +857,24 @@ export default function Shop() {
               console.log("Successfully updated existing order with items.");
               // Update the orderData reference so legal acceptance can use it
               orderData = { ...existingOrder, items: itemsToSave };
+              // Clear error so we proceed to success logic
+              orderError = null;
             }
           } else {
             // Order exists and has items, so we're good
             console.log("Found existing order with items, completing process");
             orderData = existingOrder;
+            // Clear error so we proceed to success logic
+            orderError = null;
           }
-
-          // If we have orderData now (either fetched or updated), ensure legal acceptance is recorded
-          if (orderData) {
-            const acceptanceData = sessionStorage.getItem(
-              "pending_legal_acceptance",
-            );
-            if (acceptanceData) {
-              try {
-                const parsedAcceptance = JSON.parse(acceptanceData);
-                // Try to insert legal acceptance (ignore if it fails/duplicates)
-                await supabase.from("legal_acceptances").insert({
-                  user_id: finalUserId,
-                  order_id: orderData.id,
-                  tos_accepted: parsedAcceptance.tos_accepted,
-                  privacy_accepted: parsedAcceptance.privacy_accepted,
-                  refund_policy_accepted:
-                    parsedAcceptance.refund_policy_accepted,
-                  licensing_accepted: parsedAcceptance.licensing_accepted,
-                  accepted_at: parsedAcceptance.accepted_at,
-                  tos_version: parsedAcceptance.tos_version,
-                  privacy_version: parsedAcceptance.privacy_version,
-                  refund_policy_version: parsedAcceptance.refund_policy_version,
-                  licensing_version: parsedAcceptance.licensing_version,
-                  user_agent: parsedAcceptance.user_agent,
-                  ip_address: "client-side",
-                });
-                sessionStorage.removeItem("pending_legal_acceptance");
-              } catch (err) {
-                console.log(
-                  "Legal acceptance might already exist, ignoring error:",
-                  err,
-                );
-              }
-            }
-          }
-
-          // FIX: Send receipt email even if it was a duplicate/existing order
-          if (orderData) {
-            await sendReceiptEmail(orderData, {
-              id: finalUserId,
-              email: currentUser?.email || user?.email,
-              user_metadata: currentUser?.user_metadata || user?.user_metadata,
-            });
-          }
-
-          clearCart();
-          localStorage.removeItem("stripe_cart_backup");
-          setLocation("/downloads");
+        } else {
+          // Genuine error
+          console.error("Error saving Stripe order:", orderError);
+          alert(
+            "Payment successful but there was an error saving your order. Please contact support.",
+          );
           return;
         }
-
-        console.error("Error saving Stripe order:", orderError);
-        alert(
-          "Payment successful but there was an error saving your order. Please contact support.",
-        );
-        return;
       }
 
       console.log("Order saved successfully!");

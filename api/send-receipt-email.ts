@@ -1,10 +1,5 @@
-import nodemailer from "nodemailer";
-import type { VercelRequest, VercelResponse } from "@vercel/node";
-import { createClient } from "@supabase/supabase-js";
-
-const supabaseUrl = process.env.SUPABASE_URL || "";
-const supabaseKey = process.env.SUPABASE_SERVICE_ROLE_KEY || "";
-const supabase = createClient(supabaseUrl, supabaseKey);
+import nodemailer from 'nodemailer';
+import type { VercelRequest, VercelResponse } from '@vercel/node';
 
 const emailTemplate = `<!DOCTYPE html>
 <html lang="en">
@@ -64,7 +59,10 @@ const emailTemplate = `<!DOCTYPE html>
                 <div class="total-section"><div class="total"><span>Total:</span><span>{{total_amount}}</span></div></div>
             </div>
             <div class="download-section"><div class="download-header">Download Your Beats</div>{{download_links_html}}</div>
-            {{license_section_html}}
+            <div class="license-section">
+                <div class="license-header">📄 Your License</div>
+                <div class="license-text">{{license_type}}<br><br><a href="{{license_url}}" style="color: #FFA500; font-weight: 600;">View Full License Agreement →</a></div>
+            </div>
             <div class="legal-links">
                 <a href="{{terms_url}}" class="legal-link">Terms of Service</a>
                 <span style="color: #666666;">|</span>
@@ -81,223 +79,75 @@ const emailTemplate = `<!DOCTYPE html>
 </body>
 </html>`;
 
-interface LicenseInfo {
-  type: "custom" | "subscription" | "standard" | "none";
-  licenseText: string;
-  licenseUrl: string;
-}
-
-async function determineLicenseForOrder(
-  userId: string,
-  orderId: string,
-  items: any[],
-): Promise<LicenseInfo> {
-  // Ensure items is an array
-  if (!items || !Array.isArray(items)) {
-    items = [];
-  }
-
-  // Check if order contains beats (not subscription or license products)
-  const beatItems = items.filter(
-    (item: any) =>
-      item &&
-      item.id &&
-      typeof item.id === "string" &&
-      !item.id.startsWith("subscription-") &&
-      !item.id.startsWith("license-"),
-  );
-
-  // If this is a subscription purchase (no beats, just subscription)
-  const subscriptionItem = items.find(
-    (item: any) =>
-      item &&
-      item.id &&
-      typeof item.id === "string" &&
-      item.id.startsWith("subscription-"),
-  );
-
-  if (subscriptionItem && beatItems.length === 0) {
-    // This is a subscription purchase - show subscription license
-    return {
-      type: "subscription",
-      licenseText:
-        "Subscription License - Unlimited use while your subscription is active. You can download and view your personalized license card anytime.",
-      licenseUrl: `${process.env.SITE_URL || "https://3lixir.com"}/license/subscription`,
-    };
-  }
-
-  // If no beats in order, no license section needed
-  if (beatItems.length === 0) {
-    return {
-      type: "none",
-      licenseText: "",
-      licenseUrl: "",
-    };
-  }
-
-  // For beat purchases, check each beat for custom license
-  for (const beat of beatItems) {
-    const beatName = beat.title || beat.name;
-
-    // Check if a custom license exists for this beat
-    const { data: customLicense, error: customLicenseError } = await supabase
-      .from("custom_licenses")
-      .select("*")
-      .eq("user_id", userId)
-      .eq("song_name", beatName)
-      .eq("order_id", orderId)
-      .maybeSingle();
-
-    if (!customLicenseError && customLicense) {
-      // Custom license exists for this beat
-      return {
-        type: "custom",
-        licenseText: `Custom License - A personalized license has been created for "${beatName}". Click below to view and download your custom license certificate.`,
-        licenseUrl: `${process.env.SITE_URL || "https://3lixir.com"}/license/custom/${customLicense.id}`,
-      };
-    }
-  }
-
-  // No custom license found, check if user has active subscription
-  const { data: profile, error: profileError } = await supabase
-    .from("profiles")
-    .select("subscription_tier")
-    .eq("id", userId)
-    .single();
-
-  if (
-    !profileError &&
-    profile &&
-    profile.subscription_tier &&
-    profile.subscription_tier !== "tier_zero"
-  ) {
-    // User has active subscription
-    return {
-      type: "subscription",
-      licenseText: `Subscription License - As a ${profile.subscription_tier.replace("tier_", "").toUpperCase()} member, your beats are covered under your subscription license. View and download your license card anytime.`,
-      licenseUrl: `${process.env.SITE_URL || "https://3lixir.com"}/license/subscription`,
-    };
-  }
-
-  // Default to standard license
-  return {
-    type: "standard",
-    licenseText:
-      "Standard License - Commercial use permitted with attribution. View the full license agreement for details on usage rights and restrictions.",
-    licenseUrl: `${process.env.SITE_URL || "https://3lixir.com"}/info?section=licensing`,
-  };
-}
-
 export default async function handler(req: VercelRequest, res: VercelResponse) {
-  res.setHeader("Access-Control-Allow-Origin", "*");
-  res.setHeader("Access-Control-Allow-Methods", "POST, OPTIONS");
-  res.setHeader("Access-Control-Allow-Headers", "Content-Type");
+  res.setHeader('Access-Control-Allow-Origin', '*');
+  res.setHeader('Access-Control-Allow-Methods', 'POST, OPTIONS');
+  res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
 
-  if (req.method === "OPTIONS") {
+  if (req.method === 'OPTIONS') {
     return res.status(200).end();
   }
 
-  if (req.method !== "POST") {
-    return res.status(405).json({ error: "Method not allowed" });
+  if (req.method !== 'POST') {
+    return res.status(405).json({ error: 'Method not allowed' });
   }
 
   try {
     const { orderData } = req.body;
 
     if (!orderData || !orderData.customer_email) {
-      return res.status(400).json({ error: "Missing required order data" });
+      return res.status(400).json({ error: 'Missing required order data' });
     }
 
     const transporter = nodemailer.createTransport({
-      host: "smtp.zoho.com",
+      host: 'smtp.zoho.com',
       port: 587,
       secure: false,
       auth: {
-        user: process.env.ZOHO_EMAIL_RECEIPT || "receipt@3lixirmusic.com",
-        pass: process.env.ZOHO_PASSWORD_RECEIPT || "G7KPtMtXZAD5",
+        user: process.env.ZOHO_EMAIL_RECEIPT || 'receipt@3lixirmusic.com',
+        pass: process.env.ZOHO_PASSWORD_RECEIPT || 'G7KPtMtXZAD5',
       },
     });
 
-    // Build items HTML
-    let itemsHtml = "";
+    let itemsHtml = '';
     if (orderData.items && orderData.items.length > 0) {
       orderData.items.forEach((item: any) => {
         itemsHtml += `<div class="item"><span class="item-name">${item.name}</span><span class="item-price">${item.price}</span></div>`;
       });
     }
 
-    // Build download links HTML
-    let downloadLinksHtml = "";
+    let downloadLinksHtml = '';
     if (orderData.download_links && orderData.download_links.length > 0) {
       orderData.download_links.forEach((link: any) => {
         downloadLinksHtml += `<a href="${link.url}" class="download-btn" style="display: inline-block; background-color: #FFD700; background: linear-gradient(135deg, #FFD700 0%, #FFA500 100%); color: #000000; text-decoration: none; padding: 14px 30px; border-radius: 6px; font-weight: 600; font-size: 15px; margin: 8px;">Download ${link.name}</a>`;
       });
     }
 
-    // Determine which license to show
-    const licenseInfo = await determineLicenseForOrder(
-      orderData.user_id,
-      orderData.order_id,
-      orderData.items || [],
-    );
-
-    // Build license section HTML
-    let licenseSectionHtml = "";
-    if (licenseInfo.type !== "none") {
-      licenseSectionHtml = `
-        <div class="license-section">
-          <div class="license-header">📄 Your License</div>
-          <div class="license-text">
-            ${licenseInfo.licenseText}
-            <br><br>
-            <a href="${licenseInfo.licenseUrl}" style="color: #FFA500; font-weight: 600;">View & Download License →</a>
-          </div>
-        </div>
-      `;
-    }
-
-    // Replace template variables
     const emailHtml = emailTemplate
-      .replace(/{{customer_name}}/g, orderData.customer_name || "Customer")
-      .replace(/{{order_id}}/g, orderData.order_id || "")
-      .replace(
-        /{{order_date}}/g,
-        orderData.order_date || new Date().toLocaleDateString(),
-      )
-      .replace(/{{payment_method}}/g, orderData.payment_method || "PayPal")
-      .replace(/{{total_amount}}/g, orderData.total_amount || "$0.00")
+      .replace(/{{customer_name}}/g, orderData.customer_name || 'Customer')
+      .replace(/{{order_id}}/g, orderData.order_id || '')
+      .replace(/{{order_date}}/g, orderData.order_date || new Date().toLocaleDateString())
+      .replace(/{{payment_method}}/g, orderData.payment_method || 'PayPal')
+      .replace(/{{total_amount}}/g, orderData.total_amount || '$0.00')
       .replace(/{{items_html}}/g, itemsHtml)
       .replace(/{{download_links_html}}/g, downloadLinksHtml)
-      .replace(/{{license_section_html}}/g, licenseSectionHtml)
-      .replace(
-        /{{terms_url}}/g,
-        orderData.terms_url ||
-          `${process.env.SITE_URL || "https://3lixir.com"}/shop/contract/terms`,
-      )
-      .replace(
-        /{{privacy_url}}/g,
-        orderData.privacy_url ||
-          `${process.env.SITE_URL || "https://3lixir.com"}/info?section=privacy`,
-      )
-      .replace(
-        /{{support_url}}/g,
-        orderData.support_url ||
-          `${process.env.SITE_URL || "https://3lixir.com"}/support`,
-      )
+      .replace(/{{license_type}}/g, orderData.license_type || 'Standard License')
+      .replace(/{{license_url}}/g, orderData.license_url || '#')
+      .replace(/{{terms_url}}/g, orderData.terms_url || '#')
+      .replace(/{{privacy_url}}/g, orderData.privacy_url || '#')
+      .replace(/{{support_url}}/g, orderData.support_url || '#')
       .replace(/{{year}}/g, new Date().getFullYear().toString());
 
     await transporter.sendMail({
-      from: process.env.ZOHO_EMAIL_RECEIPT || "receipt@3lixirmusic.com",
+      from: process.env.ZOHO_EMAIL_RECEIPT || 'receipt@3lixirmusic.com',
       to: orderData.customer_email,
-      subject: `3LIXIR - Order Receipt #${orderData.order_id || "N/A"}`,
+      subject: `3LIXIR - Order Receipt #${orderData.order_id || 'N/A'}`,
       html: emailHtml,
     });
 
-    return res
-      .status(200)
-      .json({ success: true, message: "Receipt email sent successfully" });
+    return res.status(200).json({ success: true, message: 'Receipt email sent successfully' });
   } catch (error: any) {
-    console.error("Error sending email:", error);
+    console.error('Error sending email:', error);
     return res.status(500).json({ success: false, error: error.message });
   }
 }
