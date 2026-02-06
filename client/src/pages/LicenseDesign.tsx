@@ -86,39 +86,28 @@ export default function LicenseDesign() {
 
   const licenseDetails = getLicenseDetails();
 
-  // Save license to database via API
+  // Save license directly to Supabase custom_licenses table
   const saveLicenseToDatabase = async (orderId?: string) => {
+    if (!user) {
+      throw new Error("Not logged in");
+    }
+
     try {
-      const {
-        data: { session },
-      } = await supabase.auth.getSession();
+      const { data, error } = await supabase
+        .from("custom_licenses")
+        .insert({
+          user_id: user.id,
+          song_name: beatName,
+          artist_name: artistName.trim(),
+          order_id: orderId || null,
+          status: "pending",
+        })
+        .select()
+        .single();
 
-      if (!session) {
-        throw new Error("Not logged in");
-      }
+      if (error) throw error;
 
-      const apiUrl = "/api";
-
-      const response = await fetch(`${apiUrl}/licenses/custom`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${session.access_token}`,
-        },
-        body: JSON.stringify({
-          songName: beatName,
-          artistName: artistName.trim(),
-          orderId: orderId || null,
-        }),
-      });
-
-      const result = await response.json();
-
-      if (!result.success) {
-        throw new Error(result.error || "Failed to save license");
-      }
-
-      return result.data;
+      return data;
     } catch (error) {
       console.error("Error saving license:", error);
       throw error;
@@ -134,8 +123,10 @@ export default function LicenseDesign() {
     setSaving(true);
 
     try {
+      // Save to database
       await saveLicenseToDatabase();
 
+      // Add to cart
       addToCart({
         id: `license-${beatName}`,
         title: `Personal ${licenseDetails.tierName} License - ${beatName}`,
@@ -302,7 +293,7 @@ export default function LicenseDesign() {
                     className="w-full h-full object-cover"
                   />
 
-                  {/* Overlay Text - Beat Title - centered at middle of chip */}
+                  {/* Overlay Text - Beat Title */}
                   <div className="absolute top-[35%] left-0 right-0 text-center px-4">
                     <p
                       className="text-lg md:text-xl font-bold tracking-wide"
@@ -316,7 +307,7 @@ export default function LicenseDesign() {
                     </p>
                   </div>
 
-                  {/* Overlay Text - Artist Name - positioned just above the bottom line */}
+                  {/* Overlay Text - Artist Name */}
                   <div className="absolute bottom-[10%] left-0 right-0 text-center px-4">
                     <p
                       className="text-xl md:text-2xl font-bold tracking-wide"

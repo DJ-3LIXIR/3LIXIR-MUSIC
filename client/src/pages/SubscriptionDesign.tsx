@@ -85,53 +85,27 @@ export default function SubscriptionDesign() {
 
   const subscriptionDetails = getSubscriptionDetails();
 
-  // Save subscription to database via API
-  const saveSubscriptionToDatabase = async (orderId) => {
+  // Save subscription directly to Supabase subscription_licenses table
+  const saveSubscriptionToDatabase = async (orderId?: string) => {
+    if (!user) {
+      throw new Error("Not logged in");
+    }
+
     try {
-      const {
-        data: { session },
-      } = await supabase.auth.getSession();
+      const { data, error } = await supabase
+        .from("subscription_licenses")
+        .insert({
+          user_id: user.id,
+          name: artistName.trim(),
+          order_id: orderId || null,
+          status: "pending", // Will be updated to "active" after payment
+        })
+        .select()
+        .single();
 
-      if (!session) {
-        throw new Error("Not logged in");
-      }
+      if (error) throw error;
 
-      const apiUrl = "/api";
-
-      const response = await fetch(`${apiUrl}/subscriptions/custom`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${session.access_token}`,
-        },
-        body: JSON.stringify({
-          artistName: artistName.trim(),
-          tier: subscriptionDetails.tierName,
-          orderId: orderId || null,
-        }),
-      });
-
-      // Check if response is OK before parsing JSON
-      if (!response.ok) {
-        const errorText = await response.text();
-        console.error("API Error Response:", errorText);
-        throw new Error(`Server error: ${response.status}`);
-      }
-
-      // Try to parse JSON
-      let result;
-      try {
-        result = await response.json();
-      } catch (parseError) {
-        console.error("Failed to parse JSON response");
-        throw new Error("Invalid server response");
-      }
-
-      if (!result.success) {
-        throw new Error(result.error || "Failed to save subscription");
-      }
-
-      return result.data;
+      return data;
     } catch (error) {
       console.error("Error saving subscription:", error);
       throw error;
@@ -147,6 +121,7 @@ export default function SubscriptionDesign() {
     setSaving(true);
 
     try {
+      // Save to database
       await saveSubscriptionToDatabase();
 
       // Add SUBSCRIPTION to cart
@@ -300,7 +275,7 @@ export default function SubscriptionDesign() {
                     className="w-full h-full object-cover"
                   />
 
-                  {/* Overlay Text - Artist Name - positioned just above the bottom line */}
+                  {/* Overlay Text - Artist Name */}
                   <div className="absolute bottom-[10%] left-0 right-0 text-center px-4">
                     <p
                       className="text-xl md:text-2xl font-bold tracking-wide"
