@@ -99,7 +99,11 @@ const sendReceiptEmail = async (orderData: any, user: any) => {
             )
               ? "Subscription License - Unlimited use while active"
               : "Standard License - Commercial use permitted",
-            license_url: `${window.location.origin}/downloads`,
+            license_url: orderData.items.some((item: any) =>
+              item.id.startsWith("subscription-"),
+            )
+              ? `${window.location.origin}/license/subscription`
+              : `${window.location.origin}/license/standard`,
             terms_url: `${window.location.origin}/info?section=terms`,
             privacy_url: `${window.location.origin}/info?section=privacy`,
             support_url: `${window.location.origin}/info?section=contact`,

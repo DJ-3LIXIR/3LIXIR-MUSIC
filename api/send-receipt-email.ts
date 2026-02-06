@@ -1,5 +1,5 @@
-import nodemailer from 'nodemailer';
-import type { VercelRequest, VercelResponse } from '@vercel/node';
+import nodemailer from "nodemailer";
+import type { VercelRequest, VercelResponse } from "@vercel/node";
 
 const emailTemplate = `<!DOCTYPE html>
 <html lang="en">
@@ -80,43 +80,43 @@ const emailTemplate = `<!DOCTYPE html>
 </html>`;
 
 export default async function handler(req: VercelRequest, res: VercelResponse) {
-  res.setHeader('Access-Control-Allow-Origin', '*');
-  res.setHeader('Access-Control-Allow-Methods', 'POST, OPTIONS');
-  res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
+  res.setHeader("Access-Control-Allow-Origin", "*");
+  res.setHeader("Access-Control-Allow-Methods", "POST, OPTIONS");
+  res.setHeader("Access-Control-Allow-Headers", "Content-Type");
 
-  if (req.method === 'OPTIONS') {
+  if (req.method === "OPTIONS") {
     return res.status(200).end();
   }
 
-  if (req.method !== 'POST') {
-    return res.status(405).json({ error: 'Method not allowed' });
+  if (req.method !== "POST") {
+    return res.status(405).json({ error: "Method not allowed" });
   }
 
   try {
     const { orderData } = req.body;
 
     if (!orderData || !orderData.customer_email) {
-      return res.status(400).json({ error: 'Missing required order data' });
+      return res.status(400).json({ error: "Missing required order data" });
     }
 
     const transporter = nodemailer.createTransport({
-      host: 'smtp.zoho.com',
+      host: "smtp.zoho.com",
       port: 587,
       secure: false,
       auth: {
-        user: process.env.ZOHO_EMAIL_RECEIPT || 'receipt@3lixirmusic.com',
-        pass: process.env.ZOHO_PASSWORD_RECEIPT || 'G7KPtMtXZAD5',
+        user: process.env.ZOHO_EMAIL_RECEIPT || "receipt@3lixirmusic.com",
+        pass: process.env.ZOHO_PASSWORD_RECEIPT || "G7KPtMtXZAD5",
       },
     });
 
-    let itemsHtml = '';
+    let itemsHtml = "";
     if (orderData.items && orderData.items.length > 0) {
       orderData.items.forEach((item: any) => {
         itemsHtml += `<div class="item"><span class="item-name">${item.name}</span><span class="item-price">${item.price}</span></div>`;
       });
     }
 
-    let downloadLinksHtml = '';
+    let downloadLinksHtml = "";
     if (orderData.download_links && orderData.download_links.length > 0) {
       orderData.download_links.forEach((link: any) => {
         downloadLinksHtml += `<a href="${link.url}" class="download-btn" style="display: inline-block; background-color: #FFD700; background: linear-gradient(135deg, #FFD700 0%, #FFA500 100%); color: #000000; text-decoration: none; padding: 14px 30px; border-radius: 6px; font-weight: 600; font-size: 15px; margin: 8px;">Download ${link.name}</a>`;
@@ -124,30 +124,38 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     }
 
     const emailHtml = emailTemplate
-      .replace(/{{customer_name}}/g, orderData.customer_name || 'Customer')
-      .replace(/{{order_id}}/g, orderData.order_id || '')
-      .replace(/{{order_date}}/g, orderData.order_date || new Date().toLocaleDateString())
-      .replace(/{{payment_method}}/g, orderData.payment_method || 'PayPal')
-      .replace(/{{total_amount}}/g, orderData.total_amount || '$0.00')
+      .replace(/{{customer_name}}/g, orderData.customer_name || "Customer")
+      .replace(/{{order_id}}/g, orderData.order_id || "")
+      .replace(
+        /{{order_date}}/g,
+        orderData.order_date || new Date().toLocaleDateString(),
+      )
+      .replace(/{{payment_method}}/g, orderData.payment_method || "PayPal")
+      .replace(/{{total_amount}}/g, orderData.total_amount || "$0.00")
       .replace(/{{items_html}}/g, itemsHtml)
       .replace(/{{download_links_html}}/g, downloadLinksHtml)
-      .replace(/{{license_type}}/g, orderData.license_type || 'Standard License')
-      .replace(/{{license_url}}/g, orderData.license_url || '#')
-      .replace(/{{terms_url}}/g, orderData.terms_url || '#')
-      .replace(/{{privacy_url}}/g, orderData.privacy_url || '#')
-      .replace(/{{support_url}}/g, orderData.support_url || '#')
+      .replace(
+        /{{license_type}}/g,
+        orderData.license_type || "Standard License",
+      )
+      .replace(/{{license_url}}/g, orderData.license_url || "#")
+      .replace(/{{terms_url}}/g, orderData.terms_url || "#")
+      .replace(/{{privacy_url}}/g, orderData.privacy_url || "#")
+      .replace(/{{support_url}}/g, orderData.support_url || "#")
       .replace(/{{year}}/g, new Date().getFullYear().toString());
 
     await transporter.sendMail({
-      from: process.env.ZOHO_EMAIL_RECEIPT || 'receipt@3lixirmusic.com',
+      from: process.env.ZOHO_EMAIL_RECEIPT || "receipt@3lixirmusic.com",
       to: orderData.customer_email,
-      subject: `3LIXIR - Order Receipt #${orderData.order_id || 'N/A'}`,
+      subject: `3LIXIR - Order Receipt #${orderData.order_id || "N/A"}`,
       html: emailHtml,
     });
 
-    return res.status(200).json({ success: true, message: 'Receipt email sent successfully' });
+    return res
+      .status(200)
+      .json({ success: true, message: "Receipt email sent successfully" });
   } catch (error: any) {
-    console.error('Error sending email:', error);
+    console.error("Error sending email:", error);
     return res.status(500).json({ success: false, error: error.message });
   }
 }
