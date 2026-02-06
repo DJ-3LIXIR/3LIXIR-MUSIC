@@ -664,9 +664,14 @@ export default function Shop() {
               lineItems,
               userId: user?.id,
               userEmail: user?.email,
-              // Send minimal item data to avoid 500 char limit in metadata
+              // Send essential item data (title/artist) for the receipt/DB,
+              // but exclude long descriptions/URLs to stay under Stripe's 500 char metadata limit.
+              // The frontend will "heal" the full data (including download links) from localStorage upon return.
               items: validItems.map((item) => ({
                 id: item.id,
+                title: item.title,
+                artist: item.artist,
+                price: item.price,
                 type: item.id.startsWith("subscription")
                   ? "subscription"
                   : "beat",
@@ -844,10 +849,23 @@ export default function Shop() {
             return;
           }
 
-          // FIX: If the existing order has empty items (created by webhook), update it with our local data
-          if (!existingOrder.items || existingOrder.items.length === 0) {
+          // FIX: If the existing order has empty items OR "Unknown" items (created by webhook with limited metadata),
+          // update it with our local cart data which has the full details.
+          const hasIncompleteItems =
+            !existingOrder.items ||
+            existingOrder.items.length === 0 ||
+            existingOrder.items.some(
+              (item: any) =>
+                !item.id.startsWith("subscription-") &&
+                (!item.title ||
+                  item.title === "Unknown Beat" ||
+                  item.title === "Unknown Item" ||
+                  item.name === "Unknown Item"),
+            );
+
+          if (hasIncompleteItems) {
             console.log(
-              "Existing order has empty items. Updating with local cart data...",
+              "Existing order has incomplete items. Updating with local cart data...",
             );
             const { error: updateError } = await supabase
               .from("orders")
