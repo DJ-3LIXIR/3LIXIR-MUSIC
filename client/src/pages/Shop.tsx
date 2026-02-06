@@ -102,8 +102,8 @@ const sendReceiptEmail = async (orderData: any, user: any) => {
             license_url: orderData.items.some((item: any) =>
               item.id.startsWith("subscription-"),
             )
-              ? `${window.location.origin}/license/subscription`
-              : `${window.location.origin}/license/standard`,
+              ? `${window.location.origin}/license/subscription/${orderData.id}`
+              : `${window.location.origin}/license/custom/${orderData.id}`,
             terms_url: `${window.location.origin}/info?section=terms`,
             privacy_url: `${window.location.origin}/info?section=privacy`,
             support_url: `${window.location.origin}/info?section=contact`,

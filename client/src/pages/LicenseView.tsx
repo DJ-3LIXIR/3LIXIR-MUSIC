@@ -33,26 +33,65 @@ export default function LicenseView() {
     setError(null);
 
     try {
-      if (licenseType === "custom" && licenseId) {
-        // Load custom license
-        const { data, error } = await supabase
-          .from("custom_licenses")
-          .select("*")
-          .eq("id", licenseId)
-          .eq("user_id", user.id)
-          .single();
+      if (licenseType === "custom") {
+        // First try to find a custom license associated with this order
+        // This query assumes there is a link between custom_licenses and orders, e.g. via order_id
+        let customLicenseData = null;
 
-        if (error) throw error;
-        if (!data) throw new Error("License not found");
+        if (licenseId) {
+          // If we have an ID (which might be an order ID based on shop.tsx), try to find by order_id first
+          const { data: byOrder, error: orderError } = await supabase
+            .from("custom_licenses")
+            .select("*")
+            .eq("order_id", licenseId)
+            .maybeSingle();
 
-        setLicenseData({
-          type: "custom",
-          songName: data.song_name,
-          artistName: data.artist_name,
-          orderId: data.order_id,
-          status: data.status,
-          createdAt: data.created_at,
-        });
+          if (byOrder) {
+            customLicenseData = byOrder;
+          } else {
+            // If not found by order_id, try by license id directly
+            const { data: byId, error: idError } = await supabase
+              .from("custom_licenses")
+              .select("*")
+              .eq("id", licenseId)
+              .maybeSingle();
+
+            if (byId) customLicenseData = byId;
+          }
+        }
+
+        // If we found a custom license, use it
+        if (customLicenseData) {
+          setLicenseData({
+            type: "custom",
+            songName: customLicenseData.song_name,
+            artistName: customLicenseData.artist_name,
+            orderId: customLicenseData.order_id,
+            status: customLicenseData.status,
+            createdAt: customLicenseData.created_at,
+          });
+        } else {
+          // Fallback: If no custom license found for this order, show the subscription card
+          // This handles the "if not then custom subscription card" requirement
+          console.log(
+            "No custom license found for order, falling back to subscription view",
+          );
+          // Recursively load subscription data
+          // We can just manually trigger the subscription logic here
+          const { data: profile } = await supabase
+            .from("profiles")
+            .select("subscription_tier")
+            .eq("id", user.id)
+            .single();
+
+          setLicenseData({
+            type: "subscription",
+            tier: profile?.subscription_tier || "tier_zero",
+            artistName: user.user_metadata?.full_name || "Artist",
+            status: "active", // Assumed active if they just bought it
+            expiresAt: null,
+          });
+        }
       } else if (licenseType === "subscription") {
         // Load subscription license
         const { data: profile, error: profileError } = await supabase
