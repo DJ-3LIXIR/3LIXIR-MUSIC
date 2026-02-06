@@ -92,15 +92,28 @@ async function determineLicenseForOrder(
   orderId: string,
   items: any[],
 ): Promise<LicenseInfo> {
+  // Ensure items is an array
+  if (!items || !Array.isArray(items)) {
+    items = [];
+  }
+
   // Check if order contains beats (not subscription or license products)
   const beatItems = items.filter(
     (item: any) =>
-      !item.id.startsWith("subscription-") && !item.id.startsWith("license-"),
+      item &&
+      item.id &&
+      typeof item.id === "string" &&
+      !item.id.startsWith("subscription-") &&
+      !item.id.startsWith("license-"),
   );
 
   // If this is a subscription purchase (no beats, just subscription)
-  const subscriptionItem = items.find((item: any) =>
-    item.id.startsWith("subscription-"),
+  const subscriptionItem = items.find(
+    (item: any) =>
+      item &&
+      item.id &&
+      typeof item.id === "string" &&
+      item.id.startsWith("subscription-"),
   );
 
   if (subscriptionItem && beatItems.length === 0) {
