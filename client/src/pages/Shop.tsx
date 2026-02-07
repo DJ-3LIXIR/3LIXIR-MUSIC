@@ -203,7 +203,9 @@ export default function Shop() {
 
   const beatItems = validItems.filter(
     (item) =>
-      item.id !== "royalty-token" && !item.id.startsWith("subscription-"),
+      item.id !== "royalty-token" && 
+      !item.id.startsWith("subscription-") && 
+      !item.id.startsWith("license-"),
   );
   const totalBeats = beatItems.reduce(
     (sum, item) => sum + (item.quantity || 0),
@@ -212,6 +214,10 @@ export default function Shop() {
 
   const hasSubscription = validItems.some((item) =>
     item.id.startsWith("subscription-"),
+  );
+
+  const hasLicenseInCart = validItems.some((item) =>
+    item.id.startsWith("license-"),
   );
 
   const isCryptoDisabled = hasSubscription;
@@ -260,7 +266,7 @@ export default function Shop() {
     userProfile.subscription_tier !== "tier_zero";
 
   const hasProperLicensing =
-    hasActiveMembership || hasSubscription || tokenCount >= totalBeats;
+    hasActiveMembership || hasSubscription || hasLicenseInCart || tokenCount >= totalBeats;
 
   // PayPal useEffect
   useEffect(() => {
@@ -1270,7 +1276,7 @@ export default function Shop() {
                 ? "proper licensing"
                 : tokenCount < totalBeats
                   ? `${totalBeats - tokenCount} more token${totalBeats - tokenCount > 1 ? "s" : ""}`
-                  : "a subscription or tokens"}{" "}
+                  : "a subscription, a license, or tokens"}{" "}
               to proceed with checkout.
             </p>
 
