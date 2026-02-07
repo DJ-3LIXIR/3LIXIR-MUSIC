@@ -211,9 +211,19 @@ export default function Downloads() {
     }
 
     return order.items
-      .filter((item) => {
+      .filter((item: any) => {
         if (!item || !item.id) return false;
         if (item.hasOwnProperty("price_data")) return false;
+        
+        // Filter out license items from the beats view
+        const titleToCheck = (item.title || item.name || item.description || "").toLowerCase();
+        const isLicense = 
+          titleToCheck.includes("license") || 
+          titleToCheck.includes("personal black") ||
+          String(item.id).startsWith("license-");
+          
+        if (isLicense) return false;
+
         return item.id !== "royalty-token" && !item.id.startsWith("subscription-");
       })
       .map((item) => {
@@ -238,6 +248,30 @@ export default function Downloads() {
           orderDate: order.created_at,
         };
       });
+  });
+
+  // Get all purchased licenses (from orders)
+  const purchasedLicenses = orders.flatMap((order) => {
+    if (!order.items || !Array.isArray(order.items)) {
+      return [];
+    }
+
+    return order.items
+      .filter((item: any) => {
+        if (!item || !item.id) return false;
+        if (item.hasOwnProperty("price_data")) return false;
+        
+        // Only include license items
+        const titleToCheck = item.title || item.name || "";
+        const isLicense = titleToCheck.toLowerCase().includes("license") || String(item.id).startsWith("license-");
+        return isLicense;
+      })
+      .map((item: any) => ({
+        ...item,
+        title: item.title || item.name || "Unknown License",
+        orderId: order.id,
+        orderDate: order.created_at,
+      }));
   });
 
   // Check if user has subscription
@@ -458,7 +492,7 @@ export default function Downloads() {
                     </div>
 
                     <Button
-                      onClick={() => setLocation(`/license/view?orderId=${license.orderId}`)}
+                      onClick={() => setLocation(`/license/custom/${license.orderId}`)}
                       className="w-full bg-[hsl(var(--gold))] text-black hover:bg-[hsl(var(--gold))]/90 rounded-full py-3 text-xs font-bold uppercase tracking-widest"
                     >
                       View License
