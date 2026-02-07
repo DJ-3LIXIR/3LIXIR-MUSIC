@@ -264,7 +264,11 @@ export default function Downloads() {
         // Only include license items
         const titleToCheck = item.title || item.name || "";
         const isLicense = titleToCheck.toLowerCase().includes("license") || String(item.id).startsWith("license-");
-        return isLicense;
+        const isSubscription = String(item.id).startsWith("subscription-") || 
+                             String(item.id).startsWith("sub_") || 
+                             titleToCheck.toLowerCase().includes("subscription");
+        
+        return isLicense && !isSubscription;
       })
       .map((item: any) => ({
         ...item,
@@ -274,8 +278,6 @@ export default function Downloads() {
       }));
   });
 
-  // Check if user has subscription
-  const hasSubscription = userProfile?.subscription_tier && userProfile.subscription_tier !== "tier_zero";
 
   return (
     <div className="min-h-screen bg-black text-foreground relative">
@@ -338,7 +340,7 @@ export default function Downloads() {
                 }`}
               >
                 <FileText className="w-4 h-4" />
-                Licenses ({customLicenses.length + (hasSubscription ? 1 : 0)})
+                Licenses ({customLicenses.length + purchasedLicenses.length})
               </button>
             </div>
 
@@ -433,37 +435,6 @@ export default function Downloads() {
             {/* Licenses View */}
             {viewMode === "licenses" && (
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                {/* Subscription License Card (if active) */}
-                {hasSubscription && (
-                  <div className="border border-white/10 rounded-lg p-6 bg-black/80 hover:border-white/20 transition-all hover:shadow-lg hover:shadow-[hsl(var(--gold))]/10">
-                    <div className="flex items-start gap-4 mb-4">
-                      <div className="w-16 h-16 bg-white/10 rounded-lg flex-shrink-0 flex items-center justify-center">
-                        <FileText className="w-8 h-8 text-[hsl(var(--gold))]" />
-                      </div>
-                      <div className="flex-grow min-w-0">
-                        <h3 className="text-lg font-bold mb-1 truncate">
-                          Unlimited License
-                        </h3>
-                        <p className="text-sm text-muted-foreground truncate">
-                          Active Subscription
-                        </p>
-                      </div>
-                    </div>
-
-                    <div className="flex items-center gap-2 text-xs text-green-500 mb-4 bg-green-500/10 px-3 py-2 rounded-lg">
-                      <CheckCircle2 className="w-4 h-4" />
-                      <span>Active</span>
-                    </div>
-
-                    <Button
-                      onClick={() => setLocation("/license/view?type=subscription")}
-                      className="w-full bg-[hsl(var(--gold))] text-black hover:bg-[hsl(var(--gold))]/90 rounded-full py-3 text-xs font-bold uppercase tracking-widest"
-                    >
-                      View License
-                    </Button>
-                  </div>
-                )}
-
                 {/* Purchased Custom Licenses (from orders) */}
                 {purchasedLicenses.map((license, index) => (
                   <div
