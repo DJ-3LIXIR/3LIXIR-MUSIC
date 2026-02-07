@@ -442,8 +442,12 @@ export default function Downloads() {
                     className="border border-white/10 rounded-lg p-6 bg-black/80 hover:border-white/20 transition-all hover:shadow-lg hover:shadow-[hsl(var(--gold))]/10"
                   >
                     <div className="flex items-start gap-4 mb-4">
-                      <div className="w-16 h-16 bg-white/10 rounded-lg flex-shrink-0 flex items-center justify-center">
-                        <Music className="w-8 h-8 text-[hsl(var(--gold))]" />
+                      <div className="w-16 h-16 bg-white/10 rounded-lg flex-shrink-0 overflow-hidden">
+                        <img 
+                          src="/personal-black-license.png" 
+                          alt="License" 
+                          className="w-full h-full object-cover"
+                        />
                       </div>
                       <div className="flex-grow min-w-0">
                         <h3 className="text-lg font-bold mb-1 truncate">
@@ -478,8 +482,12 @@ export default function Downloads() {
                     className="border border-white/10 rounded-lg p-6 bg-black/80 hover:border-white/20 transition-all hover:shadow-lg hover:shadow-[hsl(var(--gold))]/10"
                   >
                     <div className="flex items-start gap-4 mb-4">
-                      <div className="w-16 h-16 bg-white/10 rounded-lg flex-shrink-0 flex items-center justify-center">
-                        <Music className="w-8 h-8 text-[hsl(var(--gold))]" />
+                      <div className="w-16 h-16 bg-white/10 rounded-lg flex-shrink-0 overflow-hidden">
+                        <img 
+                          src="/personal-black-license.png" 
+                          alt="License" 
+                          className="w-full h-full object-cover"
+                        />
                       </div>
                       <div className="flex-grow min-w-0">
                         <h3 className="text-lg font-bold mb-1 truncate">
