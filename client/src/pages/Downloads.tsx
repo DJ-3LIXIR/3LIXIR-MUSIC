@@ -398,14 +398,119 @@ export default function Downloads() {
 
             {/* Licenses View */}
             {viewMode === "licenses" && (
-              <div className="flex flex-col items-center justify-center py-20">
-                <div className="w-24 h-24 rounded-full bg-white/10 flex items-center justify-center mb-6">
-                  <FileText className="w-12 h-12 text-muted-foreground" />
-                </div>
-                <h2 className="text-2xl font-bold mb-2">Licenses</h2>
-                <p className="text-muted-foreground mb-8">
-                  Your licenses will appear here
-                </p>
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                {/* Subscription License Card (if active) */}
+                {hasSubscription && (
+                  <div className="border border-white/10 rounded-lg p-6 bg-black/80 hover:border-white/20 transition-all hover:shadow-lg hover:shadow-[hsl(var(--gold))]/10">
+                    <div className="flex items-start gap-4 mb-4">
+                      <div className="w-16 h-16 bg-white/10 rounded-lg flex-shrink-0 flex items-center justify-center">
+                        <FileText className="w-8 h-8 text-[hsl(var(--gold))]" />
+                      </div>
+                      <div className="flex-grow min-w-0">
+                        <h3 className="text-lg font-bold mb-1 truncate">
+                          Unlimited License
+                        </h3>
+                        <p className="text-sm text-muted-foreground truncate">
+                          Active Subscription
+                        </p>
+                      </div>
+                    </div>
+
+                    <div className="flex items-center gap-2 text-xs text-green-500 mb-4 bg-green-500/10 px-3 py-2 rounded-lg">
+                      <CheckCircle2 className="w-4 h-4" />
+                      <span>Active</span>
+                    </div>
+
+                    <Button
+                      onClick={() => setLocation("/license/view?type=subscription")}
+                      className="w-full bg-[hsl(var(--gold))] text-black hover:bg-[hsl(var(--gold))]/90 rounded-full py-3 text-xs font-bold uppercase tracking-widest"
+                    >
+                      View License
+                    </Button>
+                  </div>
+                )}
+
+                {/* Purchased Custom Licenses (from orders) */}
+                {purchasedLicenses.map((license, index) => (
+                  <div
+                    key={`${license.orderId}-${index}`}
+                    className="border border-white/10 rounded-lg p-6 bg-black/80 hover:border-white/20 transition-all hover:shadow-lg hover:shadow-[hsl(var(--gold))]/10"
+                  >
+                    <div className="flex items-start gap-4 mb-4">
+                      <div className="w-16 h-16 bg-white/10 rounded-lg flex-shrink-0 flex items-center justify-center">
+                        <Music className="w-8 h-8 text-[hsl(var(--gold))]" />
+                      </div>
+                      <div className="flex-grow min-w-0">
+                        <h3 className="text-lg font-bold mb-1 truncate">
+                          {license.title}
+                        </h3>
+                        <p className="text-sm text-muted-foreground truncate">
+                          DJ 3LIXIR
+                        </p>
+                      </div>
+                    </div>
+
+                    <div className="flex items-center gap-2 text-xs text-muted-foreground mb-4">
+                      <Clock className="w-3 h-3" />
+                      <span>
+                        Purchased {new Date(license.orderDate).toLocaleDateString()}
+                      </span>
+                    </div>
+
+                    <Button
+                      onClick={() => setLocation(`/license/view?orderId=${license.orderId}`)}
+                      className="w-full bg-[hsl(var(--gold))] text-black hover:bg-[hsl(var(--gold))]/90 rounded-full py-3 text-xs font-bold uppercase tracking-widest"
+                    >
+                      View License
+                    </Button>
+                  </div>
+                ))}
+
+                {/* Existing Custom Licenses (Legacy/Direct) */}
+                {customLicenses.map((license) => (
+                  <div
+                    key={license.id}
+                    className="border border-white/10 rounded-lg p-6 bg-black/80 hover:border-white/20 transition-all hover:shadow-lg hover:shadow-[hsl(var(--gold))]/10"
+                  >
+                    <div className="flex items-start gap-4 mb-4">
+                      <div className="w-16 h-16 bg-white/10 rounded-lg flex-shrink-0 flex items-center justify-center">
+                        <Music className="w-8 h-8 text-[hsl(var(--gold))]" />
+                      </div>
+                      <div className="flex-grow min-w-0">
+                        <h3 className="text-lg font-bold mb-1 truncate">
+                          {license.song_name}
+                        </h3>
+                        <p className="text-sm text-muted-foreground truncate">
+                          {license.artist_name}
+                        </p>
+                      </div>
+                    </div>
+
+                    <div className="flex items-center gap-2 text-xs text-green-500 mb-4 bg-green-500/10 px-3 py-2 rounded-lg">
+                      <CheckCircle2 className="w-4 h-4" />
+                      <span>Active</span>
+                    </div>
+
+                    <Button
+                      onClick={() => setLocation(`/license/view?id=${license.id}`)}
+                      className="w-full bg-[hsl(var(--gold))] text-black hover:bg-[hsl(var(--gold))]/90 rounded-full py-3 text-xs font-bold uppercase tracking-widest"
+                    >
+                      View License
+                    </Button>
+                  </div>
+                ))}
+
+                {!hasSubscription && purchasedLicenses.length === 0 && customLicenses.length === 0 && (
+                  <div className="col-span-full flex flex-col items-center justify-center py-20">
+                    <div className="w-24 h-24 rounded-full bg-white/10 flex items-center justify-center mb-6">
+                      <FileText className="w-12 h-12 text-muted-foreground" />
+                    </div>
+                    <h2 className="text-2xl font-bold mb-2">No licenses found</h2>
+                    <p className="text-muted-foreground mb-8">
+                      Your purchased licenses will appear here
+                    </p>
+                  </div>
+                )}
               </div>
             )}
           </div>
