@@ -1,0 +1,37 @@
+{
+  "version": 2,
+  "builds": [
+    {
+      "src": "api/send-receipt-email.ts",
+      "use": "@vercel/node"
+    },
+    {
+      "src": "api/index.cjs",
+      "use": "@vercel/node"
+    },
+    {
+      "src": "package.json",
+      "use": "@vercel/static-build",
+      "config": {
+        "distDir": "dist/public"
+      }
+    }
+  ],
+  "routes": [
+    {
+      "src": "/api/send-receipt-email",
+      "dest": "/api/send-receipt-email.ts"
+    },
+    {
+      "src": "/api/(.*)",
+      "dest": "/api/index.cjs"
+    },
+    {
+      "handle": "filesystem"
+    },
+    {
+      "src": "/(.*)",
+      "dest": "/index.html"
+    }
+  ]
+}
