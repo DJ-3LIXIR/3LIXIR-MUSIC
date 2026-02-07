@@ -406,6 +406,29 @@ export default function Shop() {
           return;
         }
 
+        // Create the order record for the subscription so it appears in receipts
+        const { error: orderError } = await supabase
+          .from("orders")
+          .insert({
+            user_id: user.id,
+            payment_method: "paypal",
+            transaction_id: subscriptionId,
+            items: [
+              {
+                ...subscriptionItem,
+                name: subscriptionItem.title || "Subscription",
+              },
+            ],
+            subtotal: subscriptionItem.price,
+            tax: 0,
+            total: subscriptionItem.price,
+            status: "completed",
+          });
+
+        if (orderError) {
+          console.error("Error creating subscription order:", orderError);
+        }
+
         console.log("PayPal subscription created:", subscriptionId);
       }
     } catch (error) {
