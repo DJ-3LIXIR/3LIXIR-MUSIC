@@ -206,10 +206,10 @@ export default function LicenseView() {
             </h1>
             <p className="text-muted-foreground mb-8">{error}</p>
             <Button
-              onClick={() => setLocation("/shop")}
+              onClick={() => setLocation("/downloads")}
               className="bg-[hsl(var(--gold))] text-black hover:bg-[hsl(var(--gold))]/90"
             >
-              Return to Shop
+              Return to Downloads
             </Button>
           </div>
         </div>
@@ -224,11 +224,11 @@ export default function LicenseView() {
       <div className="container mx-auto px-6 pt-32 pb-20">
         {/* Back Button */}
         <button
-          onClick={() => setLocation("/shop")}
+          onClick={() => setLocation("/downloads")}
           className="flex items-center gap-2 text-muted-foreground hover:text-[hsl(var(--gold))] transition-colors mb-8 print:hidden"
         >
           <ArrowLeft className="w-5 h-5" />
-          Back to Shop
+          Back to Downloads
         </button>
 
         <div className="max-w-4xl mx-auto">
