@@ -505,7 +505,7 @@ export default function Downloads() {
                   </div>
                 ))}
 
-                {!hasSubscription && purchasedLicenses.length === 0 && customLicenses.length === 0 && (
+                {purchasedLicenses.length === 0 && customLicenses.length === 0 && (
                   <div className="col-span-full flex flex-col items-center justify-center py-20">
                     <div className="w-24 h-24 rounded-full bg-white/10 flex items-center justify-center mb-6">
                       <FileText className="w-12 h-12 text-muted-foreground" />
