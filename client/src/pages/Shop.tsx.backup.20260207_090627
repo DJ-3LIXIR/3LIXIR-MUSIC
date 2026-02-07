@@ -103,9 +103,7 @@ const sendReceiptEmail = async (orderData: any, user: any) => {
               item.id.startsWith("subscription-"),
             )
               ? `${window.location.origin}/license/subscription/${orderData.id}`
-              : orderData.customLicenseId
-                ? `${window.location.origin}/license/custom/${orderData.customLicenseId}`
-                : `${window.location.origin}/license/standard`,
+              : `${window.location.origin}/license/custom/${orderData.id}`,
             terms_url: `${window.location.origin}/info?section=terms`,
             privacy_url: `${window.location.origin}/info?section=privacy`,
             support_url: `${window.location.origin}/info?section=contact`,
@@ -461,33 +459,6 @@ export default function Shop() {
           console.error("Error saving order:", error);
         }
 
-        // Create custom licenses for beat purchases
-        let customLicenseId = null;
-        const beatItems = validItems.filter(
-          (item) =>
-            !item.id.startsWith("subscription-") &&
-            !item.id.startsWith("license-") &&
-            item.id !== "royalty-token"
-        );
-
-        if (beatItems.length > 0 && orderData) {
-          const { data: customLicense, error: licenseError } = await supabase
-            .from("custom_licenses")
-            .insert({
-              user_id: user.id,
-              song_name: beatItems.map(b => b.title).join(", "),
-              artist_name: user.user_metadata?.full_name || user.email?.split("@")[0] || "Artist",
-              order_id: orderData.id,
-              status: "active",
-            })
-            .select()
-            .single();
-
-          if (!licenseError && customLicense) {
-            customLicenseId = customLicense.id;
-          }
-        }
-
         // Insert legal acceptance record
         if (orderData) {
           const acceptanceData = sessionStorage.getItem(
@@ -524,17 +495,11 @@ export default function Shop() {
           }
 
           // Send Receipt Email
-          await sendReceiptEmail(
-            {
-              ...orderData,
-              customLicenseId,
-            },
-            {
-              id: user.id,
-              email: user.email,
-              user_metadata: user.user_metadata,
-            },
-          );
+          await sendReceiptEmail(orderData, {
+            id: user.id,
+            email: user.email,
+            user_metadata: user.user_metadata,
+          });
         }
 
         const subscriptionItem = validItems.find((item) =>
@@ -957,33 +922,6 @@ export default function Shop() {
 
       // Update profile with order_id
       if (orderData) {
-        // Create custom licenses for beat purchases
-        let customLicenseId = null;
-        const beatItems = cartItems.filter(
-          (item: any) =>
-            !item.id.startsWith("subscription-") &&
-            !item.id.startsWith("license-") &&
-            item.id !== "royalty-token"
-        );
-
-        if (beatItems.length > 0 && orderData) {
-          const { data: customLicense, error: licenseError } = await supabase
-            .from("custom_licenses")
-            .insert({
-              user_id: finalUserId,
-              song_name: beatItems.map((b: any) => b.title).join(", "),
-              artist_name: currentUser?.user_metadata?.full_name || currentUser?.email?.split("@")[0] || user?.user_metadata?.full_name || "Artist",
-              order_id: orderData.id,
-              status: "active",
-            })
-            .select()
-            .single();
-
-          if (!licenseError && customLicense) {
-            customLicenseId = customLicense.id;
-          }
-        }
-
         const acceptanceData = sessionStorage.getItem(
           "pending_legal_acceptance",
         );
@@ -1014,18 +952,12 @@ export default function Shop() {
           }
         }
 
-          // Send Receipt Email
-          await sendReceiptEmail(
-            {
-              ...orderData,
-              customLicenseId,
-            },
-            {
-              id: finalUserId,
-              email: currentUser?.email || user?.email,
-              user_metadata: currentUser?.user_metadata || user?.user_metadata,
-            },
-          );
+        // Send receipt email
+        await sendReceiptEmail(orderData, {
+          id: finalUserId,
+          email: currentUser?.email || user?.email,
+          user_metadata: currentUser?.user_metadata || user?.user_metadata,
+        });
 
         await updateProfileWithOrderId(finalUserId, orderData.id);
       }
