@@ -66,6 +66,7 @@ export default function LicenseView() {
             type: "custom",
             songName: customLicenseData.song_name,
             artistName: customLicenseData.artist_name,
+            licenseeName: user.user_metadata?.full_name || user.email?.split("@")[0] || "Valued Customer",
             orderId: customLicenseData.order_id,
             status: customLicenseData.status,
             createdAt: customLicenseData.created_at,
@@ -96,8 +97,8 @@ export default function LicenseView() {
           setLicenseData({
             type: "subscription",
             tier: profile?.subscription_tier || "tier_zero",
-            artistName:
-              subLicense?.name || user.user_metadata?.full_name || "Artist",
+            artistName: "DJ 3LIXIR",
+            licenseeName: subLicense?.name || user.user_metadata?.full_name || "Valued Customer",
             status: "active", // Assumed active if they just bought it
             expiresAt: null,
           });
@@ -124,8 +125,8 @@ export default function LicenseView() {
         setLicenseData({
           type: "subscription",
           tier: profile.subscription_tier,
-          artistName:
-            subLicense?.name || user.user_metadata?.full_name || "Artist",
+          artistName: subLicense?.name || user.user_metadata?.full_name || "Valued Customer",
+          licenseeName: subLicense?.name || user.user_metadata?.full_name || "Valued Customer",
           status: subLicense?.status || "active",
           expiresAt: subLicense?.expires_at,
         });
@@ -159,6 +160,16 @@ export default function LicenseView() {
     }
     // For custom licenses, use the black card
     return "/Screenshot 2026-01-30 at 14.46.19.png";
+  };
+
+  // Helper to ensure we don't display a UUID as the artist name
+  const displayArtistName = (name: any) => {
+    if (!name) return "DJ 3LIXIR";
+    // Check if it looks like a UUID
+    if (typeof name === 'string' && name.length === 36 && name.match(/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i)) {
+      return "DJ 3LIXIR";
+    }
+    return name;
   };
 
   const handleDownloadPDF = () => {
@@ -262,7 +273,7 @@ export default function LicenseView() {
                   </div>
                 )}
 
-                {/* Overlay Text - Artist Name */}
+                {/* Overlay Text - Licensee Name */}
                 <div className="absolute bottom-[10%] left-0 right-0 text-center px-4">
                   <p
                     className="text-xl md:text-2xl font-bold tracking-wide"
@@ -309,9 +320,9 @@ export default function LicenseView() {
                     </span>
                   </div>
                   <div className="flex justify-between">
-                    <span className="text-muted-foreground">Artist:</span>
+                    <span className="text-muted-foreground">Licensee Name:</span>
                     <span className="font-semibold">
-                      {licenseData.artistName}
+                      {displayArtistName(licenseData.artistName)}
                     </span>
                   </div>
                   {licenseData.orderId && (
@@ -346,7 +357,7 @@ export default function LicenseView() {
                   <div className="flex justify-between">
                     <span className="text-muted-foreground">Artist:</span>
                     <span className="font-semibold">
-                      {licenseData.artistName}
+                      {displayArtistName(licenseData.artistName)}
                     </span>
                   </div>
                   <div className="flex justify-between">

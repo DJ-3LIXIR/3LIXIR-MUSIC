@@ -476,7 +476,7 @@ export default function Shop() {
             .insert({
               user_id: user.id,
               song_name: beatItems.map(b => b.title).join(", "),
-              artist_name: beatItems[0]?.artist || "DJ 3LIXIR",
+              artist_name: user.user_metadata?.full_name || user.email?.split("@")[0] || "Valued Customer",
               order_id: orderData.id,
               status: "active",
             })
@@ -972,7 +972,7 @@ export default function Shop() {
             .insert({
               user_id: finalUserId,
               song_name: beatItems.map((b: any) => b.title).join(", "),
-              artist_name: beatItems[0]?.artist || "DJ 3LIXIR",
+              artist_name: currentUser?.user_metadata?.full_name || user?.user_metadata?.full_name || currentUser?.email?.split("@")[0] || "Valued Customer",
               order_id: orderData.id,
               status: "active",
             })
