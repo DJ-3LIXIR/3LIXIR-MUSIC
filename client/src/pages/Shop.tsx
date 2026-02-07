@@ -470,13 +470,16 @@ export default function Shop() {
             item.id !== "royalty-token"
         );
 
+        // Try to find a custom artist name from any item in the cart (including license items)
+        const customArtistName = validItems.find(item => item.metadata?.artistName)?.metadata.artistName;
+
         if (beatItems.length > 0 && orderData) {
           const { data: customLicense, error: licenseError } = await supabase
             .from("custom_licenses")
             .insert({
               user_id: user.id,
               song_name: beatItems.map(b => b.title).join(", "),
-              artist_name: user.user_metadata?.full_name || user.email?.split("@")[0] || "Valued Customer",
+              artist_name: customArtistName || user.user_metadata?.full_name || user.email?.split("@")[0] || "Valued Customer",
               order_id: orderData.id,
               status: "active",
             })
@@ -966,13 +969,16 @@ export default function Shop() {
             item.id !== "royalty-token"
         );
 
+        // Try to find a custom artist name from any item in the cart (including license items)
+        const customArtistName = cartItems.find((item: any) => item.metadata?.artistName)?.metadata.artistName;
+
         if (beatItems.length > 0 && orderData) {
           const { data: customLicense, error: licenseError } = await supabase
             .from("custom_licenses")
             .insert({
               user_id: finalUserId,
               song_name: beatItems.map((b: any) => b.title).join(", "),
-              artist_name: currentUser?.user_metadata?.full_name || user?.user_metadata?.full_name || currentUser?.email?.split("@")[0] || "Valued Customer",
+              artist_name: customArtistName || currentUser?.user_metadata?.full_name || user?.user_metadata?.full_name || currentUser?.email?.split("@")[0] || "Valued Customer",
               order_id: orderData.id,
               status: "active",
             })
