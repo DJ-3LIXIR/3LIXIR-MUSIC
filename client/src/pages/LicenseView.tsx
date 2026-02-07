@@ -155,11 +155,11 @@ export default function LicenseView() {
         case "platinum":
           return "/Screenshot 2026-01-30 at 14.45.49.png";
         default:
-          return "/Screenshot 2026-01-30 at 14.46.19.png";
+          return "/personal-black-license.png";
       }
     }
     // For custom licenses, use the black card
-    return "/Screenshot 2026-01-30 at 14.46.19.png";
+    return "/personal-black-license.png";
   };
 
   // Helper to ensure we don't display a UUID as the artist name

@@ -76,7 +76,7 @@ export default function LicenseDesign() {
         };
       default:
         return {
-          cardImage: "/Screenshot 2026-01-30 at 14.46.19.png",
+          cardImage: "/personal-black-license.png",
           tierName: "Black",
           price: 50,
           split: "40/60",
