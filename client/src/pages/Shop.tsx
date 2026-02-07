@@ -270,12 +270,56 @@ export default function Shop() {
   const hasProperLicensing =
     hasActiveMembership || hasSubscription || hasLicenseInCart || tokenCount >= totalBeats;
 
+  const [isPayPalReady, setIsPayPalReady] = useState(false);
+
+  // Dynamic PayPal Script Loading
+  useEffect(() => {
+    if (!showPaymentModal || selectedPaymentMethod !== "paypal") return;
+
+    setIsPayPalReady(false);
+    const clientId =
+      "AZToHZYjUTiMaTHZZnA0ZM1GBR1Bd4avfBQB3n46dgp6hkaN3ZnOMn3LC2m1OGOBZRP3xmzjflT3T4JD";
+
+    // Remove existing script to ensure clean slate with correct intent
+    const existingScript = document.querySelector(
+      'script[src^="https://www.paypal.com/sdk/js"]',
+    );
+    if (existingScript) {
+      existingScript.remove();
+    }
+    if (window.paypal) {
+      delete window.paypal;
+    }
+
+    const script = document.createElement("script");
+    let src = `https://www.paypal.com/sdk/js?client-id=${clientId}&currency=USD`;
+
+    if (hasSubscription) {
+      // Subscription intent
+      src += "&vault=true&intent=subscription";
+    } else {
+      // One-time payment (capture) intent
+      src += "&intent=capture";
+    }
+
+    script.src = src;
+    script.async = true;
+    script.onload = () => setIsPayPalReady(true);
+    script.onerror = () => {
+      console.error("PayPal SDK failed to load");
+      alert("Failed to load PayPal. Please try refreshing.");
+    };
+
+    document.body.appendChild(script);
+  }, [showPaymentModal, selectedPaymentMethod, hasSubscription]);
+
   // PayPal useEffect
   useEffect(() => {
     if (
       showPaymentModal &&
       selectedPaymentMethod === "paypal" &&
       paypalRef.current &&
+      isPayPalReady &&
       window.paypal &&
       validItems.length > 0
     ) {
@@ -370,7 +414,7 @@ export default function Shop() {
         paypalRef.current.innerHTML = "";
       }
     };
-  }, [showPaymentModal, selectedPaymentMethod, validItems.length]);
+  }, [showPaymentModal, selectedPaymentMethod, validItems.length, isPayPalReady]);
 
   const handlePayPalSubscriptionSuccess = async (
     subscriptionId: string,
