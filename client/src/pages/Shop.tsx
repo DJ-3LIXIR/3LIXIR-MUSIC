@@ -261,9 +261,11 @@ export default function Shop() {
 
   const royaltyTokens = validItems.find((item) => item.id === "royalty-token");
   const tokenCount = royaltyTokens ? royaltyTokens.quantity : 0;
+  
+  const activeTiers = ["gold", "diamond", "platinum"];
   const hasActiveMembership =
     userProfile?.subscription_tier &&
-    userProfile.subscription_tier !== "tier_zero";
+    activeTiers.includes(userProfile.subscription_tier.toLowerCase());
 
   const hasProperLicensing =
     hasActiveMembership || hasSubscription || hasLicenseInCart || tokenCount >= totalBeats;
@@ -1229,6 +1231,7 @@ export default function Shop() {
       setShowLicenseModal(true);
       return;
     }
+
 
     // Always show contract modal for all purchases
     setContractAccepted(false);
