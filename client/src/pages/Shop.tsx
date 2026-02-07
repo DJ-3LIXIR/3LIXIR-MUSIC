@@ -286,6 +286,10 @@ export default function Shop() {
         item.id.startsWith("subscription-"),
       );
 
+      // Mixed Cart Logic: If both subscription and regular items exist
+      // We prioritize the subscription first. The user must complete that transaction.
+      // After success, we can prompt them to pay for the rest or handle it however you prefer.
+      // For now, if a subscription exists, we ONLY process the subscription.
       if (subscriptionItem) {
         // PayPal Subscription Flow
         const planId =
@@ -316,7 +320,7 @@ export default function Shop() {
           })
           .render(paypalRef.current);
       } else {
-        // Original one-time payment flow
+        // Original one-time payment flow (only if NO subscription is in cart)
         window.paypal
           .Buttons({
             createOrder: (data: any, actions: any) => {
