@@ -45,7 +45,7 @@ router.post('/subscribe', async (req, res) => {
 
     // Add subscriber to Zoho Campaigns - using form-encoded data
     const params = new URLSearchParams({
-      listkey: process.env.ZOHO_LIST_KEY,
+      list_key: process.env.ZOHO_LIST_KEY,
       resfmt: 'JSON',
       contactinfo: JSON.stringify({
         'Contact Email': email,
