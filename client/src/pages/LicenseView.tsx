@@ -129,9 +129,39 @@ export default function LicenseView() {
         });
       } else {
         // Standard license (no personalization needed)
-        setLicenseData({
-          type: "standard",
-        });
+        // BUT, if the user has a subscription, we should show their subscription card instead of generic text
+        const { data: profile } = await supabase
+            .from("profiles")
+            .select("subscription_tier")
+            .eq("id", user.id)
+            .single();
+
+        const userTier = profile?.subscription_tier?.toLowerCase();
+
+        if (userTier && ["gold", "diamond", "platinum"].includes(userTier)) {
+           // User is a subscriber, show their card!
+           const { data: subLicense } = await supabase
+            .from("subscription_licenses")
+            .select("*")
+            .eq("user_id", user.id)
+            .order("created_at", { ascending: false })
+            .limit(1)
+            .maybeSingle();
+
+           setLicenseData({
+            type: "subscription",
+            tier: userTier,
+            artistName: subLicense?.name || user.user_metadata?.full_name || user.email?.split("@")[0] || "Valued Customer",
+            licenseeName: subLicense?.name || user.user_metadata?.full_name || "Valued Customer",
+            status: "active",
+            expiresAt: null,
+          });
+        } else {
+           // Truly just a standard license (non-subscriber)
+           setLicenseData({
+             type: "standard",
+           });
+        }
       }
     } catch (err: any) {
       console.error("Error loading license:", err);

@@ -455,7 +455,7 @@ export default function Shop() {
         }
 
         // Create the order record for the subscription so it appears in receipts
-        const { error: orderError } = await supabase
+        const { data: subscriptionOrder, error: orderError } = await supabase
           .from("orders")
           .insert({
             user_id: user.id,
@@ -471,13 +471,32 @@ export default function Shop() {
             tax: 0,
             total: subscriptionItem.price,
             status: "completed",
-          });
+          })
+          .select()
+          .single();
 
         if (orderError) {
           console.error("Error creating subscription order:", orderError);
         }
 
         console.log("PayPal subscription created:", subscriptionId);
+
+        // Update subscription_licenses status if ID is present
+        if (subscriptionItem.metadata?.subscriptionLicenseId) {
+          const { error: licenseError } = await supabase
+            .from("subscription_licenses")
+            .update({ 
+              status: "active",
+              order_id: subscriptionOrder?.id // Use the Supabase Order UUID
+            })
+            .eq("id", subscriptionItem.metadata.subscriptionLicenseId);
+
+          if (licenseError) {
+            console.error("Error updating subscription license status:", licenseError);
+          } else {
+            console.log("Subscription license activated:", subscriptionItem.metadata.subscriptionLicenseId);
+          }
+        }
       }
     } catch (error) {
       console.error("Error processing PayPal subscription:", error);
@@ -1143,6 +1162,23 @@ export default function Shop() {
           console.error("Error updating subscription tier:", updateError);
         } else {
           console.log("Subscription tier updated to:", newTier);
+        }
+
+        // Update subscription_licenses status if ID is present
+        if (subscriptionItem.metadata?.subscriptionLicenseId) {
+          const { error: licenseError } = await supabase
+            .from("subscription_licenses")
+            .update({ 
+              status: "active",
+              order_id: orderData?.id || sessionId
+            })
+            .eq("id", subscriptionItem.metadata.subscriptionLicenseId);
+
+          if (licenseError) {
+            console.error("Error updating subscription license status:", licenseError);
+          } else {
+            console.log("Subscription license activated:", subscriptionItem.metadata.subscriptionLicenseId);
+          }
         }
       }
 

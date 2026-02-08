@@ -122,7 +122,7 @@ export default function SubscriptionDesign() {
 
     try {
       // Save to database
-      await saveSubscriptionToDatabase();
+      const savedLicense = await saveSubscriptionToDatabase();
 
       // Add SUBSCRIPTION to cart
       addToCart({
@@ -136,6 +136,7 @@ export default function SubscriptionDesign() {
           artistName: artistName.trim(),
           tier: subscriptionDetails.tierName,
           split: subscriptionDetails.split,
+          subscriptionLicenseId: savedLicense?.id,
         },
       });
 
