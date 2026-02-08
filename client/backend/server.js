@@ -1,5 +1,5 @@
 // backend/server.js
-require("dotenv").config();
+require("dotenv").config({ path: '.env.local' });
 console.log("DEBUG: PORT from .env =", process.env.PORT);
 const express = require("express");
 const cors = require("cors");
