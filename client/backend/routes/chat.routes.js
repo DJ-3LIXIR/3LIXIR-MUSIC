@@ -2,15 +2,7 @@
 const express = require("express");
 const router = express.Router();
 const chatService = require("../services/chat.service");
-const authMiddleware = require("../middleware/auth");
-console.log("DEBUG: authMiddleware export:", authMiddleware);
-const { authenticateUser } = authMiddleware;
-
-if (!authenticateUser || typeof authenticateUser !== 'function') {
-  console.error("CRITICAL ERROR: authenticateUser is not a function!", authenticateUser);
-  // Fallback to avoid crash, but requests will fail auth
-  throw new Error("authenticateUser middleware is missing");
-}
+const { authenticateUser } = require("../middleware/auth");
 
 // All routes require authentication
 router.use(authenticateUser);
