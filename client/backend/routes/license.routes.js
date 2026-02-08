@@ -1,10 +1,10 @@
 const express = require("express");
 const router = express.Router();
 const licenseService = require("../services/license.service");
-const auth = require("../middleware/auth");
+const { authenticateUser } = require("../middleware/auth");
 
 // All routes require authentication
-router.use(auth);
+router.use(authenticateUser);
 
 /**
  * POST /api/licenses/custom

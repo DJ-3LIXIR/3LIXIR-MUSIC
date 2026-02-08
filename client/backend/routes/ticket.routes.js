@@ -1,10 +1,10 @@
 const express = require("express");
 const router = express.Router();
 const ticketService = require("../services/ticket.service");
-const auth = require("../middleware/auth");
+const { authenticateUser } = require("../middleware/auth");
 
 // All routes require authentication
-router.use(auth);
+router.use(authenticateUser);
 
 /**
  * POST /api/tickets

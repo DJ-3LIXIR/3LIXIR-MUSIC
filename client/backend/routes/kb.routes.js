@@ -1,10 +1,10 @@
 const express = require("express");
 const router = express.Router();
 const knowledgeBaseService = require("../services/knowledgeBase.service");
-const auth = require("../middleware/auth");
+const { authenticateUser } = require("../middleware/auth");
 
 // All routes require authentication
-router.use(auth);
+router.use(authenticateUser);
 
 /**
  * GET /api/kb/search
