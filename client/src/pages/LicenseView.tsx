@@ -97,9 +97,9 @@ export default function LicenseView() {
           setLicenseData({
             type: "subscription",
             tier: profile?.subscription_tier || "tier_zero",
-            artistName: "DJ 3LIXIR",
+            artistName: subLicense?.name || user.user_metadata?.full_name || "Valued Customer",
             licenseeName: subLicense?.name || user.user_metadata?.full_name || "Valued Customer",
-            status: "active", // Assumed active if they just bought it
+            status: "active",
             expiresAt: null,
           });
         }
