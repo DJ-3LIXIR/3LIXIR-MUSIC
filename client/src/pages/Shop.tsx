@@ -1356,6 +1356,7 @@ export default function Shop() {
         onClose={() => setShowContractModal(false)}
         onAccept={handleContractAccept}
         beatTitles={beatItems.map((item) => item.title)}
+        userEmail={user?.email || ""}
       />
 
       {/* Licensing Required Modal */}

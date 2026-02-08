@@ -6,6 +6,7 @@ interface ContractModalProps {
   onClose: () => void;
   onAccept: (emailSubscription: boolean) => void;
   beatTitles: string[];
+  userEmail: string;
 }
 
 export default function ContractModal({
@@ -13,6 +14,7 @@ export default function ContractModal({
   onClose,
   onAccept,
   beatTitles,
+  userEmail,
 }: ContractModalProps) {
   const [termsAccepted, setTermsAccepted] = useState(false);
   const [licenseAccepted, setLicenseAccepted] = useState(false);
@@ -28,8 +30,31 @@ export default function ContractModal({
     refundAccepted &&
     contractAccepted;
 
-  const handleAccept = () => {
+  const subscribeToNewsletter = async (email: string) => {
+    try {
+      const response = await fetch('http://localhost:3001/api/newsletter/subscribe', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ email }),
+      });
+
+      if (!response.ok) {
+        console.error('Newsletter subscription failed');
+      }
+    } catch (error) {
+      console.error('Error subscribing to newsletter:', error);
+    }
+  };
+
+  const handleAccept = async () => {
     if (allRequiredAccepted) {
+      // Subscribe to newsletter if checked
+      if (emailSubscription && userEmail) {
+        await subscribeToNewsletter(userEmail);
+      }
+      
       onAccept(emailSubscription);
     }
   };
