@@ -173,7 +173,12 @@ export default function LicenseView() {
 
   const getLicenseCardImage = () => {
     if (licenseData?.type === "subscription") {
-      const tier = licenseData.tier?.toLowerCase();
+      // Normalize tier string: remove 'tier_' prefix and whitespace
+      const rawTier = licenseData.tier || "";
+      const tier = rawTier.toLowerCase().replace("tier_", "").trim();
+      
+      console.log("Debug: License Tier:", { raw: rawTier, normalized: tier });
+
       switch (tier) {
         case "gold":
           return "/card-gold.png";
@@ -182,6 +187,7 @@ export default function LicenseView() {
         case "platinum":
           return "/card-platinum.png";
         default:
+          console.warn("Debug: Unknown tier, falling back to black card", tier);
           return "/personal-black-license.png";
       }
     }
@@ -280,9 +286,20 @@ export default function LicenseView() {
                 {/* Card Background Image */}
                 <img
                   src={getLicenseCardImage()}
-                  alt="License Card"
+                  alt={`License Card - ${licenseData.tier || 'Custom'}`}
+                  onError={(e) => {
+                    console.error("Image failed to load:", e.currentTarget.src);
+                    e.currentTarget.style.display = 'none'; // Hide broken image
+                    // Show error message in parent
+                    e.currentTarget.parentElement?.classList.add('image-load-error');
+                  }}
                   className="w-full h-full object-cover"
                 />
+                
+                {/* Error Fallback (only visible if image hidden/error) */}
+                <div className="hidden image-load-error:flex absolute inset-0 items-center justify-center text-red-500">
+                   Image Load Error
+                </div>
 
                 {/* Overlay Text - Beat Title (for custom licenses only) */}
                 {licenseData.type === "custom" && (
