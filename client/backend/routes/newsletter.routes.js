@@ -43,22 +43,24 @@ router.post('/subscribe', async (req, res) => {
       hasRefreshToken: !!process.env.ZOHO_REFRESH_TOKEN
     });
 
-    // Add subscriber to Zoho Campaigns
+    // Add subscriber to Zoho Campaigns - using form-encoded data
+    const params = new URLSearchParams({
+      listkey: process.env.ZOHO_LIST_KEY,
+      resfmt: 'JSON',
+      contactinfo: JSON.stringify({
+        'Contact Email': email,
+        'First Name': firstName || '',
+        'Last Name': lastName || ''
+      })
+    });
+
     const response = await axios.post(
       `https://campaigns.zoho.com/api/v1.1/json/listsubscribe`,
-      {
-        listkey: process.env.ZOHO_LIST_KEY,
-        contactinfo: {
-          'Contact Email': email,
-          'First Name': firstName || '',
-          'Last Name': lastName || ''
-        },
-        resfmt: 'JSON'
-      },
+      params.toString(),
       {
         headers: {
           'Authorization': `Zoho-oauthtoken ${accessToken}`,
-          'Content-Type': 'application/json'
+          'Content-Type': 'application/x-www-form-urlencoded'
         }
       }
     );
