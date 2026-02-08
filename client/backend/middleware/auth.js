@@ -4,7 +4,7 @@ const { supabase } = require("../config/supabase");
  * Authentication middleware
  * Verifies Supabase JWT token and attaches user to request
  */
-const auth = async (req, res, next) => {
+const authenticateUser = async (req, res, next) => {
   try {
     // Get token from header
     const token = req.header("Authorization")?.replace("Bearer ", "");
@@ -62,4 +62,4 @@ const auth = async (req, res, next) => {
   }
 };
 
-module.exports = auth;
+module.exports = { authenticateUser };
