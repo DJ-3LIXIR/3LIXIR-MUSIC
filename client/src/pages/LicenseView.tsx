@@ -73,19 +73,14 @@ export default function LicenseView() {
           });
         } else {
           // Fallback: If no custom license found for this order, show the subscription card
-          // This handles the "if not then custom subscription card" requirement
-          console.log(
-            "No custom license found for order, falling back to subscription view",
-          );
-          // Recursively load subscription data
-          // We can just manually trigger the subscription logic here
+          console.log("No custom license found, falling back to subscription view");
+          
           const { data: profile } = await supabase
             .from("profiles")
             .select("subscription_tier")
             .eq("id", user.id)
             .single();
 
-          // Fetch the subscription license to get the correct name
           const { data: subLicense } = await supabase
             .from("subscription_licenses")
             .select("*")
@@ -94,10 +89,12 @@ export default function LicenseView() {
             .limit(1)
             .maybeSingle();
 
+          const userTier = profile?.subscription_tier || "tier_zero";
+          
           setLicenseData({
             type: "subscription",
-            tier: profile?.subscription_tier || "tier_zero",
-            artistName: subLicense?.name || user.user_metadata?.full_name || "Valued Customer",
+            tier: userTier,
+            artistName: subLicense?.name || user.user_metadata?.full_name || user.email?.split("@")[0] || "Valued Customer",
             licenseeName: subLicense?.name || user.user_metadata?.full_name || "Valued Customer",
             status: "active",
             expiresAt: null,
@@ -257,7 +254,7 @@ export default function LicenseView() {
                   className="w-full h-full object-cover"
                 />
 
-                {/* Overlay Text - Beat Title (for custom licenses) */}
+                {/* Overlay Text - Beat Title (for custom licenses only) */}
                 {licenseData.type === "custom" && (
                   <div className="absolute top-[35%] left-0 right-0 text-center px-4">
                     <p
@@ -283,7 +280,8 @@ export default function LicenseView() {
                       fontFamily: "monospace",
                     }}
                   >
-                    {licenseData.artistName}
+                    {/* For subscription licenses, use the artistName from data (which we set to user's name) */}
+                    {licenseData.type === "subscription" ? licenseData.artistName : licenseData.artistName}
                   </p>
                 </div>
               </div>
