@@ -45,9 +45,9 @@ export default function VIPLicensesimg() {
 
   const licenseCards = {
     tier_zero: "/ChatGPT Image Jan 6, 2026 at 09_05_34 PM.png",
-    gold: "/gold_card.png",
-    diamond: "/diamond-license-card.png",
-    platinum: "/platinum_card.png",
+    gold: "/card-gold.png",
+    diamond: "/card-diamond.png",
+    platinum: "/card-platinum.png",
   };
 
   const tierNames = {
