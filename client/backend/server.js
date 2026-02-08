@@ -12,6 +12,7 @@ const ticketRoutes = require("./routes/ticket.routes");
 const kbRoutes = require("./routes/kb.routes");
 const licenseRoutes = require("./routes/license.routes");
 const subscriptionRoutes = require("./routes/subscription.routes");
+const newsletterRoutes = require("./routes/newsletter.routes");
 const app = express();
 // Middleware - FIXED CORS to allow multiple origins
 app.use(
@@ -77,6 +78,7 @@ app.use("/api/tickets", ticketRoutes);
 app.use("/api/kb", kbRoutes);
 app.use("/api/licenses", licenseRoutes);
 app.use("/api/subscriptions", subscriptionRoutes);
+app.use("/api/newsletter", newsletterRoutes);
 // Serve frontend static files (for production/deployment) - AFTER API ROUTES
 const path = require("path");
 app.use(express.static(path.join(__dirname, "../client/dist")));
@@ -90,12 +92,17 @@ app.use(notFound);
 app.use(errorHandler);
 // Start server - CHANGED TO PORT 3001 - FIXED SYNTAX
 const PORT = process.env.PORT || 3001;
-app.listen(PORT, () => {
-  console.log(`🚀 Server running on port ${PORT}`);
-  console.log(`📝 Environment: ${process.env.NODE_ENV || "development"}`);
-  console.log(`🔗 API URL: http://localhost:${PORT}`);
-  console.log(`💾 Database: Supabase`);
-});
+
+if (require.main === module) {
+  app.listen(PORT, () => {
+    console.log(`🚀 Server running on port ${PORT}`);
+    console.log(`📝 Environment: ${process.env.NODE_ENV || "development"}`);
+    console.log(`🔗 API URL: http://localhost:${PORT}`);
+    console.log(`💾 Database: Supabase`);
+  });
+}
+
+module.exports = app;
 // Handle graceful shutdown
 process.on("SIGTERM", () => {
   console.log("SIGTERM signal received: closing HTTP server");

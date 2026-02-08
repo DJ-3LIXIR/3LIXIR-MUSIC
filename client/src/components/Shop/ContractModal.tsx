@@ -32,7 +32,7 @@ export default function ContractModal({
 
   const subscribeToNewsletter = async (email: string) => {
     try {
-      const response = await fetch('http://localhost:3001/api/newsletter/subscribe', {
+      const response = await fetch('/api/newsletter/subscribe', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
