@@ -24,13 +24,24 @@ async function getAccessToken() {
 router.post('/subscribe', async (req, res) => {
   try {
     const { email, firstName, lastName } = req.body;
+    
+    console.log('Newsletter subscription request:', { email, firstName, lastName });
 
     if (!email) {
       return res.status(400).json({ error: 'Email is required' });
     }
 
     // Get fresh access token
+    console.log('Getting fresh access token...');
     const accessToken = await getAccessToken();
+    console.log('Access token obtained:', accessToken ? 'yes' : 'no');
+
+    console.log('Zoho Config:', {
+      listKey: process.env.ZOHO_LIST_KEY,
+      hasClientId: !!process.env.ZOHO_CLIENT_ID,
+      hasClientSecret: !!process.env.ZOHO_CLIENT_SECRET,
+      hasRefreshToken: !!process.env.ZOHO_REFRESH_TOKEN
+    });
 
     // Add subscriber to Zoho Campaigns
     const response = await axios.post(
@@ -51,6 +62,8 @@ router.post('/subscribe', async (req, res) => {
         }
       }
     );
+
+    console.log('Zoho response:', response.data);
 
     res.json({ 
       success: true, 
