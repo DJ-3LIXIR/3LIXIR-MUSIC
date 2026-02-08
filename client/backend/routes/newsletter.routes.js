@@ -24,7 +24,6 @@ async function getAccessToken() {
 router.post('/subscribe', async (req, res) => {
   try {
     const { email, firstName, lastName } = req.body;
-    
     console.log('Newsletter subscription request:', { email, firstName, lastName });
 
     if (!email) {
@@ -45,7 +44,7 @@ router.post('/subscribe', async (req, res) => {
 
     // Add subscriber to Zoho Campaigns - using form-encoded data
     const params = new URLSearchParams({
-      list_key: process.env.ZOHO_LIST_KEY,
+      listkey: process.env.ZOHO_LIST_KEY,  // CHANGED: was list_key
       resfmt: 'JSON',
       contactinfo: JSON.stringify({
         'Contact Email': email,
@@ -72,7 +71,6 @@ router.post('/subscribe', async (req, res) => {
       message: 'Successfully subscribed to newsletter!',
       data: response.data
     });
-
   } catch (error) {
     console.error('Newsletter subscription error:', error.response?.data || error.message);
     res.status(500).json({ 
