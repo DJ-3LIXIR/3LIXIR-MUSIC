@@ -55,21 +55,21 @@ export default function LicenseDesign() {
     switch (subscriptionTier) {
       case "gold":
         return {
-          cardImage: "/Screenshot 2026-01-30 at 14.45.05.png",
+          cardImage: "/card-gold.png",
           tierName: "Gold",
           price: 0,
           split: "45/55",
         };
       case "diamond":
         return {
-          cardImage: "/Screenshot 2026-01-30 at 14.46.59.png",
+          cardImage: "/card-diamond.png",
           tierName: "Diamond",
           price: 0,
           split: "50/50",
         };
       case "platinum":
         return {
-          cardImage: "/Screenshot 2026-01-30 at 14.45.49.png",
+          cardImage: "/card-platinum.png",
           tierName: "Platinum",
           price: 0,
           split: "55/45",

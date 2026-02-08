@@ -24,7 +24,7 @@ export default function SubscriptionDesign() {
     switch (tier.toLowerCase()) {
       case "gold":
         return {
-          cardImage: "/Screenshot 2026-01-30 at 14.45.05.png",
+          cardImage: "/card-gold.png",
           tierName: "Gold",
           price: 10,
           split: "45/55",
@@ -39,7 +39,7 @@ export default function SubscriptionDesign() {
         };
       case "diamond":
         return {
-          cardImage: "/Screenshot 2026-01-30 at 14.46.59.png",
+          cardImage: "/card-diamond.png",
           tierName: "Diamond",
           price: 15,
           split: "50/50",
@@ -56,7 +56,7 @@ export default function SubscriptionDesign() {
         };
       case "platinum":
         return {
-          cardImage: "/Screenshot 2026-01-30 at 14.45.49.png",
+          cardImage: "/card-platinum.png",
           tierName: "Platinum",
           price: 20,
           split: "55/45",
@@ -74,7 +74,7 @@ export default function SubscriptionDesign() {
         };
       default:
         return {
-          cardImage: "/Screenshot 2026-01-30 at 14.45.05.png",
+          cardImage: "/card-gold.png",
           tierName: "Gold",
           price: 10,
           split: "45/55",

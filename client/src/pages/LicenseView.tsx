@@ -176,11 +176,11 @@ export default function LicenseView() {
       const tier = licenseData.tier?.toLowerCase();
       switch (tier) {
         case "gold":
-          return "/Screenshot 2026-01-30 at 14.45.05.png";
+          return "/card-gold.png";
         case "diamond":
-          return "/Screenshot 2026-01-30 at 14.46.59.png";
+          return "/card-diamond.png";
         case "platinum":
-          return "/Screenshot 2026-01-30 at 14.45.49.png";
+          return "/card-platinum.png";
         default:
           return "/personal-black-license.png";
       }
