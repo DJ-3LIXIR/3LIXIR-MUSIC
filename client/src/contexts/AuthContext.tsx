@@ -127,18 +127,24 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
         // Create profile
         if (data.user) {
+          // Try to create profile if it doesn't exist (handled by trigger usually)
+          // We use upsert to handle cases where trigger might have already created it
           const { error: profileError } = await supabase
             .from("profiles")
-            .insert([
+            .upsert([
               {
                 id: data.user.id,
                 email: email,
                 full_name: fullName,
                 subscription_tier: "tier_zero", // Default tier
               },
-            ]);
+            ], { onConflict: 'id' });
 
-          if (profileError) throw profileError;
+          if (profileError) {
+            console.warn("Profile creation/update warning:", profileError);
+            // Don't throw here, as the trigger might have handled it or it might be an RLS issue
+            // that doesn't prevent the user from being created in Auth
+          }
         }
 
         setMessage("Account created successfully! You can now sign in.");
