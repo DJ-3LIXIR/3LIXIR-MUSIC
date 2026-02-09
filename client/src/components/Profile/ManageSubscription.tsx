@@ -99,7 +99,7 @@ export default function ManageSubscription({
   }
 
   // No active subscription
-  if (!subscriptionTier || subscriptionTier === "black") {
+  if (!subscriptionTier || subscriptionTier === "black" || subscriptionTier === "tier_zero") {
     return (
       <div className="flex flex-col items-center justify-center gap-6 p-8">
         <div className="relative w-full max-w-md aspect-[1.586/1] rounded-2xl overflow-hidden shadow-2xl bg-zinc-900">
