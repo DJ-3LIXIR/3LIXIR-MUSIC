@@ -24,7 +24,7 @@ export default function VIPLP() {
           .from("profiles")
           .select("subscription_tier")
           .eq("id", user.id)
-          .single();
+          .maybeSingle();
 
         if (error) {
           console.error("Error fetching subscription:", error);

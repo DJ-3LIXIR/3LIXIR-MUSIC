@@ -34,7 +34,7 @@ export function BeatCard({ beat }: BeatCardProps) {
           .from("profiles")
           .select("subscription_tier")
           .eq("id", user.id)
-          .single();
+          .maybeSingle();
 
         if (!error && data) {
           setSubscriptionTier(data.subscription_tier || "tier_zero");
@@ -60,7 +60,7 @@ export function BeatCard({ beat }: BeatCardProps) {
           .select("id")
           .eq("user_id", user.id)
           .eq("beat_id", beat.id)
-          .single();
+          .maybeSingle();
 
         if (!error && data) {
           setIsFavorited(true);
