@@ -5,7 +5,7 @@ export default function VSTLink() {
   return (
     <div
       style={{
-        background: "#000",
+        background: "transparent",
         color: "#fff",
         fontFamily: "'DM Sans', 'Helvetica Neue', sans-serif",
         padding: "80px 0",
