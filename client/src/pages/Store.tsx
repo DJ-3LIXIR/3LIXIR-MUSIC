@@ -133,52 +133,59 @@ export default function Store() {
           </p>
         </div>
 
-        {/* Store Sub-Navbar */}
-        <div
-          style={{
-            borderTop: "1px solid #C9A84C",
-            borderBottom: "1px solid #C9A84C",
-            marginBottom: "48px",
-            display: "flex",
-            justifyContent: "center",
-            alignItems: "center",
-            background: "#000",
-          }}
-        >
-          {[
-            { label: "Beats", href: "/beats" },
-            { label: "VST Plugins", href: "/vst" },
-            { label: "Merchendise", href: "/shop" },
-            { label: "Miscellaneous", href: "/shop" },
-          ].map((item, index) => (
-            <Link key={item.href} href={item.href}>
-              <div
-                style={{
-                  padding: "16px 48px",
-                  fontSize: "12px",
-                  fontWeight: 700,
-                  letterSpacing: "0.15em",
-                  textTransform: "uppercase",
-                  color: "#C9A84C",
-                  cursor: "pointer",
-                  borderLeft: index !== 0 ? "1px solid rgba(201,168,76,0.2)" : "none",
-                  transition: "background 0.2s ease, color 0.2s ease",
-                  whiteSpace: "nowrap",
-                }}
-                onMouseEnter={(e) => {
-                  (e.currentTarget as HTMLElement).style.background = "rgba(201,168,76,0.07)";
-                  (e.currentTarget as HTMLElement).style.color = "#e8c76a";
-                }}
-                onMouseLeave={(e) => {
-                  (e.currentTarget as HTMLElement).style.background = "transparent";
-                  (e.currentTarget as HTMLElement).style.color = "#C9A84C";
-                }}
-              >
-                {item.label}
-              </div>
-            </Link>
-          ))}
-        </div>
+      </div>
+
+      {/* Store Sub-Navbar - Full Width */}
+      <div
+        style={{
+          borderTop: "1px solid #C9A84C",
+          borderBottom: "1px solid #C9A84C",
+          marginBottom: "48px",
+          display: "flex",
+          justifyContent: "center",
+          alignItems: "center",
+          background: "#000",
+          width: "100%",
+          position: "relative",
+          zIndex: 1,
+        }}
+      >
+        {[
+          { label: "Beats", href: "/beats" },
+          { label: "VST Plugins", href: "/vst" },
+          { label: "Merchendise", href: "/shop" },
+          { label: "Miscellaneous", href: "/shop" },
+        ].map((item, index) => (
+          <Link key={item.href} href={item.href}>
+            <div
+              style={{
+                padding: "16px 80px",
+                fontSize: "12px",
+                fontWeight: 700,
+                letterSpacing: "0.15em",
+                textTransform: "uppercase",
+                color: "#C9A84C",
+                cursor: "pointer",
+                borderLeft: index !== 0 ? "1px solid rgba(201,168,76,0.2)" : "none",
+                transition: "background 0.2s ease, color 0.2s ease",
+                whiteSpace: "nowrap",
+              }}
+              onMouseEnter={(e) => {
+                (e.currentTarget as HTMLElement).style.background = "rgba(201,168,76,0.07)";
+                (e.currentTarget as HTMLElement).style.color = "#e8c76a";
+              }}
+              onMouseLeave={(e) => {
+                (e.currentTarget as HTMLElement).style.background = "transparent";
+                (e.currentTarget as HTMLElement).style.color = "#C9A84C";
+              }}
+            >
+              {item.label}
+            </div>
+          </Link>
+        ))}
+      </div>
+
+      <div style={{ position: "relative", zIndex: 1, maxWidth: "1100px", margin: "0 auto", padding: "0 24px" }}>
 
         {/* Category Cards */}
         <div
