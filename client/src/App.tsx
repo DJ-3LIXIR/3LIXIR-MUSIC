@@ -27,6 +27,7 @@ import ProfileManager from "@/components/ProfileManager";
 import AdminDashboard from "@/components/AdminDashboard";
 import Admin from "@/pages/Admin";
 import CustomerSupport from "@/pages/CustomerSupport";
+import Store from "@/pages/Store";
 
 // Contract Pages
 import Terms from "@/components/Shop/Contract/Terms";
@@ -56,6 +57,7 @@ function Router() {
       <Route path="/subscription/design" component={SubscriptionDesign} />
       <Route path="/license/:type/:id?" component={LicenseView} />
       <Route path="/shop" component={Shop} />
+      <Route path="/store" component={Store} />
       <Route path="/stripe-success" component={StripeSuccess} />
       <Route path="/cancel" component={Cancel} />
       <Route path="/downloads" component={Downloads} />
