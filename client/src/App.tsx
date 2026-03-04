@@ -28,6 +28,7 @@ import AdminDashboard from "@/components/AdminDashboard";
 import Admin from "@/pages/Admin";
 import CustomerSupport from "@/pages/CustomerSupport";
 import Store from "@/pages/Store";
+import VST from "@/pages/VST";
 
 // Contract Pages
 import Terms from "@/components/Shop/Contract/Terms";
@@ -58,6 +59,7 @@ function Router() {
       <Route path="/license/:type/:id?" component={LicenseView} />
       <Route path="/shop" component={Shop} />
       <Route path="/store" component={Store} />
+      <Route path="/vst" component={VST} />
       <Route path="/stripe-success" component={StripeSuccess} />
       <Route path="/cancel" component={Cancel} />
       <Route path="/downloads" component={Downloads} />
