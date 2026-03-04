@@ -282,14 +282,34 @@ export default function VST() {
         ))}
       </div>
 
-      {/* Plugin Grid */}
+      {/* Plugin Grid - Brick Texture Background */}
       <div
         style={{
-          maxWidth: "1200px",
-          margin: "0 auto",
-          padding: "60px 24px 100px",
+          position: "relative",
+          backgroundImage: "url('/black_gold_brick_texture.png')",
+          backgroundSize: "cover",
+          backgroundPosition: "center",
+          backgroundRepeat: "no-repeat",
         }}
       >
+        {/* Dark overlay */}
+        <div
+          style={{
+            position: "absolute",
+            inset: 0,
+            background: "rgba(0,0,0,0.72)",
+            zIndex: 0,
+          }}
+        />
+        <div
+          style={{
+            position: "relative",
+            zIndex: 1,
+            maxWidth: "1200px",
+            margin: "0 auto",
+            padding: "60px 24px 100px",
+          }}
+        >
         {/* Grid header */}
         <div
           style={{
@@ -446,6 +466,7 @@ export default function VST() {
             );
           })}
         </div>
+      </div>
       </div>
     </div>
   );
