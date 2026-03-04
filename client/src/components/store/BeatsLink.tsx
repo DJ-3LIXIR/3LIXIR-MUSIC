@@ -35,7 +35,7 @@ export default function BeatsLink() {
         >
           {/* Placeholder — swap src for your actual beat image */}
           <img
-            src="/placeholder-beats.jpg"
+            src="/Gemini_Generated_Image_af4eezaf4eezaf4e.png"
             alt="Beats"
             style={{
               width: "100%",
