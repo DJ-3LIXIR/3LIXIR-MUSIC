@@ -1,63 +1,10 @@
-// frontend/src/pages/Store.tsx
-import { useState } from "react";
+// client/src/pages/Store.tsx
 import { Link } from "wouter";
 import { Navbar } from "@/components/layout/Navbar";
-
-const categories = [
-  {
-    id: "beats",
-    label: "Beats & Licenses",
-    href: "/beats",
-    description: "Premium trap, drill, and custom beats. Exclusive & non-exclusive licenses available.",
-    tag: "Most Popular",
-    accent: "#a855f7",
-    icon: (
-      <svg width="38" height="38" viewBox="0 0 38 38" fill="none">
-        <circle cx="19" cy="19" r="10" stroke="currentColor" strokeWidth="1.5" />
-        <circle cx="19" cy="19" r="3.5" fill="currentColor" />
-        <path d="M19 4v4M19 30v4M4 19h4M30 19h4" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
-        <path d="M24 12l2-2M12 24l-2 2M26 26l-2-2M12 12l-2-2" stroke="currentColor" strokeWidth="1.2" strokeLinecap="round" />
-      </svg>
-    ),
-    items: ["Non-Exclusive Lease", "Exclusive License", "Track Outs / Stems", "Custom Beats"],
-  },
-  {
-    id: "downloads",
-    label: "Digital Downloads",
-    href: "/downloads",
-    description: "Instantly download purchased files — stems, tracked-out beats, and sample packs.",
-    tag: "Instant Access",
-    accent: "#22d3ee",
-    icon: (
-      <svg width="38" height="38" viewBox="0 0 38 38" fill="none">
-        <rect x="6" y="28" width="26" height="3" rx="1.5" stroke="currentColor" strokeWidth="1.5" />
-        <path d="M19 6v18M12 17l7 7 7-7" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
-      </svg>
-    ),
-    items: ["Stem Packs", "Sample Kits", "Beat Files", "Project Files"],
-  },
-  {
-    id: "shop",
-    label: "Merch & Physical",
-    href: "/shop",
-    description: "Limited drops. Branded gear, apparel, and physical collectibles.",
-    tag: "Limited Drop",
-    accent: "#f97316",
-    icon: (
-      <svg width="38" height="38" viewBox="0 0 38 38" fill="none">
-        <path d="M10 14h18l-2 14H12L10 14z" stroke="currentColor" strokeWidth="1.5" strokeLinejoin="round" />
-        <path d="M14 14c0-2.76 2.24-5 5-5s5 2.24 5 5" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
-        <circle cx="15" cy="30" r="1.5" fill="currentColor" />
-        <circle cx="23" cy="30" r="1.5" fill="currentColor" />
-      </svg>
-    ),
-    items: ["Hoodies & Tees", "Hats & Accessories", "Limited Editions", "Bundles"],
-  },
-];
+import BeatsLink from "@/components/store/BeatsLink";
+import VSTLink from "@/components/store/VSTLink";
 
 export default function Store() {
-  const [hovered, setHovered] = useState<string | null>(null);
-
   return (
     <div
       style={{
@@ -69,6 +16,7 @@ export default function Store() {
       }}
     >
       <Navbar />
+
       {/* Ambient glow top */}
       <div
         style={{
@@ -84,9 +32,8 @@ export default function Store() {
         }}
       />
 
+      {/* Header */}
       <div style={{ position: "relative", zIndex: 1, maxWidth: "1100px", margin: "0 auto", padding: "0 24px" }}>
-
-        {/* Header */}
         <div style={{ paddingTop: "96px", paddingBottom: "64px", textAlign: "center" }}>
           <div
             style={{
@@ -132,7 +79,6 @@ export default function Store() {
             Beats, licenses, digital downloads, and exclusive merch — all under one roof.
           </p>
         </div>
-
       </div>
 
       {/* Store Sub-Navbar - Full Width */}
@@ -140,7 +86,6 @@ export default function Store() {
         style={{
           borderTop: "1px solid #C9A84C",
           borderBottom: "1px solid #C9A84C",
-          marginBottom: "48px",
           display: "flex",
           justifyContent: "center",
           alignItems: "center",
@@ -153,7 +98,8 @@ export default function Store() {
         {[
           { label: "Beats", href: "/beats" },
           { label: "VST Plugins", href: "/vst" },
-          { label: "Merch & Misc", href: "/shop" },
+          { label: "Merchendise", href: "/shop" },
+          { label: "Miscellaneous", href: "/shop" },
         ].map((item, index) => (
           <Link key={item.href} href={item.href}>
             <div
@@ -184,177 +130,10 @@ export default function Store() {
         ))}
       </div>
 
-      {/* Brick Texture Section */}
-      <div
-        style={{
-          position: "relative",
-          zIndex: 1,
-          backgroundImage: "url('/black_gold_brick_texture.png')",
-          backgroundSize: "cover",
-          backgroundPosition: "center",
-          backgroundRepeat: "no-repeat",
-        }}
-      >
-        {/* Dark overlay so cards remain readable */}
-        <div
-          style={{
-            position: "absolute",
-            inset: 0,
-            background: "rgba(0,0,0,0.65)",
-            zIndex: 0,
-          }}
-        />
-
-        <div style={{ position: "relative", zIndex: 1, maxWidth: "1100px", margin: "0 auto", padding: "48px 24px 80px" }}>
-
-        {/* Category Cards */}
-        <div
-          style={{
-            display: "grid",
-            gridTemplateColumns: "repeat(auto-fit, minmax(300px, 1fr))",
-            gap: "2px",
-            background: "rgba(17,17,17,0.7)",
-            border: "1px solid rgba(201,168,76,0.15)",
-            borderRadius: "20px",
-            overflow: "hidden",
-          }}
-        >
-          {categories.map((cat) => {
-            const isHovered = hovered === cat.id;
-            return (
-              <Link key={cat.id} href={cat.href}>
-                <div
-                  onMouseEnter={() => setHovered(cat.id)}
-                  onMouseLeave={() => setHovered(null)}
-                  style={{
-                    padding: "40px 36px",
-                    background: isHovered ? "#0d0d0d" : "#000",
-                    cursor: "pointer",
-                    transition: "background 0.2s ease",
-                    borderRight: "1px solid #111",
-                    position: "relative",
-                    overflow: "hidden",
-                  }}
-                >
-                  {/* Accent glow on hover */}
-                  <div
-                    style={{
-                      position: "absolute",
-                      bottom: "-60px",
-                      left: "-20px",
-                      width: "200px",
-                      height: "200px",
-                      borderRadius: "50%",
-                      background: `radial-gradient(circle, ${cat.accent}18 0%, transparent 70%)`,
-                      opacity: isHovered ? 1 : 0,
-                      transition: "opacity 0.4s ease",
-                      pointerEvents: "none",
-                    }}
-                  />
-
-                  {/* Tag */}
-                  <div
-                    style={{
-                      display: "inline-block",
-                      fontSize: "10px",
-                      fontWeight: 700,
-                      letterSpacing: "0.15em",
-                      textTransform: "uppercase",
-                      color: cat.accent,
-                      marginBottom: "24px",
-                    }}
-                  >
-                    {cat.tag}
-                  </div>
-
-                  {/* Icon */}
-                  <div
-                    style={{
-                      color: isHovered ? cat.accent : "#444",
-                      marginBottom: "20px",
-                      transition: "color 0.3s ease",
-                    }}
-                  >
-                    {cat.icon}
-                  </div>
-
-                  {/* Label */}
-                  <h2
-                    style={{
-                      fontSize: "22px",
-                      fontWeight: 700,
-                      letterSpacing: "-0.02em",
-                      margin: "0 0 10px",
-                      color: isHovered ? "#fff" : "#e0e0e0",
-                      transition: "color 0.2s ease",
-                    }}
-                  >
-                    {cat.label}
-                  </h2>
-
-                  {/* Description */}
-                  <p
-                    style={{
-                      fontSize: "14px",
-                      color: "#555",
-                      lineHeight: 1.6,
-                      margin: "0 0 28px",
-                    }}
-                  >
-                    {cat.description}
-                  </p>
-
-                  {/* Item list */}
-                  <ul style={{ listStyle: "none", padding: 0, margin: "0 0 32px", display: "flex", flexDirection: "column", gap: "8px" }}>
-                    {cat.items.map((item) => (
-                      <li
-                        key={item}
-                        style={{
-                          fontSize: "13px",
-                          color: "#444",
-                          display: "flex",
-                          alignItems: "center",
-                          gap: "8px",
-                        }}
-                      >
-                        <span style={{ width: "4px", height: "4px", borderRadius: "50%", background: cat.accent, flexShrink: 0 }} />
-                        {item}
-                      </li>
-                    ))}
-                  </ul>
-
-                  {/* CTA */}
-                  <div
-                    style={{
-                      display: "flex",
-                      alignItems: "center",
-                      gap: "8px",
-                      fontSize: "13px",
-                      fontWeight: 600,
-                      color: isHovered ? cat.accent : "#444",
-                      transition: "color 0.2s ease",
-                    }}
-                  >
-                    Browse {cat.label}
-                    <svg
-                      width="14"
-                      height="14"
-                      viewBox="0 0 14 14"
-                      fill="none"
-                      style={{
-                        transform: isHovered ? "translateX(4px)" : "translateX(0)",
-                        transition: "transform 0.2s ease",
-                      }}
-                    >
-                      <path d="M2 7h10M8 3l4 4-4 4" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
-                    </svg>
-                  </div>
-                </div>
-              </Link>
-            );
-          })}
-        </div>
-        </div>
+      {/* Embedded Store Components */}
+      <div style={{ position: "relative", zIndex: 1 }}>
+        <BeatsLink />
+        <VSTLink />
       </div>
 
       {/* Bottom strip */}
