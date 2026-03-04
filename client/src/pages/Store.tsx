@@ -130,10 +130,45 @@ export default function Store() {
         ))}
       </div>
 
-      {/* Embedded Store Components */}
-      <div style={{ position: "relative", zIndex: 1 }}>
-        <BeatsLink />
-        <VSTLink />
+      {/* Embedded Store Components - Mirrored brick background */}
+      <div style={{ position: "relative" }}>
+        {/* Left half - normal */}
+        <div
+          style={{
+            position: "absolute",
+            top: 0,
+            left: 0,
+            bottom: 0,
+            width: "50%",
+            backgroundImage: 'url("/black_gold_brick_texture.png")',
+            backgroundSize: "cover",
+            backgroundPosition: "center",
+            backgroundRepeat: "no-repeat",
+            opacity: 0.4,
+            zIndex: 0,
+          }}
+        />
+        {/* Right half - mirrored */}
+        <div
+          style={{
+            position: "absolute",
+            top: 0,
+            right: 0,
+            bottom: 0,
+            width: "50%",
+            backgroundImage: 'url("/black_gold_brick_texture.png")',
+            backgroundSize: "cover",
+            backgroundPosition: "center",
+            backgroundRepeat: "no-repeat",
+            opacity: 0.4,
+            transform: "scaleX(-1)",
+            zIndex: 0,
+          }}
+        />
+        <div style={{ position: "relative", zIndex: 1 }}>
+          <BeatsLink />
+          <VSTLink />
+        </div>
       </div>
 
       {/* Bottom strip */}

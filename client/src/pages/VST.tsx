@@ -282,25 +282,42 @@ export default function VST() {
         ))}
       </div>
 
-      {/* Plugin Grid - Brick Texture Background */}
-      <div
-        style={{
-          position: "relative",
-          backgroundImage: "url('/black_gold_brick_texture.png')",
-          backgroundSize: "cover",
-          backgroundPosition: "center",
-          backgroundRepeat: "no-repeat",
-        }}
-      >
-        {/* Dark overlay */}
+      {/* Plugin Grid - Mirrored brick background like Downloads page */}
+      <div style={{ position: "relative" }}>
+        {/* Left half - normal */}
         <div
           style={{
             position: "absolute",
-            inset: 0,
-            background: "rgba(0,0,0,0.72)",
+            top: 0,
+            left: 0,
+            bottom: 0,
+            width: "50%",
+            backgroundImage: 'url("/black_gold_brick_texture.png")',
+            backgroundSize: "cover",
+            backgroundPosition: "center",
+            backgroundRepeat: "no-repeat",
+            opacity: 0.4,
             zIndex: 0,
           }}
         />
+        {/* Right half - mirrored */}
+        <div
+          style={{
+            position: "absolute",
+            top: 0,
+            right: 0,
+            bottom: 0,
+            width: "50%",
+            backgroundImage: 'url("/black_gold_brick_texture.png")',
+            backgroundSize: "cover",
+            backgroundPosition: "center",
+            backgroundRepeat: "no-repeat",
+            opacity: 0.4,
+            transform: "scaleX(-1)",
+            zIndex: 0,
+          }}
+        />
+
         <div
           style={{
             position: "relative",
