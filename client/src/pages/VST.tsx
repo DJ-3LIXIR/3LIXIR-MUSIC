@@ -4,14 +4,12 @@ import { Link } from "wouter";
 import { Navbar } from "@/components/layout/Navbar";
 
 const plugins = [
-  { id: 1, name: "Synth One", category: "Instruments", tag: "New", price: "$49" },
-  { id: 2, name: "Bass Engine", category: "Instruments", tag: "Popular", price: "$39" },
-  { id: 3, name: "Reverb X", category: "Audio Units", tag: "Sale", price: "$29" },
-  { id: 4, name: "Compressor Pro", category: "Audio Units", tag: null, price: "$59" },
-  { id: 5, name: "Sample Pack Vol.1", category: "Libraries", tag: "New", price: "$19" },
-  { id: 6, name: "Drum Kit 808", category: "Libraries", tag: "Popular", price: "$24" },
-  { id: 7, name: "Chord Machine", category: "Instruments", tag: null, price: "$44" },
-  { id: 8, name: "EQ Studio", category: "Audio Units", tag: "Sale", price: "$34" },
+  { id: 1, name: "ARK", category: "Instruments", tag: "New", price: "$200" },
+  { id: 2, name: "Oyster", category: "Instruments", tag: "Popular", price: "$150" },
+  { id: 3, name: "APOLLO", category: "Audio Units", tag: "Sale", price: "$100" },
+  { id: 4, name: "HADES", category: "Audio Units", tag: null, price: "$60" },
+  { id: 5, name: "ARK Library Ethereal ", category: "Libraries", tag: "New", price: "$15" },
+  { id: 6, name: "Orion Sound EQ", category: "Audio Units", tag: "Sale", price: "$35" },
 ];
 
 const navItems = ["All", "Instruments", "Audio Units", "Libraries"];
