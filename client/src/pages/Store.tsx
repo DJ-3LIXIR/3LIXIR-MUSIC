@@ -153,8 +153,7 @@ export default function Store() {
         {[
           { label: "Beats", href: "/beats" },
           { label: "VST Plugins", href: "/vst" },
-          { label: "Merchendise", href: "/shop" },
-          { label: "Miscellaneous", href: "/shop" },
+          { label: "Merch & Misc", href: "/shop" },
         ].map((item, index) => (
           <Link key={item.href} href={item.href}>
             <div
@@ -185,7 +184,28 @@ export default function Store() {
         ))}
       </div>
 
-      <div style={{ position: "relative", zIndex: 1, maxWidth: "1100px", margin: "0 auto", padding: "0 24px" }}>
+      {/* Brick Texture Section */}
+      <div
+        style={{
+          position: "relative",
+          zIndex: 1,
+          backgroundImage: "url('/black_gold_brick_texture.png')",
+          backgroundSize: "cover",
+          backgroundPosition: "center",
+          backgroundRepeat: "no-repeat",
+        }}
+      >
+        {/* Dark overlay so cards remain readable */}
+        <div
+          style={{
+            position: "absolute",
+            inset: 0,
+            background: "rgba(0,0,0,0.65)",
+            zIndex: 0,
+          }}
+        />
+
+        <div style={{ position: "relative", zIndex: 1, maxWidth: "1100px", margin: "0 auto", padding: "48px 24px 80px" }}>
 
         {/* Category Cards */}
         <div
@@ -193,11 +213,10 @@ export default function Store() {
             display: "grid",
             gridTemplateColumns: "repeat(auto-fit, minmax(300px, 1fr))",
             gap: "2px",
-            background: "#111",
-            border: "1px solid #1a1a1a",
+            background: "rgba(17,17,17,0.7)",
+            border: "1px solid rgba(201,168,76,0.15)",
             borderRadius: "20px",
             overflow: "hidden",
-            marginBottom: "80px",
           }}
         >
           {categories.map((cat) => {
@@ -335,8 +354,11 @@ export default function Store() {
             );
           })}
         </div>
+        </div>
+      </div>
 
-        {/* Bottom strip */}
+      {/* Bottom strip */}
+      <div style={{ position: "relative", zIndex: 1, maxWidth: "1100px", margin: "0 auto", padding: "0 24px" }}>
         <div
           style={{
             borderTop: "1px solid #111",
