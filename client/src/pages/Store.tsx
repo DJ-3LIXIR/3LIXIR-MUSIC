@@ -1,6 +1,7 @@
 // frontend/src/pages/Store.tsx
 import { useState } from "react";
 import { Link } from "wouter";
+import { Navbar } from "@/components/layout/Navbar";
 
 const categories = [
   {
@@ -67,6 +68,7 @@ export default function Store() {
         overflowX: "hidden",
       }}
     >
+      <Navbar />
       {/* Ambient glow top */}
       <div
         style={{
