@@ -22,7 +22,7 @@ export default function VST() {
   useEffect(() => {
     const fetchPlugins = async () => {
       const { data, error } = await supabase
-        .from("products")
+        .from("plugins")
         .select("*")
         .order("id", { ascending: true });
 
