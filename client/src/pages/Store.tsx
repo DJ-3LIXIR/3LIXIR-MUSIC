@@ -3,6 +3,7 @@ import { Link } from "wouter";
 import { Navbar } from "@/components/layout/Navbar";
 import BeatsLink from "@/components/store/BeatsLink";
 import VSTLink from "@/components/store/VSTLink";
+import LoaderLink from "@/components/store/LoaderLink";
 
 export default function Store() {
   return (
@@ -168,6 +169,7 @@ export default function Store() {
         <div style={{ position: "relative", zIndex: 1 }}>
           <BeatsLink />
           <VSTLink />
+          <LoaderLink />
         </div>
       </div>
 
