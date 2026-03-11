@@ -134,9 +134,8 @@ export default function VSTLink() {
             border: "1px solid #1a1a1a",
           }}
         >
-          {/* Placeholder — swap src for your actual VST image */}
           <img
-            src="/placeholder-vst.jpg"
+            src="/vst-preview.png"
             alt="VST Plugin"
             style={{
               width: "100%",
