@@ -1,22 +1,57 @@
 // client/src/pages/VST.tsx
-import { useState } from "react";
-import { Link } from "wouter";
+import { useState, useEffect } from "react";
 import { Navbar } from "@/components/layout/Navbar";
+import { supabase } from "@/supabaseClient";
 
-const plugins = [
-  { id: 1, name: "ARK", category: "Instruments", tag: "New", price: "$200" },
-  { id: 2, name: "Oyster", category: "Instruments", tag: "Popular", price: "$150" },
-  { id: 3, name: "APOLLO", category: "Audio Units", tag: "Sale", price: "$100" },
-  { id: 4, name: "HADES", category: "Audio Units", tag: null, price: "$60" },
-  { id: 5, name: "ARK Library Ethereal ", category: "Libraries", tag: "New", price: "$15" },
-  { id: 6, name: "Orion Sound EQ", category: "Audio Units", tag: "Sale", price: "$35" },
-];
+interface Plugin {
+  id: string | number;
+  name: string;
+  category: string;
+  tag: string | null;
+  price: string;
+}
 
 const navItems = ["All", "Instruments", "Audio Units", "Libraries"];
 
 export default function VST() {
   const [activeTab, setActiveTab] = useState("All");
-  const [hoveredPlugin, setHoveredPlugin] = useState<number | null>(null);
+  const [hoveredPlugin, setHoveredPlugin] = useState<string | number | null>(null);
+  const [plugins, setPlugins] = useState<Plugin[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const fetchPlugins = async () => {
+      const { data, error } = await supabase
+        .from("products")
+        .select("*")
+        .order("id", { ascending: true });
+
+      if (error) {
+        console.error("Error fetching products:", error);
+        setLoading(false);
+        return;
+      }
+
+      const mapped: Plugin[] = (data || []).map((item: any) => ({
+        id: item.id,
+        name: item.name || item.title || "Unknown",
+        category: item.category || "Instruments",
+        tag: item.tag || null,
+        price: item.price
+          ? typeof item.price === "number"
+            ? `$${item.price}`
+            : String(item.price)
+          : item.price_usd
+          ? `$${item.price_usd}`
+          : "$0",
+      }));
+
+      setPlugins(mapped);
+      setLoading(false);
+    };
+
+    fetchPlugins();
+  }, []);
 
   const filtered = activeTab === "All" ? plugins : plugins.filter(p => p.category === activeTab);
 
@@ -337,12 +372,29 @@ export default function VST() {
           }}
         >
           <span style={{ fontSize: "13px", color: "#444" }}>
-            {filtered.length} {filtered.length === 1 ? "result" : "results"}
+            {loading ? "Loading..." : `${filtered.length} ${filtered.length === 1 ? "result" : "results"}`}
           </span>
         </div>
 
+        {/* Loading */}
+        {loading && (
+          <div style={{ display: "flex", justifyContent: "center", padding: "80px 0" }}>
+            <div
+              style={{
+                width: "40px",
+                height: "40px",
+                borderRadius: "50%",
+                border: "2px solid rgba(201,168,76,0.2)",
+                borderTop: "2px solid #C9A84C",
+                animation: "spin 0.8s linear infinite",
+              }}
+            />
+            <style>{`@keyframes spin { to { transform: rotate(360deg); } }`}</style>
+          </div>
+        )}
+
         {/* Grid */}
-        <div
+        {!loading && <div
           style={{
             display: "grid",
             gridTemplateColumns: "repeat(auto-fill, minmax(240px, 1fr))",
@@ -482,7 +534,7 @@ export default function VST() {
               </div>
             );
           })}
-        </div>
+        </div>}
       </div>
       </div>
     </div>
