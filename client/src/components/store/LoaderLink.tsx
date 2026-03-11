@@ -35,13 +35,14 @@ export default function LoaderLink() {
           }}
         >
           <img
-            src="/loader-preview.png"
+            src="/3lixir-loader.png"
             alt="3LIXIR Loader"
             style={{
               width: "100%",
               height: "100%",
-              objectFit: "cover",
+              objectFit: "contain",
               display: "block",
+              padding: "24px",
             }}
             onError={(e) => {
               (e.currentTarget as HTMLImageElement).style.display = "none";
