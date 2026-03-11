@@ -40,9 +40,8 @@ export default function LoaderLink() {
             style={{
               width: "100%",
               height: "100%",
-              objectFit: "contain",
+              objectFit: "cover",
               display: "block",
-              padding: "24px",
             }}
             onError={(e) => {
               (e.currentTarget as HTMLImageElement).style.display = "none";
