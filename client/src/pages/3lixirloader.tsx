@@ -77,7 +77,12 @@ async function downloadLoader(platform: 'mac' | 'pc') {
   try {
     const res = await fetch(
       `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/get-loader-download?platform=${platform}`,
-      { headers: { apikey: import.meta.env.VITE_SUPABASE_ANON_KEY } }
+      {
+        headers: {
+          apikey: import.meta.env.VITE_SUPABASE_ANON_KEY,
+          Authorization: `Bearer ${import.meta.env.VITE_SUPABASE_ANON_KEY}`,
+        }
+      }
     );
     if (!res.ok) throw new Error(`Server error: ${res.status}`);
     const data = await res.json();
