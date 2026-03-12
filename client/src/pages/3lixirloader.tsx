@@ -1,5 +1,6 @@
 // client/src/pages/3lixirloader.tsx
 import { useState } from "react";
+import { Link } from "wouter";
 import { Navbar } from "@/components/layout/Navbar";
 
 const features = [
@@ -87,6 +88,55 @@ export default function LoaderPage() {
       }}
     >
       <Navbar />
+
+      {/* Store Sub-Navbar - Full Width */}
+      <div
+        style={{
+          borderTop: "1px solid #C9A84C",
+          borderBottom: "1px solid #C9A84C",
+          display: "flex",
+          justifyContent: "center",
+          alignItems: "center",
+          background: "#000",
+          width: "100%",
+          position: "relative",
+          zIndex: 1,
+        }}
+      >
+        {[
+          { label: "Beats", href: "/beats" },
+          { label: "VST Plugins", href: "/vst" },
+          { label: "Merchendise", href: "/shop" },
+          { label: "Miscellaneous", href: "/shop" },
+        ].map((item, index) => (
+          <Link key={item.href + index} href={item.href}>
+            <div
+              style={{
+                padding: "16px 80px",
+                fontSize: "12px",
+                fontWeight: 700,
+                letterSpacing: "0.15em",
+                textTransform: "uppercase",
+                color: "#C9A84C",
+                cursor: "pointer",
+                borderLeft: index !== 0 ? "1px solid rgba(201,168,76,0.2)" : "none",
+                transition: "background 0.2s ease, color 0.2s ease",
+                whiteSpace: "nowrap",
+              }}
+              onMouseEnter={(e) => {
+                (e.currentTarget as HTMLElement).style.background = "rgba(201,168,76,0.07)";
+                (e.currentTarget as HTMLElement).style.color = "#e8c76a";
+              }}
+              onMouseLeave={(e) => {
+                (e.currentTarget as HTMLElement).style.background = "transparent";
+                (e.currentTarget as HTMLElement).style.color = "#C9A84C";
+              }}
+            >
+              {item.label}
+            </div>
+          </Link>
+        ))}
+      </div>
 
       {/* Ambient glow */}
       <div
@@ -255,6 +305,43 @@ export default function LoaderPage() {
           Free · macOS 11+ · Windows 10+ · v1.0
         </p>
       </div>
+
+      {/* Mirrored brick background wrapper for content sections */}
+      <div style={{ position: "relative" }}>
+        {/* Left half - normal */}
+        <div
+          style={{
+            position: "absolute",
+            top: 0,
+            left: 0,
+            bottom: 0,
+            width: "50%",
+            backgroundImage: 'url("/black_gold_brick_texture.png")',
+            backgroundSize: "cover",
+            backgroundPosition: "center",
+            backgroundRepeat: "no-repeat",
+            opacity: 0.4,
+            zIndex: 0,
+          }}
+        />
+        {/* Right half - mirrored */}
+        <div
+          style={{
+            position: "absolute",
+            top: 0,
+            right: 0,
+            bottom: 0,
+            width: "50%",
+            backgroundImage: 'url("/black_gold_brick_texture.png")',
+            backgroundSize: "cover",
+            backgroundPosition: "center",
+            backgroundRepeat: "no-repeat",
+            opacity: 0.4,
+            transform: "scaleX(-1)",
+            zIndex: 0,
+          }}
+        />
+        <div style={{ position: "relative", zIndex: 1 }}>
 
       {/* Divider */}
       <div style={{ borderTop: "1px solid #111", position: "relative", zIndex: 1 }} />
@@ -523,6 +610,9 @@ export default function LoaderPage() {
           </a>
         </div>
       </div>
+
+        </div>{/* end brick inner */}
+      </div>{/* end brick wrapper */}
     </div>
   );
 }
