@@ -99,7 +99,7 @@ export default function Store() {
         {[
           { label: "Beats", href: "/beats" },
           { label: "VST Plugins", href: "/vst" },
-          { label: "Merchendise", href: "/shop" },
+          { label: "Merchandise", href: "/shop" },
           { label: "Plugin Installer", href: "/loader" },
         ].map((item, index) => (
           <Link key={item.href} href={item.href}>
