@@ -74,13 +74,19 @@ const steps = [
 ];
 
 async function downloadLoader(platform: 'mac' | 'pc') {
-  const res = await fetch(
-    `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/get-loader-download?platform=${platform}`,
-    { headers: { apikey: import.meta.env.VITE_SUPABASE_ANON_KEY } }
-  );
-  const { url, error } = await res.json();
-  if (error || !url) { alert('Download unavailable. Please try again.'); return; }
-  window.location.href = url;
+  try {
+    const res = await fetch(
+      `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/get-loader-download?platform=${platform}`,
+      { headers: { apikey: import.meta.env.VITE_SUPABASE_ANON_KEY } }
+    );
+    if (!res.ok) throw new Error(`Server error: ${res.status}`);
+    const data = await res.json();
+    if (data.error || !data.url) throw new Error(data.error || 'No URL returned');
+    window.open(data.url, '_blank');
+  } catch (err) {
+    console.error('Download error:', err);
+    alert('Download unavailable. Please try again shortly.');
+  }
 }
 
 export default function LoaderPage() {
