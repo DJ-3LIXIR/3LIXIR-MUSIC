@@ -73,6 +73,16 @@ const steps = [
   { num: "03", label: "Browse & Install", desc: "Pick any plugin from your library and hit Install." },
 ];
 
+async function downloadLoader(platform: 'mac' | 'pc') {
+  const res = await fetch(
+    `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/get-loader-download?platform=${platform}`,
+    { headers: { apikey: import.meta.env.VITE_SUPABASE_ANON_KEY } }
+  );
+  const { url, error } = await res.json();
+  if (error || !url) { alert('Download unavailable. Please try again.'); return; }
+  window.location.href = url;
+}
+
 export default function LoaderPage() {
   const [hoveredFeature, setHoveredFeature] = useState<number | null>(null);
   const [hoveredStep, setHoveredStep] = useState<number | null>(null);
@@ -190,8 +200,8 @@ export default function LoaderPage() {
         {/* Download buttons */}
         <div style={{ display: "flex", gap: "16px", flexWrap: "wrap", justifyContent: "center" }}>
           {/* Mac */}
-          <a
-            href="#"
+          <button
+            onClick={() => downloadLoader('mac')}
             style={{
               display: "inline-flex",
               alignItems: "center",
@@ -204,7 +214,8 @@ export default function LoaderPage() {
               letterSpacing: "0.12em",
               textTransform: "uppercase",
               borderRadius: "100px",
-              textDecoration: "none",
+              border: "none",
+              cursor: "pointer",
               transition: "opacity 0.2s ease",
             }}
             onMouseEnter={(e) => ((e.currentTarget as HTMLElement).style.opacity = "0.85")}
@@ -214,11 +225,11 @@ export default function LoaderPage() {
               <path d="M11.5 1.5C10.5 1.5 9.5 2 9 3c.8.5 1.5 1.5 1.5 2.5 0 1-.5 2-1.5 2.5.5 1 1.5 1.5 2.5 1.5 1.5 0 3-1.5 3-4 0-2.5-1-4-3-4zM5 4C3 4 1.5 6 1.5 8.5 1.5 11 3 14 5 14c.8 0 1.5-.5 2-.5s1.2.5 2 .5c2 0 3.5-3 3.5-5.5C10.5 7 9 6 8 6c-.8 0-1.5.5-2 .5S5.8 6 5.5 6C5.2 6 5 5 5 4z" fill="currentColor" />
             </svg>
             Download for Mac
-          </a>
+          </button>
 
           {/* PC */}
-          <a
-            href="#"
+          <button
+            onClick={() => downloadLoader('pc')}
             style={{
               display: "inline-flex",
               alignItems: "center",
@@ -232,7 +243,7 @@ export default function LoaderPage() {
               textTransform: "uppercase",
               borderRadius: "100px",
               border: "1px solid #22c55e",
-              textDecoration: "none",
+              cursor: "pointer",
               transition: "background 0.2s ease, color 0.2s ease",
             }}
             onMouseEnter={(e) => {
@@ -249,7 +260,7 @@ export default function LoaderPage() {
               <path d="M5 14h6M8 12v2" stroke="currentColor" strokeWidth="1.4" strokeLinecap="round" />
             </svg>
             Download for PC
-          </a>
+          </button>
         </div>
 
         <p style={{ fontSize: "12px", color: "#333", margin: 0 }}>
@@ -557,8 +568,8 @@ export default function LoaderPage() {
         </p>
 
         <div style={{ display: "flex", gap: "16px", flexWrap: "wrap", justifyContent: "center" }}>
-          <a
-            href="#"
+          <button
+            onClick={() => downloadLoader('mac')}
             style={{
               display: "inline-flex",
               alignItems: "center",
@@ -571,16 +582,17 @@ export default function LoaderPage() {
               letterSpacing: "0.12em",
               textTransform: "uppercase",
               borderRadius: "100px",
-              textDecoration: "none",
+              border: "none",
+              cursor: "pointer",
               transition: "opacity 0.2s ease",
             }}
             onMouseEnter={(e) => ((e.currentTarget as HTMLElement).style.opacity = "0.85")}
             onMouseLeave={(e) => ((e.currentTarget as HTMLElement).style.opacity = "1")}
           >
             Download for Mac
-          </a>
-          <a
-            href="#"
+          </button>
+          <button
+            onClick={() => downloadLoader('pc')}
             style={{
               display: "inline-flex",
               alignItems: "center",
@@ -594,7 +606,7 @@ export default function LoaderPage() {
               textTransform: "uppercase",
               borderRadius: "100px",
               border: "1px solid #22c55e",
-              textDecoration: "none",
+              cursor: "pointer",
               transition: "background 0.2s ease, color 0.2s ease",
             }}
             onMouseEnter={(e) => {
@@ -607,7 +619,7 @@ export default function LoaderPage() {
             }}
           >
             Download for PC
-          </a>
+          </button>
         </div>
       </div>
 
