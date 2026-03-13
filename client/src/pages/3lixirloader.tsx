@@ -125,6 +125,26 @@ export default function LoaderPage() {
         }}
       />
 
+      {/* Hero background wrapper */}
+      <div
+        style={{
+          position: "relative",
+          backgroundImage: 'url("/3LIXIR%20LOADER%20PRODUCT%20IMAGE.png")',
+          backgroundSize: "cover",
+          backgroundPosition: "center top",
+          backgroundRepeat: "no-repeat",
+        }}
+      >
+        {/* Dark overlay so text stays legible */}
+        <div
+          style={{
+            position: "absolute",
+            inset: 0,
+            background: "rgba(0,0,0,0.60)",
+            zIndex: 0,
+          }}
+        />
+
       {/* Hero */}
       <div
         style={{
@@ -278,6 +298,7 @@ export default function LoaderPage() {
           Free · macOS 11+ · Windows 10+ · v1.0
         </p>
       </div>
+      </div>{/* end hero bg wrapper */}
 
       {/* Store Sub-Navbar - Full Width */}
       <div
