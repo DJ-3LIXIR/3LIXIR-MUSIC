@@ -129,11 +129,12 @@ export default function LoaderPage() {
       <div
         style={{
           position: "relative",
-          height: "500px",
           backgroundImage: 'url("/3LIXIR%20LOADER%20PRODUCT%20IMAGE.png")',
-          backgroundSize: "contain",
+          backgroundSize: "cover",
           backgroundPosition: "center",
           backgroundRepeat: "no-repeat",
+          aspectRatio: "16 / 9",
+          width: "100%",
         }}
       >
         {/* Subtle dark vignette at bottom for smooth transition */}
