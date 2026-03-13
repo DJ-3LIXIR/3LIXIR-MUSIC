@@ -125,27 +125,78 @@ export default function LoaderPage() {
         }}
       />
 
-      {/* Hero background wrapper */}
+      {/* Hero product image banner */}
       <div
         style={{
           position: "relative",
+          height: "500px",
           backgroundImage: 'url("/3LIXIR%20LOADER%20PRODUCT%20IMAGE.png")',
           backgroundSize: "cover",
-          backgroundPosition: "center top",
+          backgroundPosition: "center",
           backgroundRepeat: "no-repeat",
         }}
       >
-        {/* Dark overlay so text stays legible */}
+        {/* Subtle dark vignette at bottom for smooth transition */}
         <div
           style={{
             position: "absolute",
             inset: 0,
-            background: "rgba(0,0,0,0.60)",
+            background: "linear-gradient(to bottom, rgba(0,0,0,0.15) 0%, rgba(0,0,0,0.5) 100%)",
             zIndex: 0,
           }}
         />
+      </div>
 
-      {/* Hero */}
+      {/* Store Sub-Navbar - Full Width */}
+      <div
+        style={{
+          borderTop: "1px solid #C9A84C",
+          borderBottom: "1px solid #C9A84C",
+          display: "flex",
+          justifyContent: "center",
+          alignItems: "center",
+          background: "#000",
+          width: "100%",
+          position: "relative",
+          zIndex: 1,
+        }}
+      >
+        {[
+          { label: "Beats", href: "/beats" },
+          { label: "VST Plugins", href: "/vst" },
+          { label: "Merchandise", href: "/shop" },
+          { label: "Plugin Installer", href: "/loader" },
+        ].map((item, index) => (
+          <Link key={item.href + index} href={item.href}>
+            <div
+              style={{
+                padding: "16px 80px",
+                fontSize: "12px",
+                fontWeight: 700,
+                letterSpacing: "0.15em",
+                textTransform: "uppercase",
+                color: "#C9A84C",
+                cursor: "pointer",
+                borderLeft: index !== 0 ? "1px solid rgba(201,168,76,0.2)" : "none",
+                transition: "background 0.2s ease, color 0.2s ease",
+                whiteSpace: "nowrap",
+              }}
+              onMouseEnter={(e) => {
+                (e.currentTarget as HTMLElement).style.background = "rgba(201,168,76,0.07)";
+                (e.currentTarget as HTMLElement).style.color = "#e8c76a";
+              }}
+              onMouseLeave={(e) => {
+                (e.currentTarget as HTMLElement).style.background = "transparent";
+                (e.currentTarget as HTMLElement).style.color = "#C9A84C";
+              }}
+            >
+              {item.label}
+            </div>
+          </Link>
+        ))}
+      </div>
+
+      {/* Hero text content */}
       <div
         style={{
           position: "relative",
@@ -153,7 +204,7 @@ export default function LoaderPage() {
           maxWidth: "1100px",
           margin: "0 auto",
           padding: "0 24px",
-          paddingTop: "110px",
+          paddingTop: "80px",
           paddingBottom: "80px",
           display: "flex",
           flexDirection: "column",
@@ -297,56 +348,6 @@ export default function LoaderPage() {
         <p style={{ fontSize: "12px", color: "#333", margin: 0 }}>
           Free · macOS 11+ · Windows 10+ · v1.0
         </p>
-      </div>
-      </div>{/* end hero bg wrapper */}
-
-      {/* Store Sub-Navbar - Full Width */}
-      <div
-        style={{
-          borderTop: "1px solid #C9A84C",
-          borderBottom: "1px solid #C9A84C",
-          display: "flex",
-          justifyContent: "center",
-          alignItems: "center",
-          background: "#000",
-          width: "100%",
-          position: "relative",
-          zIndex: 1,
-        }}
-      >
-        {[
-          { label: "Beats", href: "/beats" },
-          { label: "VST Plugins", href: "/vst" },
-          { label: "Merchandise", href: "/shop" },
-          { label: "Plugin Installer", href: "/loader" },
-        ].map((item, index) => (
-          <Link key={item.href + index} href={item.href}>
-            <div
-              style={{
-                padding: "16px 80px",
-                fontSize: "12px",
-                fontWeight: 700,
-                letterSpacing: "0.15em",
-                textTransform: "uppercase",
-                color: "#C9A84C",
-                cursor: "pointer",
-                borderLeft: index !== 0 ? "1px solid rgba(201,168,76,0.2)" : "none",
-                transition: "background 0.2s ease, color 0.2s ease",
-                whiteSpace: "nowrap",
-              }}
-              onMouseEnter={(e) => {
-                (e.currentTarget as HTMLElement).style.background = "rgba(201,168,76,0.07)";
-                (e.currentTarget as HTMLElement).style.color = "#e8c76a";
-              }}
-              onMouseLeave={(e) => {
-                (e.currentTarget as HTMLElement).style.background = "transparent";
-                (e.currentTarget as HTMLElement).style.color = "#C9A84C";
-              }}
-            >
-              {item.label}
-            </div>
-          </Link>
-        ))}
       </div>
 
       {/* Mirrored brick background wrapper for content sections */}
