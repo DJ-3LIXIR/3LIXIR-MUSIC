@@ -10,6 +10,7 @@ interface Plugin {
   tag: string | null;
   price: string;
   url: string | null;
+  image: string | null;
 }
 
 const navItems = ["All", "Instruments", "Audio Units", "Libraries"];
@@ -46,6 +47,7 @@ export default function VST() {
           ? `$${item.price_usd}`
           : "$0",
         url: item.url || item.product_url || item.link || null,
+        image: item.image || item.image_url || item.thumbnail || null,
       }));
 
       setPlugins(mapped);
@@ -444,7 +446,7 @@ export default function VST() {
                   </div>
                 )}
 
-                {/* Image placeholder */}
+                {/* Image */}
                 <div
                   style={{
                     aspectRatio: "4/3",
@@ -463,15 +465,31 @@ export default function VST() {
                       inset: 0,
                       background: isHovered ? "radial-gradient(ellipse at 50% 50%, rgba(201,168,76,0.05) 0%, transparent 70%)" : "transparent",
                       transition: "background 0.3s ease",
+                      zIndex: 1,
                     }}
                   />
-                  <svg width="40" height="40" viewBox="0 0 40 40" fill="none">
-                    <rect x="6" y="12" width="28" height="16" rx="3" stroke="#222" strokeWidth="1.5" />
-                    <circle cx="13" cy="20" r="3" stroke="#222" strokeWidth="1.5" />
-                    <circle cx="20" cy="20" r="3" stroke="#222" strokeWidth="1.5" />
-                    <circle cx="27" cy="20" r="3" stroke="#222" strokeWidth="1.5" />
-                    <path d="M10 28v4M20 28v4M30 28v4" stroke="#222" strokeWidth="1.5" strokeLinecap="round" />
-                  </svg>
+                  {plugin.image ? (
+                    <img
+                      src={plugin.image}
+                      alt={plugin.name}
+                      style={{
+                        width: "100%",
+                        height: "100%",
+                        objectFit: "cover",
+                        display: "block",
+                        transition: "transform 0.4s ease",
+                        transform: isHovered ? "scale(1.05)" : "scale(1)",
+                      }}
+                    />
+                  ) : (
+                    <svg width="40" height="40" viewBox="0 0 40 40" fill="none">
+                      <rect x="6" y="12" width="28" height="16" rx="3" stroke="#222" strokeWidth="1.5" />
+                      <circle cx="13" cy="20" r="3" stroke="#222" strokeWidth="1.5" />
+                      <circle cx="20" cy="20" r="3" stroke="#222" strokeWidth="1.5" />
+                      <circle cx="27" cy="20" r="3" stroke="#222" strokeWidth="1.5" />
+                      <path d="M10 28v4M20 28v4M30 28v4" stroke="#222" strokeWidth="1.5" strokeLinecap="round" />
+                    </svg>
+                  )}
                 </div>
 
                 {/* Info */}
