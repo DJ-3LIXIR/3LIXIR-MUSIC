@@ -114,7 +114,7 @@ export default function ARK() {
           backgroundRepeat: "no-repeat",
           aspectRatio: "16 / 9",
           width: "100%",
-          background: "linear-gradient(135deg, #0a0a0a 0%, #111 100%)",
+          backgroundColor: "#0a0a0a",
         }}
       >
         {/* Fallback placeholder when no image */}
