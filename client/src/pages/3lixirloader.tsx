@@ -131,7 +131,7 @@ export default function LoaderPage() {
           position: "relative",
           height: "500px",
           backgroundImage: 'url("/3LIXIR%20LOADER%20PRODUCT%20IMAGE.png")',
-          backgroundSize: "cover",
+          backgroundSize: "contain",
           backgroundPosition: "center",
           backgroundRepeat: "no-repeat",
         }}
@@ -195,6 +195,43 @@ export default function LoaderPage() {
           </Link>
         ))}
       </div>
+
+      {/* Mirrored brick background wrapper for content sections */}
+      <div style={{ position: "relative" }}>
+        {/* Left half - normal */}
+        <div
+          style={{
+            position: "absolute",
+            top: 0,
+            left: 0,
+            bottom: 0,
+            width: "50%",
+            backgroundImage: 'url("/black_gold_brick_texture.png")',
+            backgroundSize: "cover",
+            backgroundPosition: "center",
+            backgroundRepeat: "no-repeat",
+            opacity: 0.4,
+            zIndex: 0,
+          }}
+        />
+        {/* Right half - mirrored */}
+        <div
+          style={{
+            position: "absolute",
+            top: 0,
+            right: 0,
+            bottom: 0,
+            width: "50%",
+            backgroundImage: 'url("/black_gold_brick_texture.png")',
+            backgroundSize: "cover",
+            backgroundPosition: "center",
+            backgroundRepeat: "no-repeat",
+            opacity: 0.4,
+            transform: "scaleX(-1)",
+            zIndex: 0,
+          }}
+        />
+        <div style={{ position: "relative", zIndex: 1 }}>
 
       {/* Hero text content */}
       <div
@@ -349,43 +386,6 @@ export default function LoaderPage() {
           Free · macOS 11+ · Windows 10+ · v1.0
         </p>
       </div>
-
-      {/* Mirrored brick background wrapper for content sections */}
-      <div style={{ position: "relative" }}>
-        {/* Left half - normal */}
-        <div
-          style={{
-            position: "absolute",
-            top: 0,
-            left: 0,
-            bottom: 0,
-            width: "50%",
-            backgroundImage: 'url("/black_gold_brick_texture.png")',
-            backgroundSize: "cover",
-            backgroundPosition: "center",
-            backgroundRepeat: "no-repeat",
-            opacity: 0.4,
-            zIndex: 0,
-          }}
-        />
-        {/* Right half - mirrored */}
-        <div
-          style={{
-            position: "absolute",
-            top: 0,
-            right: 0,
-            bottom: 0,
-            width: "50%",
-            backgroundImage: 'url("/black_gold_brick_texture.png")',
-            backgroundSize: "cover",
-            backgroundPosition: "center",
-            backgroundRepeat: "no-repeat",
-            opacity: 0.4,
-            transform: "scaleX(-1)",
-            zIndex: 0,
-          }}
-        />
-        <div style={{ position: "relative", zIndex: 1 }}>
 
       {/* Divider */}
       <div style={{ borderTop: "1px solid #111", position: "relative", zIndex: 1 }} />
