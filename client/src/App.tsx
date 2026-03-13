@@ -30,6 +30,7 @@ import CustomerSupport from "@/pages/CustomerSupport";
 import Store from "@/pages/Store";
 import VST from "@/pages/VST";
 import LoaderPage from "@/pages/3lixirloader";
+import ARK from "@/pages/ARK";
 
 // Contract Pages
 import Terms from "@/components/Shop/Contract/Terms";
@@ -62,6 +63,7 @@ function Router() {
       <Route path="/store" component={Store} />
       <Route path="/vst" component={VST} />
       <Route path="/loader" component={LoaderPage} />
+      <Route path="/ark" component={ARK} />
       <Route path="/stripe-success" component={StripeSuccess} />
       <Route path="/cancel" component={Cancel} />
       <Route path="/downloads" component={Downloads} />

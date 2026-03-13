@@ -9,6 +9,7 @@ interface Plugin {
   category: string;
   tag: string | null;
   price: string;
+  url: string | null;
 }
 
 const navItems = ["All", "Instruments", "Audio Units", "Libraries"];
@@ -44,6 +45,7 @@ export default function VST() {
           : item.price_usd
           ? `$${item.price_usd}`
           : "$0",
+        url: item.url || item.product_url || item.link || null,
       }));
 
       setPlugins(mapped);
@@ -408,12 +410,13 @@ export default function VST() {
                 key={plugin.id}
                 onMouseEnter={() => setHoveredPlugin(plugin.id)}
                 onMouseLeave={() => setHoveredPlugin(null)}
+                onClick={() => plugin.url && window.open(plugin.url, "_blank", "noopener,noreferrer")}
                 style={{
                   background: isHovered ? "#0d0d0d" : "#080808",
                   border: `1px solid ${isHovered ? "rgba(201,168,76,0.3)" : "#111"}`,
                   borderRadius: "12px",
                   overflow: "hidden",
-                  cursor: "pointer",
+                  cursor: plugin.url ? "pointer" : "default",
                   transition: "border-color 0.2s ease, background 0.2s ease",
                   position: "relative",
                 }}
@@ -513,6 +516,7 @@ export default function VST() {
                       {plugin.price}
                     </span>
                     <div
+                      onClick={(e) => e.stopPropagation()}
                       style={{
                         fontSize: "11px",
                         fontWeight: 700,
