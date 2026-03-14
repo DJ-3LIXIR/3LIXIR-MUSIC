@@ -31,7 +31,7 @@ import Store from "@/pages/Store";
 import VST from "@/pages/VST";
 import LoaderPage from "@/pages/3lixirloader";
 import ARK from "@/pages/ARK";
-import Apollo from "@/pages/apollo";
+import Apollo from "@/pages/APOLLO";
 
 // Contract Pages
 import Terms from "@/components/Shop/Contract/Terms";
