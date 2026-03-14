@@ -108,7 +108,7 @@ export default function OYSTER() {
       <div
         style={{
           position: "relative",
-          backgroundImage: 'url("/OYSTER_PRODUCT_IMAGE.png")',
+          backgroundImage: 'url("/Oyster Product Box.png")',
           backgroundSize: "cover",
           backgroundPosition: "center",
           backgroundRepeat: "no-repeat",
