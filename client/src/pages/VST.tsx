@@ -57,7 +57,10 @@ export default function VST() {
     fetchPlugins();
   }, []);
 
-  const filtered = activeTab === "All" ? plugins : plugins.filter(p => p.category === activeTab);
+  const normalizeCategory = (str: string) => str.toLowerCase().trim().replace(/s$/, "");
+  const filtered = activeTab === "All"
+    ? plugins
+    : plugins.filter(p => normalizeCategory(p.category) === normalizeCategory(activeTab));
 
   return (
     <div
