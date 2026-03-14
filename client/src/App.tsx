@@ -33,6 +33,7 @@ import LoaderPage from "@/pages/3lixirloader";
 import ARK from "@/pages/ARK";
 import Apollo from "@/pages/APOLLO";
 import Hades from "@/pages/HADES";
+import Oyster from "@/pages/OYSTER";
 
 // Contract Pages
 import Terms from "@/components/Shop/Contract/Terms";
@@ -68,6 +69,7 @@ function Router() {
       <Route path="/ark" component={ARK} />
       <Route path="/apollo" component={Apollo} />
       <Route path="/hades" component={Hades} />
+      <Route path="/oyster" component={Oyster} />
       <Route path="/stripe-success" component={StripeSuccess} />
       <Route path="/cancel" component={Cancel} />
       <Route path="/downloads" component={Downloads} />
