@@ -565,7 +565,8 @@ export default function Shop() {
           (item) =>
             !item.id.startsWith("subscription-") &&
             !item.id.startsWith("license-") &&
-            item.id !== "royalty-token"
+            item.id !== "royalty-token" &&
+            (item as any).type !== "plugin"
         );
 
         // Try to find a custom artist name from any item in the cart (including license items)
@@ -637,6 +638,43 @@ export default function Shop() {
               user_metadata: user.user_metadata,
             },
           );
+
+          // Generate product keys for any plugin items in the order
+          const pluginItems = validItems.filter(
+            (item) => (item as any).type === "plugin"
+          );
+          if (pluginItems.length > 0 && orderData) {
+            try {
+              const keyResponse = await fetch(
+                "https://tciugratutxxrdtbsxim.supabase.co/functions/v1/generate-product-key",
+                {
+                  method: "POST",
+                  headers: {
+                    "Content-Type": "application/json",
+                    Authorization:
+                      "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InRjaXVncmF0dXR4eHJkdGJzeGltIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Njc0NzYwMDgsImV4cCI6MjA4MzA1MjAwOH0.-yif_fwvYOwE6kG4nkSc1HXyF-cHTlZGWGJ91YXsPuM",
+                  },
+                  body: JSON.stringify({
+                    orderId: orderData.id,
+                    userId: user.id,
+                    items: pluginItems.map((item) => ({
+                      id: item.id,
+                      title: item.title,
+                      type: "plugin",
+                    })),
+                  }),
+                }
+              );
+              const keyResult = await keyResponse.json();
+              if (keyResult.success) {
+                console.log("✅ Product keys generated:", keyResult.keys);
+              } else {
+                console.error("❌ Failed to generate product keys:", keyResult.error);
+              }
+            } catch (keyError) {
+              console.error("❌ Error generating product keys:", keyError);
+            }
+          }
         }
 
         const subscriptionItem = validItems.find((item) =>
@@ -811,6 +849,8 @@ export default function Shop() {
                 price: item.price,
                 type: item.id.startsWith("subscription")
                   ? "subscription"
+                  : (item as any).type === "plugin"
+                  ? "plugin"
                   : "beat",
               })),
               successUrl: `${window.location.origin}/stripe-success?session_id={CHECKOUT_SESSION_ID}`,
@@ -1065,7 +1105,8 @@ export default function Shop() {
           (item: any) =>
             !item.id.startsWith("subscription-") &&
             !item.id.startsWith("license-") &&
-            item.id !== "royalty-token"
+            item.id !== "royalty-token" &&
+            item.type !== "plugin"
         );
 
         // Try to find a custom artist name from any item in the cart (including license items)
@@ -1131,6 +1172,43 @@ export default function Shop() {
               user_metadata: currentUser?.user_metadata || user?.user_metadata,
             },
           );
+
+        // Generate product keys for any plugin items in the Stripe order
+        const stripePluginItems = cartItems.filter(
+          (item: any) => item.type === "plugin"
+        );
+        if (stripePluginItems.length > 0 && orderData) {
+          try {
+            const keyResponse = await fetch(
+              "https://tciugratutxxrdtbsxim.supabase.co/functions/v1/generate-product-key",
+              {
+                method: "POST",
+                headers: {
+                  "Content-Type": "application/json",
+                  Authorization:
+                    "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InRjaXVncmF0dXR4eHJkdGJzeGltIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Njc0NzYwMDgsImV4cCI6MjA4MzA1MjAwOH0.-yif_fwvYOwE6kG4nkSc1HXyF-cHTlZGWGJ91YXsPuM",
+                },
+                body: JSON.stringify({
+                  orderId: orderData.id,
+                  userId: finalUserId,
+                  items: stripePluginItems.map((item: any) => ({
+                    id: item.id,
+                    title: item.title || item.name,
+                    type: "plugin",
+                  })),
+                }),
+              }
+            );
+            const keyResult = await keyResponse.json();
+            if (keyResult.success) {
+              console.log("✅ Product keys generated (Stripe):", keyResult.keys);
+            } else {
+              console.error("❌ Failed to generate product keys (Stripe):", keyResult.error);
+            }
+          } catch (keyError) {
+            console.error("❌ Error generating product keys (Stripe):", keyError);
+          }
+        }
 
         await updateProfileWithOrderId(finalUserId, orderData.id);
       }
@@ -1755,33 +1833,39 @@ export default function Shop() {
                           <p className="text-sm text-muted-foreground mb-3">
                             {item.artist || "Unknown Artist"}
                           </p>
-                          <div className="flex items-center gap-3">
-                            <button
-                              onClick={() =>
-                                updateQuantity(
-                                  item.id,
-                                  (item.quantity || 1) - 1,
-                                )
-                              }
-                              className="w-8 h-8 rounded-full bg-white/5 hover:bg-white/10 flex items-center justify-center transition-colors"
-                            >
-                              <Minus className="w-4 h-4" />
-                            </button>
-                            <span className="w-8 text-center font-bold">
-                              {item.quantity || 1}
+                          {(item as any).type === "plugin" ? (
+                            <span className="text-xs text-muted-foreground uppercase tracking-wider">
+                              Plugin License
                             </span>
-                            <button
-                              onClick={() =>
-                                updateQuantity(
-                                  item.id,
-                                  (item.quantity || 1) + 1,
-                                )
-                              }
-                              className="w-8 h-8 rounded-full bg-white/5 hover:bg-white/10 flex items-center justify-center transition-colors"
-                            >
-                              <Plus className="w-4 h-4" />
-                            </button>
-                          </div>
+                          ) : (
+                            <div className="flex items-center gap-3">
+                              <button
+                                onClick={() =>
+                                  updateQuantity(
+                                    item.id,
+                                    (item.quantity || 1) - 1,
+                                  )
+                                }
+                                className="w-8 h-8 rounded-full bg-white/5 hover:bg-white/10 flex items-center justify-center transition-colors"
+                              >
+                                <Minus className="w-4 h-4" />
+                              </button>
+                              <span className="w-8 text-center font-bold">
+                                {item.quantity || 1}
+                              </span>
+                              <button
+                                onClick={() =>
+                                  updateQuantity(
+                                    item.id,
+                                    (item.quantity || 1) + 1,
+                                  )
+                                }
+                                className="w-8 h-8 rounded-full bg-white/5 hover:bg-white/10 flex items-center justify-center transition-colors"
+                              >
+                                <Plus className="w-4 h-4" />
+                              </button>
+                            </div>
+                          )}
                         </div>
                         <div className="flex flex-col items-end justify-between">
                           <button

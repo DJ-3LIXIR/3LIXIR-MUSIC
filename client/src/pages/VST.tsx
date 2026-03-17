@@ -2,6 +2,8 @@
 import { useState, useEffect } from "react";
 import { Navbar } from "@/components/layout/Navbar";
 import { supabase } from "@/supabaseClient";
+import { useCart } from "@/contexts/CartContext";
+import { useLocation } from "wouter";
 
 interface Plugin {
   id: string | number;
@@ -20,6 +22,9 @@ export default function VST() {
   const [hoveredPlugin, setHoveredPlugin] = useState<string | number | null>(null);
   const [plugins, setPlugins] = useState<Plugin[]>([]);
   const [loading, setLoading] = useState(true);
+  const [addedPlugins, setAddedPlugins] = useState<Set<string | number>>(new Set());
+  const { addToCart, items } = useCart();
+  const [, setLocation] = useLocation();
 
   useEffect(() => {
     const fetchPlugins = async () => {
@@ -56,6 +61,35 @@ export default function VST() {
 
     fetchPlugins();
   }, []);
+
+  // Track which plugins are already in cart
+  useEffect(() => {
+    const pluginIdsInCart = new Set(
+      items.filter((i) => i.type === "plugin").map((i) => i.id)
+    );
+    setAddedPlugins(pluginIdsInCart);
+  }, [items]);
+
+  const parsePrice = (priceStr: string): number => {
+    const cleaned = priceStr.replace(/[^0-9.]/g, "");
+    return parseFloat(cleaned) || 0;
+  };
+
+  const handleAddToCart = (plugin: Plugin) => {
+    const numericPrice = parsePrice(plugin.price);
+    addToCart({
+      id: String(plugin.id),
+      title: plugin.name,
+      artist: "3LIXIR Music",
+      price: numericPrice,
+      cover: plugin.image || "",
+      quantity: 1,
+      type: "plugin",
+      category: plugin.category,
+      image: plugin.image || undefined,
+    });
+    setAddedPlugins((prev) => new Set(prev).add(plugin.id));
+  };
 
   const normalizeCategory = (str: string) => str.toLowerCase().trim().replace(/s$/, "");
   const filtered = activeTab === "All"
@@ -410,18 +444,18 @@ export default function VST() {
         >
           {filtered.map((plugin) => {
             const isHovered = hoveredPlugin === plugin.id;
+            const isInCart = addedPlugins.has(plugin.id) || addedPlugins.has(String(plugin.id));
             return (
               <div
                 key={plugin.id}
                 onMouseEnter={() => setHoveredPlugin(plugin.id)}
                 onMouseLeave={() => setHoveredPlugin(null)}
-                onClick={() => plugin.url && window.open(plugin.url, "_blank", "noopener,noreferrer")}
                 style={{
                   background: isHovered ? "#0d0d0d" : "#080808",
                   border: `1px solid ${isHovered ? "rgba(201,168,76,0.3)" : "#111"}`,
                   borderRadius: "12px",
                   overflow: "hidden",
-                  cursor: plugin.url ? "pointer" : "default",
+                  cursor: "default",
                   transition: "border-color 0.2s ease, background 0.2s ease",
                   position: "relative",
                 }}
@@ -537,22 +571,39 @@ export default function VST() {
                       {plugin.price}
                     </span>
                     <div
-                      onClick={(e) => e.stopPropagation()}
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        if (isInCart) {
+                          setLocation("/shop");
+                        } else {
+                          handleAddToCart(plugin);
+                        }
+                      }}
                       style={{
                         fontSize: "11px",
                         fontWeight: 700,
                         letterSpacing: "0.1em",
                         textTransform: "uppercase",
-                        color: isHovered ? "#000" : "#C9A84C",
-                        background: isHovered ? "#C9A84C" : "transparent",
-                        border: "1px solid rgba(201,168,76,0.4)",
+                        color: isInCart
+                          ? "#000"
+                          : isHovered
+                          ? "#000"
+                          : "#C9A84C",
+                        background: isInCart
+                          ? "#22c55e"
+                          : isHovered
+                          ? "#C9A84C"
+                          : "transparent",
+                        border: isInCart
+                          ? "1px solid #22c55e"
+                          : "1px solid rgba(201,168,76,0.4)",
                         borderRadius: "100px",
                         padding: "5px 14px",
                         transition: "background 0.2s ease, color 0.2s ease",
                         cursor: "pointer",
                       }}
                     >
-                      Add
+                      {isInCart ? "In Cart" : "Add"}
                     </div>
                   </div>
                 </div>

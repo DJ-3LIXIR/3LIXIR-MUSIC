@@ -1,13 +1,13 @@
 import { useState, useEffect } from "react";
 import { Navbar } from "@/components/layout/Navbar";
-import { Download, Music, Clock, CheckCircle2, FileText, ShoppingBag } from "lucide-react";
+import { Download, Music, Clock, CheckCircle2, FileText, ShoppingBag, Key, Copy, Check } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useAuth } from "@/contexts/AuthContext";
 import { supabase } from "@/supabaseClient";
 import { useLocation } from "wouter";
 import { beats } from "@/lib/data";
 
-type ViewMode = "beats" | "licenses";
+type ViewMode = "beats" | "licenses" | "plugins";
 
 interface OrderItem {
   id: string;
@@ -36,13 +36,32 @@ interface CustomLicense {
   created_at: string;
 }
 
+interface ProductKey {
+  id: string;
+  plugin_id: string;
+  plugin_name: string;
+  key_value: string;
+  status: string;
+  activated_at: string | null;
+  created_at: string;
+  order_id: string;
+}
+
 export default function Downloads() {
   const { user, openAuthModal, userProfile } = useAuth();
   const [, setLocation] = useLocation();
   const [viewMode, setViewMode] = useState<ViewMode>("beats");
   const [orders, setOrders] = useState<Order[]>([]);
   const [customLicenses, setCustomLicenses] = useState<CustomLicense[]>([]);
+  const [productKeys, setProductKeys] = useState<ProductKey[]>([]);
+  const [copiedKeyId, setCopiedKeyId] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
+
+  const handleCopyKey = (keyValue: string, keyId: string) => {
+    navigator.clipboard.writeText(keyValue);
+    setCopiedKeyId(keyId);
+    setTimeout(() => setCopiedKeyId(null), 2000);
+  };
 
   useEffect(() => {
     if (!user) {
@@ -72,6 +91,19 @@ export default function Downloads() {
 
         if (licensesError) throw licensesError;
         setCustomLicenses(licensesData || []);
+
+        // Fetch product keys
+        const { data: keysData, error: keysError } = await supabase
+          .from("product_keys")
+          .select("*")
+          .eq("user_id", user.id)
+          .order("created_at", { ascending: false });
+
+        if (keysError) {
+          console.error("Error fetching product keys:", keysError);
+        } else {
+          setProductKeys(keysData || []);
+        }
       } catch (error) {
         console.error("Error fetching data:", error);
       } finally {
@@ -314,7 +346,7 @@ export default function Downloads() {
                 Downloads
               </h1>
               <p className="text-xl text-muted-foreground">
-                Access all your purchased beats and licenses
+                Access all your purchased beats, licenses, and plugin keys
               </p>
             </div>
 
@@ -341,6 +373,17 @@ export default function Downloads() {
               >
                 <FileText className="w-4 h-4" />
                 Licenses ({customLicenses.length + purchasedLicenses.length})
+              </button>
+              <button
+                onClick={() => setViewMode("plugins")}
+                className={`flex items-center gap-2 px-6 py-3 rounded-full font-bold text-sm uppercase tracking-widest transition-all ${
+                  viewMode === "plugins"
+                    ? "bg-[hsl(var(--gold))] text-black"
+                    : "bg-white/5 text-muted-foreground hover:bg-white/10 hover:text-white"
+                }`}
+              >
+                <Key className="w-4 h-4" />
+                Plugins ({productKeys.length})
               </button>
             </div>
 
@@ -525,6 +568,113 @@ export default function Downloads() {
                   </div>
                 )}
               </div>
+            )}
+
+            {/* Plugins View */}
+            {viewMode === "plugins" && (
+              <>
+                {productKeys.length === 0 ? (
+                  <div className="flex flex-col items-center justify-center py-20">
+                    <div className="w-24 h-24 rounded-full bg-white/10 flex items-center justify-center mb-6">
+                      <Key className="w-12 h-12 text-muted-foreground" />
+                    </div>
+                    <h2 className="text-2xl font-bold mb-2">No plugin keys yet</h2>
+                    <p className="text-muted-foreground mb-8">
+                      Purchase plugins from the VST page to get your product keys
+                    </p>
+                    <Button
+                      onClick={() => setLocation("/vst")}
+                      className="bg-[hsl(var(--gold))] text-black hover:bg-[hsl(var(--gold))]/90 rounded-full px-8 py-6 text-sm font-bold uppercase tracking-widest"
+                    >
+                      Browse Plugins
+                    </Button>
+                  </div>
+                ) : (
+                  <>
+                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                      {productKeys.map((pk) => (
+                        <div
+                          key={pk.id}
+                          className="border border-white/10 rounded-lg p-6 bg-black/80 hover:border-white/20 transition-all hover:shadow-lg hover:shadow-[hsl(var(--gold))]/10"
+                        >
+                          <div className="flex items-start gap-4 mb-4">
+                            <div className="w-16 h-16 bg-[hsl(var(--gold))]/10 rounded-lg flex-shrink-0 overflow-hidden flex items-center justify-center">
+                              <Key className="w-8 h-8 text-[hsl(var(--gold))]" />
+                            </div>
+                            <div className="flex-grow min-w-0">
+                              <h3 className="text-lg font-bold mb-1 truncate">
+                                {pk.plugin_name}
+                              </h3>
+                              <p className="text-sm text-muted-foreground truncate">
+                                VST Plugin License
+                              </p>
+                            </div>
+                          </div>
+
+                          <div className="flex items-center gap-2 text-xs text-muted-foreground mb-3">
+                            <Clock className="w-3 h-3" />
+                            <span>
+                              Purchased {new Date(pk.created_at).toLocaleDateString()}
+                            </span>
+                          </div>
+
+                          <div className={`flex items-center gap-2 text-xs mb-4 px-3 py-2 rounded-lg ${
+                            pk.status === "active"
+                              ? "text-green-500 bg-green-500/10"
+                              : "text-red-500 bg-red-500/10"
+                          }`}>
+                            <CheckCircle2 className="w-4 h-4" />
+                            <span>{pk.status === "active" ? "Active" : pk.status}</span>
+                            {pk.activated_at && (
+                              <span className="ml-auto text-muted-foreground">
+                                Activated {new Date(pk.activated_at).toLocaleDateString()}
+                              </span>
+                            )}
+                          </div>
+
+                          {/* Product Key Display */}
+                          <div className="bg-white/5 border border-white/10 rounded-lg p-3 mb-4">
+                            <div className="text-[10px] uppercase tracking-widest text-muted-foreground mb-1">
+                              Product Key
+                            </div>
+                            <div className="flex items-center justify-between gap-2">
+                              <code className="text-sm font-mono text-[hsl(var(--gold))] break-all">
+                                {pk.key_value}
+                              </code>
+                              <button
+                                onClick={() => handleCopyKey(pk.key_value, pk.id)}
+                                className="flex-shrink-0 p-1.5 rounded hover:bg-white/10 transition-colors"
+                                title="Copy key"
+                              >
+                                {copiedKeyId === pk.id ? (
+                                  <Check className="w-4 h-4 text-green-500" />
+                                ) : (
+                                  <Copy className="w-4 h-4 text-muted-foreground" />
+                                )}
+                              </button>
+                            </div>
+                          </div>
+
+                          <p className="text-[11px] text-muted-foreground">
+                            Enter this key in the 3LIXIR Loader app to activate your plugin.
+                          </p>
+                        </div>
+                      ))}
+                    </div>
+
+                    <div className="mt-12 p-6 border border-white/10 rounded-lg bg-black/80">
+                      <h3 className="text-lg font-bold mb-2">Plugin Activation</h3>
+                      <ul className="text-sm text-muted-foreground space-y-2">
+                        <li>• Open the 3LIXIR Loader app and sign into your account</li>
+                        <li>• Your purchased plugins will appear automatically</li>
+                        <li>• Use the product key above if prompted for manual activation</li>
+                        <li>• You can install on any machine — no device limits</li>
+                        <li>• Need help? Contact support@3lixirmusic.com</li>
+                      </ul>
+                    </div>
+                  </>
+                )}
+              </>
             )}
           </div>
         </main>
