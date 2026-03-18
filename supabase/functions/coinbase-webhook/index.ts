@@ -94,6 +94,38 @@ serve(async (req) => {
 
       console.log("✓ Order saved successfully");
 
+      // Generate product keys for plugin items
+      const pluginItems = items.filter((item: any) => item.type === "plugin");
+      if (pluginItems.length > 0) {
+        try {
+          const supabaseUrl = Deno.env.get("SUPABASE_URL")!;
+          const generateKeyResponse = await fetch(
+            `${supabaseUrl}/functions/v1/generate-product-key`,
+            {
+              method: "POST",
+              headers: {
+                "Authorization": `Bearer ${supabaseKey}`,
+                "Content-Type": "application/json",
+              },
+              body: JSON.stringify({
+                orderId: charge.code,
+                userId: metadata.userId,
+                items: pluginItems,
+              }),
+            }
+          );
+
+          const keyResult = await generateKeyResponse.json();
+          if (generateKeyResponse.ok) {
+            console.log("✓ Product keys generated:", keyResult);
+          } else {
+            console.error("Error generating product keys:", keyResult);
+          }
+        } catch (keyError) {
+          console.error("Error calling generate-product-key:", keyError);
+        }
+      }
+
       const subscriptionItem = items.find((item: any) =>
         item.id?.startsWith("subscription-")
       );
