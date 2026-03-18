@@ -203,9 +203,10 @@ export default function Shop() {
 
   const beatItems = validItems.filter(
     (item) =>
-      item.id !== "royalty-token" && 
-      !item.id.startsWith("subscription-") && 
-      !item.id.startsWith("license-"),
+      item.id !== "royalty-token" &&
+      !item.id.startsWith("subscription-") &&
+      !item.id.startsWith("license-") &&
+      (item as any).type !== "plugin",
   );
   const totalBeats = beatItems.reduce(
     (sum, item) => sum + (item.quantity || 0),
