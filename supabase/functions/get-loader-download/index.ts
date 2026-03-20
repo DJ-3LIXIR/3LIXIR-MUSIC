@@ -3,7 +3,7 @@ import { AwsClient } from 'npm:aws4fetch@1.0.20'
 const BUCKET_NAME = '3lixir-loader'
 
 const FILES = {
-  mac: '3lixir-loader-1.0.0.dmg',
+  mac: '3lixir-loader-1.0.2.dmg',
   pc:  '3lixir-loader-1.0.0-setup.exe',
 }
 

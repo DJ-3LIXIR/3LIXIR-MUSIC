@@ -384,7 +384,7 @@ export default function LoaderPage() {
         </div>
 
         <p style={{ fontSize: "12px", color: "#333", margin: 0 }}>
-          Free · macOS 11+ · Windows 10+ · v1.0
+          Free · macOS 11+ · Windows 10+ · v1.0.2
         </p>
       </div>
 
