@@ -223,7 +223,7 @@ export function Navbar() {
             href="/"
             className="text-2xl font-display font-bold tracking-tighter hover:opacity-80 transition-opacity"
           >
-            3LIXIR
+            3LIXIR MUSIC 
           </Link>
 
           {/* Desktop Navigation */}
