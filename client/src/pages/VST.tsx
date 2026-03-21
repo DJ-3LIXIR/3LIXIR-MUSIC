@@ -485,6 +485,7 @@ export default function VST() {
 
                 {/* Image */}
                 <div
+                  onClick={() => plugin.url && setLocation(plugin.url)}
                   style={{
                     aspectRatio: "4/3",
                     background: "linear-gradient(135deg, #0d0d0d 0%, #111 100%)",
@@ -494,6 +495,7 @@ export default function VST() {
                     borderBottom: "1px solid #111",
                     position: "relative",
                     overflow: "hidden",
+                    cursor: plugin.url ? "pointer" : "default",
                   }}
                 >
                   <div
