@@ -93,6 +93,7 @@ export default function Apollo() {
       <div
         style={{
           position: "relative",
+          zIndex: 1,
           backgroundImage: 'url("/Product box for APOLLO.png")',
           backgroundSize: "cover",
           backgroundPosition: "center",
