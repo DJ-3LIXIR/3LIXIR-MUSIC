@@ -223,7 +223,7 @@ export function Navbar() {
             href="/"
             className="text-2xl font-display font-bold tracking-tighter hover:opacity-80 transition-opacity"
           >
-            3LIXIR MUSIC 
+            3LIXIR <span style={{ color: "#C9A84C" }}>MUSIC</span>
           </Link>
 
           {/* Desktop Navigation */}
@@ -384,35 +384,35 @@ export function Navbar() {
               <div className="grid grid-cols-5 gap-8">
                 <button
                   onClick={() => handleInfoClick("about")}
-                  className="flex items-center justify-center gap-2 text-white font-bold text-base hover:bg-white/10 py-2 px-4 rounded-lg transition-all"
+                  className="flex items-center justify-center gap-2 font-bold text-base hover:bg-white/10 py-2 px-4 rounded-lg transition-all" style={{ color: "#C9A84C" }}
                 >
                   <FileText className="w-5 h-5" />
                   About Us
                 </button>
                 <button
                   onClick={() => handleInfoClick("artist")}
-                  className="flex items-center justify-center gap-2 text-white font-bold text-base hover:bg-white/10 py-2 px-4 rounded-lg transition-all"
+                  className="flex items-center justify-center gap-2 font-bold text-base hover:bg-white/10 py-2 px-4 rounded-lg transition-all" style={{ color: "#C9A84C" }}
                 >
                   <Music className="w-5 h-5" />
                   Meet the Artist
                 </button>
                 <button
                   onClick={() => handleInfoClick("policy")}
-                  className="flex items-center justify-center gap-2 text-white font-bold text-base hover:bg-white/10 py-2 px-4 rounded-lg transition-all"
+                  className="flex items-center justify-center gap-2 font-bold text-base hover:bg-white/10 py-2 px-4 rounded-lg transition-all" style={{ color: "#C9A84C" }}
                 >
                   <Shield className="w-5 h-5" />
                   Policies
                 </button>
                 <button
                   onClick={() => handleInfoClick("faq")}
-                  className="flex items-center justify-center gap-2 text-white font-bold text-base hover:bg-white/10 py-2 px-4 rounded-lg transition-all"
+                  className="flex items-center justify-center gap-2 font-bold text-base hover:bg-white/10 py-2 px-4 rounded-lg transition-all" style={{ color: "#C9A84C" }}
                 >
                   <HelpCircle className="w-5 h-5" />
                   FAQ
                 </button>
                 <button
                   onClick={() => handleInfoClick("contact")}
-                  className="flex items-center justify-center gap-2 text-white font-bold text-base hover:bg-white/10 py-2 px-4 rounded-lg transition-all"
+                  className="flex items-center justify-center gap-2 font-bold text-base hover:bg-white/10 py-2 px-4 rounded-lg transition-all" style={{ color: "#C9A84C" }}
                 >
                   <Mail className="w-5 h-5" />
                   Contact
@@ -427,13 +427,13 @@ export function Navbar() {
               <div className="container mx-auto px-6 py-6">
                 <div className="grid grid-cols-5 gap-8">
                   {/* About Us Subsections */}
-                  <div className="flex flex-col items-center border-r border-black/30 pr-8">
+                  <div className="flex flex-col items-start border-r border-black/30 pr-8">
                     <div className="space-y-2 w-full">
                       {aboutSubItems.map((item) => (
                         <button
                           key={item.id}
                           onClick={() => handleAboutClick(item.id)}
-                          className="block text-black/80 hover:text-black hover:underline text-sm transition-all text-center w-full"
+                          className="block text-black/80 hover:text-black hover:underline text-sm transition-all text-left w-full"
                         >
                           {item.label}
                         </button>
@@ -442,13 +442,13 @@ export function Navbar() {
                   </div>
 
                   {/* Artist Subsections */}
-                  <div className="flex flex-col items-center border-r border-black/30 pr-8">
+                  <div className="flex flex-col items-start border-r border-black/30 pr-8">
                     <div className="space-y-2 w-full">
                       {artistSubItems.map((item) => (
                         <button
                           key={item.id}
                           onClick={() => handleArtistClick(item.id)}
-                          className="block text-black/80 hover:text-black hover:underline text-sm transition-all text-center w-full"
+                          className="block text-black/80 hover:text-black hover:underline text-sm transition-all text-left w-full"
                         >
                           {item.label}
                         </button>
@@ -457,13 +457,13 @@ export function Navbar() {
                   </div>
 
                   {/* Policy Subsections */}
-                  <div className="flex flex-col items-center border-r border-black/30 pr-8">
+                  <div className="flex flex-col items-start border-r border-black/30 pr-8">
                     <div className="space-y-2 w-full">
                       {policySubItems.map((item) => (
                         <button
                           key={item.id}
                           onClick={() => handlePolicyClick(item.id)}
-                          className="block text-black/80 hover:text-black hover:underline text-sm transition-all text-center w-full"
+                          className="block text-black/80 hover:text-black hover:underline text-sm transition-all text-left w-full"
                         >
                           {item.label}
                         </button>
