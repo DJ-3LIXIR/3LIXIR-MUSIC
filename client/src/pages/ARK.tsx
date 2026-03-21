@@ -108,6 +108,7 @@ export default function ARK() {
       <div
         style={{
           position: "relative",
+          zIndex: 1,
           backgroundImage: 'url("/ARK_PRODUCT_IMAGE.png")',
           backgroundSize: "cover",
           backgroundPosition: "center",
@@ -204,39 +205,38 @@ export default function ARK() {
 
       {/* Mirrored brick background wrapper */}
       <div style={{ position: "relative" }}>
-        {/* Left half - normal */}
-        <div
-          style={{
-            position: "absolute",
-            top: 0,
-            left: 0,
-            bottom: 0,
-            width: "50%",
-            backgroundImage: 'url("/black_gold_brick_texture.png")',
-            backgroundSize: "cover",
-            backgroundPosition: "center",
-            backgroundRepeat: "no-repeat",
-            opacity: 0.4,
-            zIndex: 0,
-          }}
-        />
-        {/* Right half - mirrored */}
-        <div
-          style={{
-            position: "absolute",
-            top: 0,
-            right: 0,
-            bottom: 0,
-            width: "50%",
-            backgroundImage: 'url("/black_gold_brick_texture.png")',
-            backgroundSize: "cover",
-            backgroundPosition: "center",
-            backgroundRepeat: "no-repeat",
-            opacity: 0.4,
-            transform: "scaleX(-1)",
-            zIndex: 0,
-          }}
-        />
+        {/* Fixed brick background - matches Downloads page */}
+        <div style={{ position: "fixed", inset: 0, zIndex: 0, pointerEvents: "none" }}>
+          <div
+            style={{
+              position: "absolute",
+              top: 0,
+              left: 0,
+              bottom: 0,
+              width: "50%",
+              backgroundImage: 'url("/black_gold_brick_texture.png")',
+              backgroundSize: "cover",
+              backgroundPosition: "center",
+              backgroundRepeat: "no-repeat",
+              opacity: 0.4,
+            }}
+          />
+          <div
+            style={{
+              position: "absolute",
+              top: 0,
+              right: 0,
+              bottom: 0,
+              width: "50%",
+              backgroundImage: 'url("/black_gold_brick_texture.png")',
+              backgroundSize: "cover",
+              backgroundPosition: "center",
+              backgroundRepeat: "no-repeat",
+              opacity: 0.4,
+              transform: "scaleX(-1)",
+            }}
+          />
+        </div>
         <div style={{ position: "relative", zIndex: 1 }}>
 
           {/* Hero text content */}
