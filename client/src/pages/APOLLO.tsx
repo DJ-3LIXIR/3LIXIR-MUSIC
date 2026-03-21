@@ -85,24 +85,9 @@ export default function Apollo() {
         color: "#fff",
         fontFamily: "'DM Sans', 'Helvetica Neue', sans-serif",
         overflowX: "hidden",
-      }}
+        }}
     >
       <Navbar />
-
-      {/* Ambient glow */}
-      <div
-        style={{
-          position: "fixed",
-          top: "-200px",
-          left: "50%",
-          transform: "translateX(-50%)",
-          width: "700px",
-          height: "500px",
-          background: "radial-gradient(ellipse, rgba(201,168,76,0.08) 0%, transparent 70%)",
-          pointerEvents: "none",
-          zIndex: 0,
-        }}
-      />
 
       {/* Hero product image banner */}
       <div
@@ -204,39 +189,38 @@ export default function Apollo() {
 
       {/* Mirrored brick background wrapper */}
       <div style={{ position: "relative" }}>
-        {/* Left half - normal */}
-        <div
-          style={{
-            position: "absolute",
-            top: 0,
-            left: 0,
-            bottom: 0,
-            width: "50%",
-            backgroundImage: 'url("/black_gold_brick_texture.png")',
-            backgroundSize: "cover",
-            backgroundPosition: "center",
-            backgroundRepeat: "no-repeat",
-            opacity: 0.4,
-            zIndex: 0,
-          }}
-        />
-        {/* Right half - mirrored */}
-        <div
-          style={{
-            position: "absolute",
-            top: 0,
-            right: 0,
-            bottom: 0,
-            width: "50%",
-            backgroundImage: 'url("/black_gold_brick_texture.png")',
-            backgroundSize: "cover",
-            backgroundPosition: "center",
-            backgroundRepeat: "no-repeat",
-            opacity: 0.4,
-            transform: "scaleX(-1)",
-            zIndex: 0,
-          }}
-        />
+        {/* Fixed brick background - matches Downloads page */}
+        <div style={{ position: "fixed", inset: 0, zIndex: 0, pointerEvents: "none" }}>
+          <div
+            style={{
+              position: "absolute",
+              top: 0,
+              left: 0,
+              bottom: 0,
+              width: "50%",
+              backgroundImage: 'url("/black_gold_brick_texture.png")',
+              backgroundSize: "cover",
+              backgroundPosition: "center",
+              backgroundRepeat: "no-repeat",
+              opacity: 0.4,
+            }}
+          />
+          <div
+            style={{
+              position: "absolute",
+              top: 0,
+              right: 0,
+              bottom: 0,
+              width: "50%",
+              backgroundImage: 'url("/black_gold_brick_texture.png")',
+              backgroundSize: "cover",
+              backgroundPosition: "center",
+              backgroundRepeat: "no-repeat",
+              opacity: 0.4,
+              transform: "scaleX(-1)",
+            }}
+          />
+        </div>
         <div style={{ position: "relative", zIndex: 1 }}>
 
           {/* Hero text content */}
