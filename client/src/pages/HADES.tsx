@@ -272,25 +272,17 @@ export default function Hades() {
               3LIXIR Hades
             </div>
 
-            {/* Icon */}
-            <div
+            {/* Product Image */}
+            <img
+              src="/HADES GUITAR.png"
+              alt="Hades Guitar"
               style={{
-                width: "96px",
-                height: "96px",
-                borderRadius: "24px",
-                background: "linear-gradient(145deg, #111, #0a0a0a)",
-                border: "1px solid rgba(201,168,76,0.25)",
-                display: "flex",
-                alignItems: "center",
-                justifyContent: "center",
+                width: "200px",
+                height: "auto",
+                borderRadius: "16px",
                 boxShadow: "0 0 60px rgba(201,168,76,0.1)",
               }}
-            >
-              <svg width="44" height="44" viewBox="0 0 44 44" fill="none">
-                <path d="M22 6l16 9v10l-16 9L6 25V15l16-9z" stroke="#C9A84C" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" />
-                <path d="M22 6v26M6 15l16 10 16-10" stroke="#C9A84C" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" />
-              </svg>
-            </div>
+            />
 
             {/* Headline */}
             <h1
@@ -378,6 +370,130 @@ export default function Hades() {
 
             <p style={{ fontSize: "12px", color: "#333", margin: 0 }}>
               Add version info or compatibility details here
+            </p>
+          </div>
+
+          {/* Hades Bass - centered */}
+          <div
+            style={{
+              position: "relative",
+              zIndex: 1,
+              maxWidth: "900px",
+              margin: "0 auto",
+              padding: "80px 24px 0",
+              display: "flex",
+              flexDirection: "column",
+              alignItems: "center",
+              textAlign: "center",
+              gap: "24px",
+            }}
+          >
+            <img
+              src="/HADES BASS.png"
+              alt="Hades Bass"
+              style={{
+                width: "100%",
+                maxWidth: "700px",
+                height: "auto",
+                borderRadius: "12px",
+              }}
+            />
+            <div
+              style={{
+                fontSize: "11px",
+                fontWeight: 700,
+                letterSpacing: "0.2em",
+                textTransform: "uppercase",
+                color: "#C9A84C",
+              }}
+            >
+              Hades Bass
+            </div>
+            <h3
+              style={{
+                fontSize: "clamp(22px, 3vw, 32px)",
+                fontWeight: 800,
+                letterSpacing: "-0.03em",
+                margin: 0,
+                lineHeight: 1.2,
+              }}
+            >
+              Thunderous low end
+              <br />
+              <span style={{ color: "#C9A84C" }}>built for heavy tones.</span>
+            </h3>
+            <p
+              style={{
+                fontSize: "15px",
+                color: "#888",
+                lineHeight: 1.8,
+                margin: 0,
+                maxWidth: "520px",
+              }}
+            >
+              Hades Bass delivers crushing bass tones with deep saturation and tight response. Dial in your sound with built-in presets designed for every style of heavy music.
+            </p>
+          </div>
+
+          {/* Hades Cabinet - centered */}
+          <div
+            style={{
+              position: "relative",
+              zIndex: 1,
+              maxWidth: "900px",
+              margin: "0 auto",
+              padding: "80px 24px",
+              display: "flex",
+              flexDirection: "column",
+              alignItems: "center",
+              textAlign: "center",
+              gap: "24px",
+            }}
+          >
+            <img
+              src="/HADES CABINET.png"
+              alt="Hades Cabinet"
+              style={{
+                width: "100%",
+                maxWidth: "700px",
+                height: "auto",
+                borderRadius: "12px",
+              }}
+            />
+            <div
+              style={{
+                fontSize: "11px",
+                fontWeight: 700,
+                letterSpacing: "0.2em",
+                textTransform: "uppercase",
+                color: "#C9A84C",
+              }}
+            >
+              Hades Cabinet
+            </div>
+            <h3
+              style={{
+                fontSize: "clamp(22px, 3vw, 32px)",
+                fontWeight: 800,
+                letterSpacing: "-0.03em",
+                margin: 0,
+                lineHeight: 1.2,
+              }}
+            >
+              Shape your tone
+              <br />
+              <span style={{ color: "#C9A84C" }}>with cabinet emulation.</span>
+            </h3>
+            <p
+              style={{
+                fontSize: "15px",
+                color: "#888",
+                lineHeight: 1.8,
+                margin: 0,
+                maxWidth: "520px",
+              }}
+            >
+              The Hades Cabinet simulator gives you authentic speaker response and room character. Browse through presets to find the perfect cab pairing for your guitar and bass tones.
             </p>
           </div>
 
