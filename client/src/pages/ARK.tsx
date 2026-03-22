@@ -373,26 +373,202 @@ export default function ARK() {
             </p>
           </div>
 
-          {/* Waveform image */}
+          {/* Waveform image + description */}
           <div
             style={{
               position: "relative",
               zIndex: 1,
               maxWidth: "1100px",
               margin: "0 auto",
-              padding: "60px 24px",
+              padding: "80px 24px",
               display: "flex",
-              justifyContent: "center",
+              alignItems: "center",
+              gap: "48px",
             }}
           >
-            <img
-              src="/waveform.png"
-              alt="Waveform"
-              style={{
-                maxWidth: "100%",
-                height: "auto",
-              }}
-            />
+            {/* Image on the left */}
+            <div style={{ flex: "0 0 auto", maxWidth: "420px" }}>
+              <img
+                src="/waveform.png"
+                alt="Waveform"
+                style={{
+                  width: "100%",
+                  height: "auto",
+                  borderRadius: "12px",
+                }}
+              />
+            </div>
+
+            {/* Text on the right */}
+            <div style={{ flex: 1 }}>
+              <div
+                style={{
+                  fontSize: "11px",
+                  fontWeight: 700,
+                  letterSpacing: "0.2em",
+                  textTransform: "uppercase",
+                  color: "#C9A84C",
+                  marginBottom: "16px",
+                }}
+              >
+                Oscillator Engine
+              </div>
+              <h2
+                style={{
+                  fontSize: "clamp(24px, 3vw, 36px)",
+                  fontWeight: 800,
+                  letterSpacing: "-0.03em",
+                  margin: "0 0 16px 0",
+                  lineHeight: 1.2,
+                }}
+              >
+                Powerful waveform shaping
+                <br />
+                <span style={{ color: "#C9A84C" }}>at your fingertips.</span>
+              </h2>
+              <p
+                style={{
+                  fontSize: "15px",
+                  color: "#888",
+                  lineHeight: 1.8,
+                  margin: 0,
+                }}
+              >
+                ARK's oscillator engine gives you full control over your sound with multiple waveform types, unison stacking, fine-tuning, and wavetable positioning. Shape every detail of your tone from the ground up.
+              </p>
+            </div>
+          </div>
+
+          {/* String Generator image + description */}
+          <div
+            style={{
+              position: "relative",
+              zIndex: 1,
+              maxWidth: "1100px",
+              margin: "0 auto",
+              padding: "80px 24px",
+              display: "flex",
+              alignItems: "center",
+              gap: "48px",
+            }}
+          >
+            {/* Text on the left */}
+            <div style={{ flex: 1 }}>
+              <div
+                style={{
+                  fontSize: "11px",
+                  fontWeight: 700,
+                  letterSpacing: "0.2em",
+                  textTransform: "uppercase",
+                  color: "#C9A84C",
+                  marginBottom: "16px",
+                }}
+              >
+                String Engine
+              </div>
+              <h2
+                style={{
+                  fontSize: "clamp(24px, 3vw, 36px)",
+                  fontWeight: 800,
+                  letterSpacing: "-0.03em",
+                  margin: "0 0 16px 0",
+                  lineHeight: 1.2,
+                }}
+              >
+                Authentic string modeling
+                <br />
+                <span style={{ color: "#C9A84C" }}>built from the ground up.</span>
+              </h2>
+              <p
+                style={{
+                  fontSize: "15px",
+                  color: "#888",
+                  lineHeight: 1.8,
+                  margin: 0,
+                }}
+              >
+                ARK's string generator delivers rich, expressive string tones with deep control over every parameter. Layer and shape organic textures that cut through any mix.
+              </p>
+            </div>
+
+            {/* Image on the right */}
+            <div style={{ flex: "0 0 auto", maxWidth: "420px" }}>
+              <img
+                src="/String generator.png"
+                alt="String Generator"
+                style={{
+                  width: "100%",
+                  height: "auto",
+                  borderRadius: "12px",
+                }}
+              />
+            </div>
+          </div>
+
+          {/* Choir Generator image + description */}
+          <div
+            style={{
+              position: "relative",
+              zIndex: 1,
+              maxWidth: "1100px",
+              margin: "0 auto",
+              padding: "80px 24px",
+              display: "flex",
+              alignItems: "center",
+              gap: "48px",
+            }}
+          >
+            {/* Image on the left */}
+            <div style={{ flex: "0 0 auto", maxWidth: "420px" }}>
+              <img
+                src="/Choir Generator.png"
+                alt="Choir Generator"
+                style={{
+                  width: "100%",
+                  height: "auto",
+                  borderRadius: "12px",
+                }}
+              />
+            </div>
+
+            {/* Text on the right */}
+            <div style={{ flex: 1 }}>
+              <div
+                style={{
+                  fontSize: "11px",
+                  fontWeight: 700,
+                  letterSpacing: "0.2em",
+                  textTransform: "uppercase",
+                  color: "#C9A84C",
+                  marginBottom: "16px",
+                }}
+              >
+                Choir Engine
+              </div>
+              <h2
+                style={{
+                  fontSize: "clamp(24px, 3vw, 36px)",
+                  fontWeight: 800,
+                  letterSpacing: "-0.03em",
+                  margin: "0 0 16px 0",
+                  lineHeight: 1.2,
+                }}
+              >
+                Ethereal vocal textures
+                <br />
+                <span style={{ color: "#C9A84C" }}>ready to inspire.</span>
+              </h2>
+              <p
+                style={{
+                  fontSize: "15px",
+                  color: "#888",
+                  lineHeight: 1.8,
+                  margin: 0,
+                }}
+              >
+                ARK's choir generator brings lush, heavenly vocal layers to your productions. Shape choral pads, vocal stacks, and atmospheric textures with precision control.
+              </p>
+            </div>
           </div>
 
           {/* Divider */}
