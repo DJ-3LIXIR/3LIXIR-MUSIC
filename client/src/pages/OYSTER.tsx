@@ -272,18 +272,6 @@ export default function OYSTER() {
               3LIXIR MUSIC GRANULAR SYNTHESIZER OYSTER
             </div>
 
-            {/* Product Image */}
-            <img
-              src="/Oyster Display.png"
-              alt="Oyster Display"
-              style={{
-                width: "200px",
-                height: "auto",
-                borderRadius: "16px",
-                boxShadow: "0 0 60px rgba(201,168,76,0.1)",
-              }}
-            />
-
           {/* Oyster Display - image left, text right */}
           <div
             style={{
