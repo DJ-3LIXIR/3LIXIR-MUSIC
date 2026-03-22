@@ -257,24 +257,124 @@ export default function Apollo() {
               3LIXIR Apollo
             </div>
 
-            {/* Icon */}
+            {/* Reverb Interface - image left, text right */}
             <div
               style={{
-                width: "96px",
-                height: "96px",
-                borderRadius: "24px",
-                background: "linear-gradient(145deg, #111, #0a0a0a)",
-                border: "1px solid rgba(201,168,76,0.25)",
+                width: "100%",
                 display: "flex",
                 alignItems: "center",
-                justifyContent: "center",
-                boxShadow: "0 0 60px rgba(201,168,76,0.1)",
+                gap: "32px",
+                textAlign: "left",
               }}
             >
-              <svg width="44" height="44" viewBox="0 0 44 44" fill="none">
-                <path d="M22 6l16 9v10l-16 9L6 25V15l16-9z" stroke="#C9A84C" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" />
-                <path d="M22 6v26M6 15l16 10 16-10" stroke="#C9A84C" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" />
-              </svg>
+              <div style={{ flex: "1 1 55%" }}>
+                <img
+                  src="/Apollo Reverb.png"
+                  alt="Apollo Reverb Interface"
+                  style={{
+                    width: "100%",
+                    height: "auto",
+                    borderRadius: "12px",
+                  }}
+                />
+              </div>
+              <div style={{ flex: "1 1 45%" }}>
+                <div
+                  style={{
+                    fontSize: "11px",
+                    fontWeight: 700,
+                    letterSpacing: "0.2em",
+                    textTransform: "uppercase",
+                    color: "#C9A84C",
+                    marginBottom: "12px",
+                  }}
+                >
+                  Reverb Engine
+                </div>
+                <h2
+                  style={{
+                    fontSize: "clamp(20px, 2.5vw, 28px)",
+                    fontWeight: 800,
+                    letterSpacing: "-0.03em",
+                    margin: "0 0 12px 0",
+                    lineHeight: 1.2,
+                  }}
+                >
+                  Shape your space
+                  <br />
+                  <span style={{ color: "#C9A84C" }}>with precision.</span>
+                </h2>
+                <p
+                  style={{
+                    fontSize: "14px",
+                    color: "#888",
+                    lineHeight: 1.7,
+                    margin: 0,
+                  }}
+                >
+                  Apollo's reverb engine features a graphic EQ, adjustable attack, size, density, decay, distance, and predelay controls with independent dry/wet mixing for studio-quality spatial effects.
+                </p>
+              </div>
+            </div>
+
+            {/* Room Simulator - text left, image right */}
+            <div
+              style={{
+                width: "100%",
+                display: "flex",
+                alignItems: "center",
+                gap: "32px",
+                textAlign: "left",
+              }}
+            >
+              <div style={{ flex: "1 1 45%" }}>
+                <div
+                  style={{
+                    fontSize: "11px",
+                    fontWeight: 700,
+                    letterSpacing: "0.2em",
+                    textTransform: "uppercase",
+                    color: "#C9A84C",
+                    marginBottom: "12px",
+                  }}
+                >
+                  Room Simulator
+                </div>
+                <h2
+                  style={{
+                    fontSize: "clamp(20px, 2.5vw, 28px)",
+                    fontWeight: 800,
+                    letterSpacing: "-0.03em",
+                    margin: "0 0 12px 0",
+                    lineHeight: 1.2,
+                  }}
+                >
+                  Real-world rooms,
+                  <br />
+                  <span style={{ color: "#C9A84C" }}>at your fingertips.</span>
+                </h2>
+                <p
+                  style={{
+                    fontSize: "14px",
+                    color: "#888",
+                    lineHeight: 1.7,
+                    margin: 0,
+                  }}
+                >
+                  Place your sound in theaters, churches, studios, halls, garages, and more. Full control over room size, absorption, diffusion, pre-delay, decay, width, and early/late reflections.
+                </p>
+              </div>
+              <div style={{ flex: "1 1 55%" }}>
+                <img
+                  src="/Apollo Room .png"
+                  alt="Apollo Room Simulator"
+                  style={{
+                    width: "100%",
+                    height: "auto",
+                    borderRadius: "12px",
+                  }}
+                />
+              </div>
             </div>
 
             {/* Headline */}
