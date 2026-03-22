@@ -466,6 +466,130 @@ export default function Apollo() {
             </p>
           </div>
 
+          {/* Reverb EQ - image left, text right */}
+          <div
+            style={{
+              position: "relative",
+              zIndex: 1,
+              width: "100%",
+              padding: "40px 24px 20px",
+              display: "flex",
+              alignItems: "center",
+              gap: "32px",
+            }}
+          >
+            <div style={{ flex: "1 1 55%" }}>
+              <img
+                src="/APOLLO reverb eq.png"
+                alt="Apollo Reverb EQ"
+                style={{
+                  width: "100%",
+                  height: "auto",
+                  borderRadius: "12px",
+                }}
+              />
+            </div>
+            <div style={{ flex: "1 1 45%" }}>
+              <div
+                style={{
+                  fontSize: "11px",
+                  fontWeight: 700,
+                  letterSpacing: "0.2em",
+                  textTransform: "uppercase",
+                  color: "#C9A84C",
+                  marginBottom: "12px",
+                }}
+              >
+                Output EQ & Modulation
+              </div>
+              <h2
+                style={{
+                  fontSize: "clamp(20px, 2.5vw, 28px)",
+                  fontWeight: 800,
+                  letterSpacing: "-0.03em",
+                  margin: "0 0 12px 0",
+                  lineHeight: 1.2,
+                }}
+              >
+                Fine-tune your reverb
+                <br />
+                <span style={{ color: "#C9A84C" }}>with surgical detail.</span>
+              </h2>
+              <p
+                style={{
+                  fontSize: "14px",
+                  color: "#888",
+                  lineHeight: 1.7,
+                  margin: 0,
+                }}
+              >
+                Apollo's detailed view gives you a full output EQ curve with modulation controls for quality, mod speed, mod depth, smoothing, early/late balance, width, and mono maker — total command over your reverb tail.
+              </p>
+            </div>
+          </div>
+
+          {/* Room Sim Church - text left, image right */}
+          <div
+            style={{
+              position: "relative",
+              zIndex: 1,
+              width: "100%",
+              padding: "20px 24px 40px",
+              display: "flex",
+              alignItems: "center",
+              gap: "32px",
+            }}
+          >
+            <div style={{ flex: "1 1 45%" }}>
+              <div
+                style={{
+                  fontSize: "11px",
+                  fontWeight: 700,
+                  letterSpacing: "0.2em",
+                  textTransform: "uppercase",
+                  color: "#C9A84C",
+                  marginBottom: "12px",
+                }}
+              >
+                Room Simulation
+              </div>
+              <h2
+                style={{
+                  fontSize: "clamp(20px, 2.5vw, 28px)",
+                  fontWeight: 800,
+                  letterSpacing: "-0.03em",
+                  margin: "0 0 12px 0",
+                  lineHeight: 1.2,
+                }}
+              >
+                Authentic spaces,
+                <br />
+                <span style={{ color: "#C9A84C" }}>captured in detail.</span>
+              </h2>
+              <p
+                style={{
+                  fontSize: "14px",
+                  color: "#888",
+                  lineHeight: 1.7,
+                  margin: 0,
+                }}
+              >
+                From grand churches to intimate studios — dial in room size, absorption, diffusion, pre-delay, decay, and width to place your sound in any environment with photorealistic accuracy.
+              </p>
+            </div>
+            <div style={{ flex: "1 1 55%" }}>
+              <img
+                src="/APOLLO room 2.png"
+                alt="Apollo Room Simulator - Church"
+                style={{
+                  width: "100%",
+                  height: "auto",
+                  borderRadius: "12px",
+                }}
+              />
+            </div>
+          </div>
+
           {/* Divider */}
           <div style={{ borderTop: "1px solid #111", position: "relative", zIndex: 1 }} />
 
