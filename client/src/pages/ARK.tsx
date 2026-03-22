@@ -373,6 +373,28 @@ export default function ARK() {
             </p>
           </div>
 
+          {/* Waveform image */}
+          <div
+            style={{
+              position: "relative",
+              zIndex: 1,
+              maxWidth: "1100px",
+              margin: "0 auto",
+              padding: "60px 24px",
+              display: "flex",
+              justifyContent: "center",
+            }}
+          >
+            <img
+              src="/waveform.png"
+              alt="Waveform"
+              style={{
+                maxWidth: "100%",
+                height: "auto",
+              }}
+            />
+          </div>
+
           {/* Divider */}
           <div style={{ borderTop: "1px solid #111", position: "relative", zIndex: 1 }} />
 
