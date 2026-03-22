@@ -499,24 +499,187 @@ export default function OYSTER() {
               gap: "40px",
             }}
           >
-            <img
-              src="/Screenshot 2026-03-22 at 12.32.20.png"
-              alt="Grain Engine"
-              style={{
-                width: "100%",
-                height: "auto",
-                borderRadius: "12px",
-              }}
-            />
-            <img
-              src="/Screenshot 2026-03-22 at 12.31.55.png"
-              alt="Wavetable Source"
-              style={{
-                width: "100%",
-                height: "auto",
-                borderRadius: "12px",
-              }}
-            />
+            {/* Grain Engine */}
+            <div style={{ width: "100%", textAlign: "center" }}>
+              <img
+                src="/Screenshot 2026-03-22 at 12.32.20.png"
+                alt="Grain Engine"
+                style={{
+                  width: "100%",
+                  height: "auto",
+                  borderRadius: "12px",
+                }}
+              />
+              <div
+                style={{
+                  fontSize: "11px",
+                  fontWeight: 700,
+                  letterSpacing: "0.2em",
+                  textTransform: "uppercase",
+                  color: "#C9A84C",
+                  marginTop: "24px",
+                  marginBottom: "12px",
+                }}
+              >
+                Granular Synthesizer
+              </div>
+              <p style={{ fontSize: "15px", color: "#888", lineHeight: 1.8, margin: 0, maxWidth: "600px", marginLeft: "auto", marginRight: "auto" }}>
+                Shape and sculpt sound at the micro level. Oyster's grain engine lets you manipulate position, spray, size, density, and pitch to create evolving, organic textures from any source.
+              </p>
+            </div>
+
+            {/* Wavetable / Oscillator */}
+            <div style={{ width: "100%", textAlign: "center" }}>
+              <img
+                src="/Screenshot 2026-03-22 at 12.31.55.png"
+                alt="Wavetable Source"
+                style={{
+                  width: "100%",
+                  height: "auto",
+                  borderRadius: "12px",
+                }}
+              />
+              <div
+                style={{
+                  fontSize: "11px",
+                  fontWeight: 700,
+                  letterSpacing: "0.2em",
+                  textTransform: "uppercase",
+                  color: "#C9A84C",
+                  marginTop: "24px",
+                  marginBottom: "12px",
+                }}
+              >
+                Granular Oscillator
+              </div>
+              <p style={{ fontSize: "15px", color: "#888", lineHeight: 1.8, margin: 0, maxWidth: "600px", marginLeft: "auto", marginRight: "auto" }}>
+                Blend between wavetable sources with full control over morph, octave, semitone, fine tuning, phase, and tilt. Dual wave slots let you crossfade between shapes for rich, animated tones.
+              </p>
+            </div>
+          </div>
+
+          {/* Sub Oscillator - image left, text right */}
+          <div
+            style={{
+              position: "relative",
+              zIndex: 1,
+              width: "100%",
+              padding: "80px 24px",
+              display: "flex",
+              alignItems: "center",
+              gap: "48px",
+            }}
+          >
+            <div style={{ flex: "0 0 auto", maxWidth: "320px" }}>
+              <img
+                src="/Screenshot 2026-03-22 at 12.33.19.png"
+                alt="Sub Oscillator"
+                style={{
+                  width: "100%",
+                  height: "auto",
+                  borderRadius: "12px",
+                }}
+              />
+            </div>
+            <div style={{ flex: 1 }}>
+              <div
+                style={{
+                  fontSize: "11px",
+                  fontWeight: 700,
+                  letterSpacing: "0.2em",
+                  textTransform: "uppercase",
+                  color: "#C9A84C",
+                  marginBottom: "16px",
+                }}
+              >
+                Sub Oscillator
+              </div>
+              <h2
+                style={{
+                  fontSize: "clamp(24px, 3vw, 36px)",
+                  fontWeight: 800,
+                  letterSpacing: "-0.03em",
+                  margin: "0 0 16px 0",
+                  lineHeight: 1.2,
+                }}
+              >
+                Layer in deep,
+                <br />
+                <span style={{ color: "#C9A84C" }}>powerful low end.</span>
+              </h2>
+              <p
+                style={{
+                  fontSize: "15px",
+                  color: "#888",
+                  lineHeight: 1.8,
+                  margin: 0,
+                }}
+              >
+                Oyster's sub oscillator adds weight and body to your sound. Choose from Deep Sine and other waveforms with independent octave, semi, mix, tune, pan, and phase controls for precise low-frequency layering.
+              </p>
+            </div>
+          </div>
+
+          {/* OSC 2 - text left, image right */}
+          <div
+            style={{
+              position: "relative",
+              zIndex: 1,
+              width: "100%",
+              padding: "80px 24px",
+              display: "flex",
+              alignItems: "center",
+              gap: "48px",
+            }}
+          >
+            <div style={{ flex: 1 }}>
+              <div
+                style={{
+                  fontSize: "11px",
+                  fontWeight: 700,
+                  letterSpacing: "0.2em",
+                  textTransform: "uppercase",
+                  color: "#C9A84C",
+                  marginBottom: "16px",
+                }}
+              >
+                Oscillator 2
+              </div>
+              <h2
+                style={{
+                  fontSize: "clamp(24px, 3vw, 36px)",
+                  fontWeight: 800,
+                  letterSpacing: "-0.03em",
+                  margin: "0 0 16px 0",
+                  lineHeight: 1.2,
+                }}
+              >
+                Double your sound
+                <br />
+                <span style={{ color: "#C9A84C" }}>with a second voice.</span>
+              </h2>
+              <p
+                style={{
+                  fontSize: "15px",
+                  color: "#888",
+                  lineHeight: 1.8,
+                  margin: 0,
+                }}
+              >
+                Stack a second oscillator for richer, more complex tones. Independent controls for octave, semi, fine tuning, phase, mix, and pan give you full flexibility to blend and detune for massive sounds.
+              </p>
+            </div>
+            <div style={{ flex: "0 0 auto", maxWidth: "320px" }}>
+              <img
+                src="/Screenshot 2026-03-22 at 12.33.42.png"
+                alt="Oscillator 2"
+                style={{
+                  width: "100%",
+                  height: "auto",
+                  borderRadius: "12px",
+                }}
+              />
+            </div>
           </div>
 
           {/* Divider */}
