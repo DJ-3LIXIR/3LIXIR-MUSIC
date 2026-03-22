@@ -269,28 +269,146 @@ export default function OYSTER() {
                 padding: "5px 16px",
               }}
             >
-              3LIXIR OYSTER
+              3LIXIR MUSIC GRANULAR SYNTHESIZER OYSTER
             </div>
 
-            {/* Icon */}
-            <div
+            {/* Product Image */}
+            <img
+              src="/Oyster Display.png"
+              alt="Oyster Display"
               style={{
-                width: "96px",
-                height: "96px",
-                borderRadius: "24px",
-                background: "linear-gradient(145deg, #111, #0a0a0a)",
-                border: "1px solid rgba(201,168,76,0.25)",
-                display: "flex",
-                alignItems: "center",
-                justifyContent: "center",
+                width: "200px",
+                height: "auto",
+                borderRadius: "16px",
                 boxShadow: "0 0 60px rgba(201,168,76,0.1)",
               }}
-            >
-              <svg width="44" height="44" viewBox="0 0 44 44" fill="none">
-                <path d="M22 6l16 9v10l-16 9L6 25V15l16-9z" stroke="#C9A84C" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" />
-                <path d="M22 6v26M6 15l16 10 16-10" stroke="#C9A84C" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" />
-              </svg>
+            />
+
+          {/* Oyster Display - image left, text right */}
+          <div
+            style={{
+              position: "relative",
+              zIndex: 1,
+              maxWidth: "1100px",
+              margin: "0 auto",
+              padding: "80px 24px",
+              display: "flex",
+              alignItems: "center",
+              gap: "48px",
+            }}
+          >
+            <div style={{ flex: "0 0 auto", maxWidth: "480px" }}>
+              <img
+                src="/Oyster Display.png"
+                alt="Oyster Display"
+                style={{
+                  width: "100%",
+                  height: "auto",
+                  borderRadius: "12px",
+                }}
+              />
             </div>
+            <div style={{ flex: 1 }}>
+              <div
+                style={{
+                  fontSize: "11px",
+                  fontWeight: 700,
+                  letterSpacing: "0.2em",
+                  textTransform: "uppercase",
+                  color: "#C9A84C",
+                  marginBottom: "16px",
+                }}
+              >
+                Oyster Interface
+              </div>
+              <h2
+                style={{
+                  fontSize: "clamp(24px, 3vw, 36px)",
+                  fontWeight: 800,
+                  letterSpacing: "-0.03em",
+                  margin: "0 0 16px 0",
+                  lineHeight: 1.2,
+                }}
+              >
+                Designed for
+                <br />
+                <span style={{ color: "#C9A84C" }}>creative exploration.</span>
+              </h2>
+              <p
+                style={{
+                  fontSize: "15px",
+                  color: "#888",
+                  lineHeight: 1.8,
+                  margin: 0,
+                }}
+              >
+                Add your Oyster interface description here. Tell producers what they're looking at and how it fits into their workflow.
+              </p>
+            </div>
+          </div>
+
+          {/* Oyster OSC - text left, image right */}
+          <div
+            style={{
+              position: "relative",
+              zIndex: 1,
+              maxWidth: "1100px",
+              margin: "0 auto",
+              padding: "80px 24px",
+              display: "flex",
+              alignItems: "center",
+              gap: "48px",
+            }}
+          >
+            <div style={{ flex: 1 }}>
+              <div
+                style={{
+                  fontSize: "11px",
+                  fontWeight: 700,
+                  letterSpacing: "0.2em",
+                  textTransform: "uppercase",
+                  color: "#C9A84C",
+                  marginBottom: "16px",
+                }}
+              >
+                Oscillator Engine
+              </div>
+              <h2
+                style={{
+                  fontSize: "clamp(24px, 3vw, 36px)",
+                  fontWeight: 800,
+                  letterSpacing: "-0.03em",
+                  margin: "0 0 16px 0",
+                  lineHeight: 1.2,
+                }}
+              >
+                Deep sound design
+                <br />
+                <span style={{ color: "#C9A84C" }}>at your fingertips.</span>
+              </h2>
+              <p
+                style={{
+                  fontSize: "15px",
+                  color: "#888",
+                  lineHeight: 1.8,
+                  margin: 0,
+                }}
+              >
+                Add your Oyster oscillator description here. Describe the sound engine and what makes it unique.
+              </p>
+            </div>
+            <div style={{ flex: "0 0 auto", maxWidth: "480px" }}>
+              <img
+                src="/Oyster OSC.png"
+                alt="Oyster Oscillator"
+                style={{
+                  width: "100%",
+                  height: "auto",
+                  borderRadius: "12px",
+                }}
+              />
+            </div>
+          </div>
 
             {/* Headline */}
             <h1
