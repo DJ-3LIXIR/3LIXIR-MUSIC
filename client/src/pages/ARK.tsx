@@ -269,7 +269,7 @@ export default function ARK() {
                 padding: "5px 16px",
               }}
             >
-              3LIXIR ARK
+              3LIXIR MUSIC ARK SYNTHESIZER
             </div>
 
             {/* Product Image */}
@@ -277,7 +277,7 @@ export default function ARK() {
               src="/ARK SYNTHESIZER .png"
               alt="ARK Synthesizer"
               style={{
-                width: "200px",
+                width: "1000px",
                 height: "auto",
                 borderRadius: "16px",
                 boxShadow: "0 0 60px rgba(201,168,76,0.1)",
