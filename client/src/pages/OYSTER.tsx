@@ -563,14 +563,15 @@ export default function OYSTER() {
             style={{
               position: "relative",
               zIndex: 1,
-              width: "100%",
-              padding: "80px 24px",
+              maxWidth: "700px",
+              margin: "0 auto",
+              padding: "40px 24px 20px",
               display: "flex",
               alignItems: "center",
-              gap: "48px",
+              gap: "32px",
             }}
           >
-            <div style={{ flex: "0 0 auto", maxWidth: "320px" }}>
+            <div style={{ flex: "0 0 auto", maxWidth: "220px" }}>
               <img
                 src="/Screenshot 2026-03-22 at 12.33.19.png"
                 alt="Sub Oscillator"
@@ -581,7 +582,7 @@ export default function OYSTER() {
                 }}
               />
             </div>
-            <div style={{ flex: 1 }}>
+            <div style={{ flex: 1, maxWidth: "360px" }}>
               <div
                 style={{
                   fontSize: "11px",
@@ -589,17 +590,17 @@ export default function OYSTER() {
                   letterSpacing: "0.2em",
                   textTransform: "uppercase",
                   color: "#C9A84C",
-                  marginBottom: "16px",
+                  marginBottom: "12px",
                 }}
               >
                 Sub Oscillator
               </div>
               <h2
                 style={{
-                  fontSize: "clamp(24px, 3vw, 36px)",
+                  fontSize: "clamp(20px, 2.5vw, 28px)",
                   fontWeight: 800,
                   letterSpacing: "-0.03em",
-                  margin: "0 0 16px 0",
+                  margin: "0 0 12px 0",
                   lineHeight: 1.2,
                 }}
               >
@@ -609,13 +610,13 @@ export default function OYSTER() {
               </h2>
               <p
                 style={{
-                  fontSize: "15px",
+                  fontSize: "14px",
                   color: "#888",
-                  lineHeight: 1.8,
+                  lineHeight: 1.7,
                   margin: 0,
                 }}
               >
-                Oyster's sub oscillator adds weight and body to your sound. Choose from Deep Sine and other waveforms with independent octave, semi, mix, tune, pan, and phase controls for precise low-frequency layering.
+                Oyster's sub oscillator adds weight and body to your sound. Choose from Deep Sine and other waveforms with independent octave, semi, mix, tune, pan, and phase controls.
               </p>
             </div>
           </div>
@@ -625,14 +626,15 @@ export default function OYSTER() {
             style={{
               position: "relative",
               zIndex: 1,
-              width: "100%",
-              padding: "80px 24px",
+              maxWidth: "700px",
+              margin: "0 auto",
+              padding: "20px 24px 40px",
               display: "flex",
               alignItems: "center",
-              gap: "48px",
+              gap: "32px",
             }}
           >
-            <div style={{ flex: 1 }}>
+            <div style={{ flex: 1, maxWidth: "360px" }}>
               <div
                 style={{
                   fontSize: "11px",
@@ -640,17 +642,17 @@ export default function OYSTER() {
                   letterSpacing: "0.2em",
                   textTransform: "uppercase",
                   color: "#C9A84C",
-                  marginBottom: "16px",
+                  marginBottom: "12px",
                 }}
               >
                 Oscillator 2
               </div>
               <h2
                 style={{
-                  fontSize: "clamp(24px, 3vw, 36px)",
+                  fontSize: "clamp(20px, 2.5vw, 28px)",
                   fontWeight: 800,
                   letterSpacing: "-0.03em",
-                  margin: "0 0 16px 0",
+                  margin: "0 0 12px 0",
                   lineHeight: 1.2,
                 }}
               >
@@ -660,16 +662,16 @@ export default function OYSTER() {
               </h2>
               <p
                 style={{
-                  fontSize: "15px",
+                  fontSize: "14px",
                   color: "#888",
-                  lineHeight: 1.8,
+                  lineHeight: 1.7,
                   margin: 0,
                 }}
               >
-                Stack a second oscillator for richer, more complex tones. Independent controls for octave, semi, fine tuning, phase, mix, and pan give you full flexibility to blend and detune for massive sounds.
+                Stack a second oscillator for richer, more complex tones. Independent controls for octave, semi, fine tuning, phase, mix, and pan give you full flexibility to blend and detune.
               </p>
             </div>
-            <div style={{ flex: "0 0 auto", maxWidth: "320px" }}>
+            <div style={{ flex: "0 0 auto", maxWidth: "220px" }}>
               <img
                 src="/Screenshot 2026-03-22 at 12.33.42.png"
                 alt="Oscillator 2"
