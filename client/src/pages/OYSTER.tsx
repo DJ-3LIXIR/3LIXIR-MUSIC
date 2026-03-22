@@ -277,15 +277,14 @@ export default function OYSTER() {
             style={{
               position: "relative",
               zIndex: 1,
-              maxWidth: "1400px",
-              margin: "0 auto",
+              width: "100%",
               padding: "80px 24px",
               display: "flex",
               alignItems: "center",
               gap: "48px",
             }}
           >
-            <div style={{ flex: "0 0 auto", maxWidth: "640px" }}>
+            <div style={{ flex: "1 1 60%" }}>
               <img
                 src="/Oyster Display.png"
                 alt="Oyster Display"
@@ -340,8 +339,7 @@ export default function OYSTER() {
             style={{
               position: "relative",
               zIndex: 1,
-              maxWidth: "1400px",
-              margin: "0 auto",
+              width: "100%",
               padding: "80px 24px",
               display: "flex",
               alignItems: "center",
@@ -385,7 +383,7 @@ export default function OYSTER() {
                 Add your Oyster oscillator description here. Describe the sound engine and what makes it unique.
               </p>
             </div>
-            <div style={{ flex: "0 0 auto", maxWidth: "640px" }}>
+            <div style={{ flex: "1 1 60%" }}>
               <img
                 src="/Oyster OSC.png"
                 alt="Oyster Oscillator"
