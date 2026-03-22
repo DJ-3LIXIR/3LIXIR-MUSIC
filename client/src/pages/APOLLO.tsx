@@ -254,7 +254,7 @@ export default function Apollo() {
                 padding: "5px 16px",
               }}
             >
-              3LIXIR Apollo
+              3LIXIR MUSIC APOLLO ROOM AND REVERB SIMULATOR
             </div>
 
             {/* Reverb Interface - image left, text right */}
