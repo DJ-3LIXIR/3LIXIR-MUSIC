@@ -272,25 +272,17 @@ export default function ARK() {
               3LIXIR ARK
             </div>
 
-            {/* Icon */}
-            <div
+            {/* Product Image */}
+            <img
+              src="/ARK SYNTHESIZER .png"
+              alt="ARK Synthesizer"
               style={{
-                width: "96px",
-                height: "96px",
-                borderRadius: "24px",
-                background: "linear-gradient(145deg, #111, #0a0a0a)",
-                border: "1px solid rgba(201,168,76,0.25)",
-                display: "flex",
-                alignItems: "center",
-                justifyContent: "center",
+                width: "200px",
+                height: "auto",
+                borderRadius: "16px",
                 boxShadow: "0 0 60px rgba(201,168,76,0.1)",
               }}
-            >
-              <svg width="44" height="44" viewBox="0 0 44 44" fill="none">
-                <path d="M22 6l16 9v10l-16 9L6 25V15l16-9z" stroke="#C9A84C" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" />
-                <path d="M22 6v26M6 15l16 10 16-10" stroke="#C9A84C" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" />
-              </svg>
-            </div>
+            />
 
             {/* Headline */}
             <h1
