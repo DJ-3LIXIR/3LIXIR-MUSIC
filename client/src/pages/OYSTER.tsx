@@ -485,6 +485,40 @@ export default function OYSTER() {
             </p>
           </div>
 
+          {/* Grain Engine & Wavetable Source - stacked centered */}
+          <div
+            style={{
+              position: "relative",
+              zIndex: 1,
+              maxWidth: "800px",
+              margin: "0 auto",
+              padding: "80px 24px",
+              display: "flex",
+              flexDirection: "column",
+              alignItems: "center",
+              gap: "40px",
+            }}
+          >
+            <img
+              src="/Screenshot 2026-03-22 at 12.32.20.png"
+              alt="Grain Engine"
+              style={{
+                width: "100%",
+                height: "auto",
+                borderRadius: "12px",
+              }}
+            />
+            <img
+              src="/Screenshot 2026-03-22 at 12.31.55.png"
+              alt="Wavetable Source"
+              style={{
+                width: "100%",
+                height: "auto",
+                borderRadius: "12px",
+              }}
+            />
+          </div>
+
           {/* Divider */}
           <div style={{ borderTop: "1px solid #111", position: "relative", zIndex: 1 }} />
 
