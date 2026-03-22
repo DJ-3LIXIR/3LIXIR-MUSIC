@@ -296,9 +296,9 @@ export default function ARK() {
             >
               ARK
               <br />
-              <span style={{ color: "#333" }}>Your tagline.</span>
+              <span style={{ color: "#333" }}>Our soloution for.</span>
               <br />
-              <span style={{ color: "#C9A84C" }}>Goes here.</span>
+              <span style={{ color: "#C9A84C" }}>Your production needs.</span>
             </h1>
 
             <p
@@ -310,7 +310,7 @@ export default function ARK() {
                 margin: 0,
               }}
             >
-              Add your ARK product description here. Tell producers what it is and why they need it.
+              Come pick up you copy of ARK our 80's style synthesizer. wavetable synthesizer with 12 oscillators, 4 choir generators, and a Moog style ladder filter with 15 different presets.
             </p>
 
             {/* CTA buttons */}
