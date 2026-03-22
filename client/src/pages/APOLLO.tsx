@@ -590,6 +590,130 @@ export default function Apollo() {
             </div>
           </div>
 
+          {/* Reverb Presets - image left, text right */}
+          <div
+            style={{
+              position: "relative",
+              zIndex: 1,
+              width: "100%",
+              padding: "40px 24px 20px",
+              display: "flex",
+              alignItems: "center",
+              gap: "32px",
+            }}
+          >
+            <div style={{ flex: "1 1 55%" }}>
+              <img
+                src="/APOLLO reverb presets .png"
+                alt="Apollo Reverb Presets"
+                style={{
+                  width: "100%",
+                  height: "auto",
+                  borderRadius: "12px",
+                }}
+              />
+            </div>
+            <div style={{ flex: "1 1 45%" }}>
+              <div
+                style={{
+                  fontSize: "11px",
+                  fontWeight: 700,
+                  letterSpacing: "0.2em",
+                  textTransform: "uppercase",
+                  color: "#C9A84C",
+                  marginBottom: "12px",
+                }}
+              >
+                Reverb Presets
+              </div>
+              <h2
+                style={{
+                  fontSize: "clamp(20px, 2.5vw, 28px)",
+                  fontWeight: 800,
+                  letterSpacing: "-0.03em",
+                  margin: "0 0 12px 0",
+                  lineHeight: 1.2,
+                }}
+              >
+                Ready-made spaces,
+                <br />
+                <span style={{ color: "#C9A84C" }}>built by professionals.</span>
+              </h2>
+              <p
+                style={{
+                  fontSize: "14px",
+                  color: "#888",
+                  lineHeight: 1.7,
+                  margin: 0,
+                }}
+              >
+                Browse factory presets across small rooms, halls, theaters, plates & digital, creative, vocals, and ambient/FX categories. Instant inspiration with one click — then tweak to taste.
+              </p>
+            </div>
+          </div>
+
+          {/* Room Sim Presets - text left, image right */}
+          <div
+            style={{
+              position: "relative",
+              zIndex: 1,
+              width: "100%",
+              padding: "20px 24px 40px",
+              display: "flex",
+              alignItems: "center",
+              gap: "32px",
+            }}
+          >
+            <div style={{ flex: "1 1 45%" }}>
+              <div
+                style={{
+                  fontSize: "11px",
+                  fontWeight: 700,
+                  letterSpacing: "0.2em",
+                  textTransform: "uppercase",
+                  color: "#C9A84C",
+                  marginBottom: "12px",
+                }}
+              >
+                Room Presets
+              </div>
+              <h2
+                style={{
+                  fontSize: "clamp(20px, 2.5vw, 28px)",
+                  fontWeight: 800,
+                  letterSpacing: "-0.03em",
+                  margin: "0 0 12px 0",
+                  lineHeight: 1.2,
+                }}
+              >
+                Every room you need,
+                <br />
+                <span style={{ color: "#C9A84C" }}>already dialed in.</span>
+              </h2>
+              <p
+                style={{
+                  fontSize: "14px",
+                  color: "#888",
+                  lineHeight: 1.7,
+                  margin: 0,
+                }}
+              >
+                Theater, church, studio, hall, garage, bathroom, bedroom, warehouse — each with curated sub-presets. Select a space, choose a variation, and drop straight into a mix-ready room simulation.
+              </p>
+            </div>
+            <div style={{ flex: "1 1 55%" }}>
+              <img
+                src="/APOLLO room presets .png"
+                alt="Apollo Room Presets"
+                style={{
+                  width: "100%",
+                  height: "auto",
+                  borderRadius: "12px",
+                }}
+              />
+            </div>
+          </div>
+
           {/* Divider */}
           <div style={{ borderTop: "1px solid #111", position: "relative", zIndex: 1 }} />
 
