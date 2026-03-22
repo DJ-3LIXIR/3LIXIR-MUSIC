@@ -571,6 +571,115 @@ export default function ARK() {
             </div>
           </div>
 
+          {/* Arpeggiator - centered image with text below */}
+          <div
+            style={{
+              position: "relative",
+              zIndex: 1,
+              maxWidth: "1100px",
+              margin: "0 auto",
+              padding: "80px 24px",
+              display: "flex",
+              flexDirection: "column",
+              alignItems: "center",
+              textAlign: "center",
+              gap: "32px",
+            }}
+          >
+            <img
+              src="/ARP.png"
+              alt="ARK Arpeggiator"
+              style={{
+                width: "100%",
+                maxWidth: "900px",
+                height: "auto",
+                borderRadius: "12px",
+              }}
+            />
+            <div
+              style={{
+                fontSize: "11px",
+                fontWeight: 700,
+                letterSpacing: "0.2em",
+                textTransform: "uppercase",
+                color: "#C9A84C",
+              }}
+            >
+              Arpeggiator
+            </div>
+            <h2
+              style={{
+                fontSize: "clamp(24px, 3vw, 36px)",
+                fontWeight: 800,
+                letterSpacing: "-0.03em",
+                margin: 0,
+                lineHeight: 1.2,
+              }}
+            >
+              Rhythmic sequences
+              <br />
+              <span style={{ color: "#C9A84C" }}>at your fingertips.</span>
+            </h2>
+            <p
+              style={{
+                fontSize: "15px",
+                color: "#888",
+                lineHeight: 1.8,
+                margin: 0,
+                maxWidth: "600px",
+              }}
+            >
+              ARK's built-in arpeggiator transforms chords into dynamic patterns. Control rate, gate, swing, octave range, and direction to create evolving melodic sequences instantly.
+            </p>
+
+            {/* Filter - centered below arp text */}
+            <img
+              src="/Filter.png"
+              alt="ARK Filter"
+              style={{
+                width: "100%",
+                maxWidth: "500px",
+                height: "auto",
+                borderRadius: "12px",
+              }}
+            />
+            <div
+              style={{
+                fontSize: "11px",
+                fontWeight: 700,
+                letterSpacing: "0.2em",
+                textTransform: "uppercase",
+                color: "#C9A84C",
+              }}
+            >
+              Filter
+            </div>
+            <h2
+              style={{
+                fontSize: "clamp(24px, 3vw, 36px)",
+                fontWeight: 800,
+                letterSpacing: "-0.03em",
+                margin: 0,
+                lineHeight: 1.2,
+              }}
+            >
+              Shape your sound
+              <br />
+              <span style={{ color: "#C9A84C" }}>with precision.</span>
+            </h2>
+            <p
+              style={{
+                fontSize: "15px",
+                color: "#888",
+                lineHeight: 1.8,
+                margin: 0,
+                maxWidth: "600px",
+              }}
+            >
+              ARK's filter section gives you full control with LP, HP, BP, and Notch modes. Dial in cutoff, resonance, and drive, then shape the envelope with dedicated ATK, DCY, SUS, and REL controls.
+            </p>
+          </div>
+
           {/* Divider */}
           <div style={{ borderTop: "1px solid #111", position: "relative", zIndex: 1 }} />
 
