@@ -129,15 +129,51 @@ export default function OrionSoundEQ() {
       <div
         style={{
           position: "relative",
+          zIndex: 1,
           backgroundImage: 'url("/OrionSoundEQ%20Product%20Box.png")',
-          backgroundSize: "contain",
+          backgroundSize: "cover",
           backgroundPosition: "center",
           backgroundRepeat: "no-repeat",
-          aspectRatio: "auto",
+          aspectRatio: "16 / 9",
           width: "100%",
-          minHeight: "300px",
+          backgroundColor: "#0a0a0a",
         }}
-      />
+      >
+        {/* Fallback placeholder when no image */}
+        <div
+          style={{
+            position: "absolute",
+            inset: 0,
+            display: "flex",
+            flexDirection: "column",
+            alignItems: "center",
+            justifyContent: "center",
+            gap: "16px",
+            zIndex: 0,
+          }}
+        >
+          <div
+            style={{
+              fontSize: "clamp(60px, 12vw, 140px)",
+              fontWeight: 800,
+              letterSpacing: "-0.04em",
+              color: "rgba(201,168,76,0.08)",
+              lineHeight: 1,
+            }}
+          >
+            Orion
+          </div>
+        </div>
+        {/* Vignette */}
+        <div
+          style={{
+            position: "absolute",
+            inset: 0,
+            background: "linear-gradient(to bottom, rgba(0,0,0,0.15) 0%, rgba(0,0,0,0.5) 100%)",
+            zIndex: 1,
+          }}
+        />
+      </div>
 
       {/* Store Sub-Navbar - Full Width */}
       <div
