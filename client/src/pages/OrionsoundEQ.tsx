@@ -129,24 +129,15 @@ export default function OrionSoundEQ() {
       <div
         style={{
           position: "relative",
-          backgroundImage: 'url("/ORION%20SOUND%20EQ%20PRODUCT%20IMAGE.png")',
-          backgroundSize: "cover",
+          backgroundImage: 'url("/OrionSoundEQ%20Product%20Box.png")',
+          backgroundSize: "contain",
           backgroundPosition: "center",
           backgroundRepeat: "no-repeat",
-          aspectRatio: "16 / 9",
+          aspectRatio: "auto",
           width: "100%",
+          minHeight: "300px",
         }}
-      >
-        {/* Subtle dark vignette at bottom for smooth transition */}
-        <div
-          style={{
-            position: "absolute",
-            inset: 0,
-            background: "linear-gradient(to bottom, rgba(0,0,0,0.15) 0%, rgba(0,0,0,0.5) 100%)",
-            zIndex: 0,
-          }}
-        />
-      </div>
+      />
 
       {/* Store Sub-Navbar - Full Width */}
       <div
