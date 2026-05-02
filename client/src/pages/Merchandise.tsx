@@ -1,11 +1,7 @@
-// client/src/pages/Store.tsx
 import { Link } from "wouter";
 import { Navbar } from "@/components/layout/Navbar";
-import BeatsLink from "@/components/store/BeatsLink";
-import VSTLink from "@/components/store/VSTLink";
-import LoaderLink from "@/components/store/LoaderLink";
 
-export default function Store() {
+export default function Merchandise() {
   return (
     <div
       style={{
@@ -18,7 +14,6 @@ export default function Store() {
     >
       <Navbar />
 
-      {/* Ambient glow top */}
       <div
         style={{
           position: "fixed",
@@ -27,14 +22,22 @@ export default function Store() {
           transform: "translateX(-50%)",
           width: "700px",
           height: "400px",
-          background: "radial-gradient(ellipse, rgba(168,85,247,0.12) 0%, transparent 70%)",
+          background:
+            "radial-gradient(ellipse, rgba(168,85,247,0.12) 0%, transparent 70%)",
           pointerEvents: "none",
           zIndex: 0,
         }}
       />
 
-      {/* Header */}
-      <div style={{ position: "relative", zIndex: 1, maxWidth: "1100px", margin: "0 auto", padding: "0 24px" }}>
+      <div
+        style={{
+          position: "relative",
+          zIndex: 1,
+          maxWidth: "1100px",
+          margin: "0 auto",
+          padding: "0 24px",
+        }}
+      >
         <div style={{ paddingTop: "96px", paddingBottom: "64px", textAlign: "center" }}>
           <div
             style={{
@@ -50,39 +53,37 @@ export default function Store() {
               marginBottom: "28px",
             }}
           >
-            Official Store
+            Official Merchandise
           </div>
 
           <h1
             style={{
               fontSize: "clamp(42px, 7vw, 80px)",
               fontWeight: 800,
-              lineHeight: 1.0,
+              lineHeight: 1,
               letterSpacing: "-0.03em",
               margin: "0 0 20px",
-              fontFamily: "'DM Sans', 'Helvetica Neue', sans-serif",
             }}
           >
-            Everything
+            Wear The
             <br />
-            <span style={{ color: "#555" }}>In One Place.</span>
+            <span style={{ color: "#555" }}>3LIXIR Vision.</span>
           </h1>
 
           <p
             style={{
               fontSize: "17px",
               color: "#666",
-              maxWidth: "460px",
+              maxWidth: "520px",
               margin: "0 auto",
               lineHeight: 1.6,
             }}
           >
-            Beats, licenses, digital downloads, and exclusive merch — all under one roof.
+            Premium apparel and limited drops for producers and artists who build with intent.
           </p>
         </div>
       </div>
 
-      {/* Store Sub-Navbar - Full Width */}
       <div
         style={{
           borderTop: "1px solid #C9A84C",
@@ -131,9 +132,7 @@ export default function Store() {
         ))}
       </div>
 
-      {/* Embedded Store Components - Mirrored brick background */}
-      <div style={{ position: "relative" }}>
-        {/* Left half - normal */}
+      <div style={{ position: "relative", minHeight: "420px" }}>
         <div
           style={{
             position: "absolute",
@@ -149,7 +148,6 @@ export default function Store() {
             zIndex: 0,
           }}
         />
-        {/* Right half - mirrored */}
         <div
           style={{
             position: "absolute",
@@ -166,53 +164,57 @@ export default function Store() {
             zIndex: 0,
           }}
         />
-        <div style={{ position: "relative", zIndex: 1 }}>
-          <BeatsLink />
-          <VSTLink />
-          <LoaderLink />
-        </div>
-      </div>
 
-      {/* Bottom strip */}
-      <div style={{ position: "relative", zIndex: 1, maxWidth: "1100px", margin: "0 auto", padding: "0 24px" }}>
         <div
           style={{
-            borderTop: "1px solid #111",
-            paddingTop: "40px",
-            paddingBottom: "60px",
-            display: "flex",
-            justifyContent: "space-between",
-            alignItems: "center",
-            flexWrap: "wrap",
-            gap: "16px",
+            position: "relative",
+            zIndex: 1,
+            maxWidth: "1100px",
+            margin: "0 auto",
+            padding: "80px 24px 100px",
+            textAlign: "center",
           }}
         >
-          <p style={{ fontSize: "13px", color: "#333", margin: 0 }}>
-            Secure checkout · Instant delivery · Licensed content
+          <h2
+            style={{
+              margin: 0,
+              fontSize: "clamp(30px, 5vw, 54px)",
+              letterSpacing: "-0.02em",
+              lineHeight: 1.05,
+            }}
+          >
+            Merchandise Collection
+          </h2>
+          <p
+            style={{
+              margin: "18px auto 34px",
+              maxWidth: "620px",
+              color: "#b9b9b9",
+              fontSize: "16px",
+              lineHeight: 1.7,
+            }}
+          >
+            Explore current drops, seasonal capsules, and artist-first essentials.
           </p>
-          <div style={{ display: "flex", gap: "24px" }}>
-            {[
-              { label: "Licenses", href: "/licenses" },
-              { label: "VIP", href: "/vip" },
-              { label: "Support", href: "/support" },
-            ].map((l) => (
-              <Link key={l.href} href={l.href}>
-                <span
-                  style={{
-                    fontSize: "13px",
-                    color: "#444",
-                    cursor: "pointer",
-                    transition: "color 0.2s",
-                    textDecoration: "none",
-                  }}
-                  onMouseEnter={(e) => ((e.target as HTMLElement).style.color = "#fff")}
-                  onMouseLeave={(e) => ((e.target as HTMLElement).style.color = "#444")}
-                >
-                  {l.label}
-                </span>
-              </Link>
-            ))}
-          </div>
+
+          <Link href="/shop">
+            <button
+              style={{
+                padding: "14px 28px",
+                borderRadius: "999px",
+                border: "1px solid #C9A84C",
+                background: "rgba(201,168,76,0.12)",
+                color: "#f5d889",
+                fontWeight: 700,
+                letterSpacing: "0.08em",
+                textTransform: "uppercase",
+                fontSize: "12px",
+                cursor: "pointer",
+              }}
+            >
+              Open Merchandise Store
+            </button>
+          </Link>
         </div>
       </div>
     </div>

@@ -35,6 +35,7 @@ import Apollo from "@/pages/APOLLO";
 import Hades from "@/pages/HADES";
 import Oyster from "@/pages/OYSTER";
 import OrionSoundEQ from "@/pages/OrionsoundEQ";
+import Merchandise from "@/pages/Merchandise";
 
 // Contract Pages
 import Terms from "@/components/Shop/Contract/Terms";
@@ -65,6 +66,7 @@ function Router() {
       <Route path="/license/:type/:id?" component={LicenseView} />
       <Route path="/shop" component={Shop} />
       <Route path="/store" component={Store} />
+      <Route path="/merchandise" component={Merchandise} />
       <Route path="/vst" component={VST} />
       <Route path="/loader" component={LoaderPage} />
       <Route path="/ark" component={ARK} />
