@@ -171,7 +171,7 @@ export default function OYSTER() {
         {[
           { label: "Beats", href: "/beats" },
           { label: "VST Plugins", href: "/vst" },
-          { label: "Merchandise", href: "/shop" },
+          { label: "Merchandise", href: "/merchandise" },
           { label: "Plugin Installer", href: "/loader" },
         ].map((item, index) => (
           <Link key={item.href + index} href={item.href}>
