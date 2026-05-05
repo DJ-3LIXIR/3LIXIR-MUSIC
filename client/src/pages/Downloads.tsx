@@ -253,8 +253,13 @@ export default function Downloads() {
           titleToCheck.includes("license") || 
           titleToCheck.includes("personal black") ||
           String(item.id).startsWith("license-");
+        const isPlugin =
+          String((item as any).type || "").toLowerCase() === "plugin" ||
+          String((item as any).category || "").toLowerCase().includes("plugin") ||
+          titleToCheck.includes("plugin") ||
+          titleToCheck.includes("vst");
           
-        if (isLicense) return false;
+        if (isLicense || isPlugin) return false;
 
         return item.id !== "royalty-token" && !item.id.startsWith("subscription-");
       })
