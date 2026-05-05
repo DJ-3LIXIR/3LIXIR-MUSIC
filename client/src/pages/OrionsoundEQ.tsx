@@ -500,6 +500,75 @@ export default function OrionSoundEQ() {
       {/* Divider */}
       <div style={{ borderTop: "1px solid #111", position: "relative", zIndex: 1 }} />
 
+      {/* Presets Section */}
+      <div
+        style={{
+          position: "relative",
+          zIndex: 1,
+          width: "100%",
+          padding: "28px 24px 48px",
+          display: "flex",
+          alignItems: "center",
+          gap: "32px",
+          maxWidth: "1100px",
+          margin: "0 auto",
+        }}
+      >
+        <div style={{ flex: "1 1 45%" }}>
+          <div
+            style={{
+              fontSize: "11px",
+              fontWeight: 700,
+              letterSpacing: "0.2em",
+              textTransform: "uppercase",
+              color: "#22c55e",
+              marginBottom: "12px",
+            }}
+          >
+            Factory Presets
+          </div>
+          <h2
+            style={{
+              fontSize: "clamp(20px, 2.5vw, 30px)",
+              fontWeight: 800,
+              letterSpacing: "-0.03em",
+              margin: "0 0 12px 0",
+              lineHeight: 1.2,
+            }}
+          >
+            Over 100 presets
+            <br />
+            <span style={{ color: "#22c55e" }}>ready to drop in.</span>
+          </h2>
+          <p
+            style={{
+              fontSize: "14px",
+              color: "#888",
+              lineHeight: 1.7,
+              margin: 0,
+            }}
+          >
+            Start fast with 100+ professionally tuned presets across vocals,
+            drums, instruments, and full mixes. Load a preset, tweak to taste,
+            and lock in polished tone in seconds.
+          </p>
+        </div>
+        <div style={{ flex: "1 1 55%" }}>
+          <img
+            src="/OrionPresets.png"
+            alt="Orion Sound EQ presets browser"
+            style={{
+              width: "100%",
+              height: "auto",
+              borderRadius: "12px",
+            }}
+          />
+        </div>
+      </div>
+
+      {/* Divider */}
+      <div style={{ borderTop: "1px solid #111", position: "relative", zIndex: 1 }} />
+
       {/* How it works */}
       <div
         style={{
