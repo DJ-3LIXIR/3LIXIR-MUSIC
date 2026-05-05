@@ -431,6 +431,75 @@ export default function OrionSoundEQ() {
       {/* Divider */}
       <div style={{ borderTop: "1px solid #111", position: "relative", zIndex: 1 }} />
 
+      {/* 32-Band Custom EQ Section */}
+      <div
+        style={{
+          position: "relative",
+          zIndex: 1,
+          width: "100%",
+          padding: "48px 24px 28px",
+          display: "flex",
+          alignItems: "center",
+          gap: "32px",
+          maxWidth: "1100px",
+          margin: "0 auto",
+        }}
+      >
+        <div style={{ flex: "1 1 55%" }}>
+          <img
+            src="/Orion32Band.png"
+            alt="Orion Sound EQ 32-band custom EQ view"
+            style={{
+              width: "100%",
+              height: "auto",
+              borderRadius: "12px",
+            }}
+          />
+        </div>
+        <div style={{ flex: "1 1 45%" }}>
+          <div
+            style={{
+              fontSize: "11px",
+              fontWeight: 700,
+              letterSpacing: "0.2em",
+              textTransform: "uppercase",
+              color: "#22c55e",
+              marginBottom: "12px",
+            }}
+          >
+            32-Band Custom EQ
+          </div>
+          <h2
+            style={{
+              fontSize: "clamp(20px, 2.5vw, 30px)",
+              fontWeight: 800,
+              letterSpacing: "-0.03em",
+              margin: "0 0 12px 0",
+              lineHeight: 1.2,
+            }}
+          >
+            Build the exact curve
+            <br />
+            <span style={{ color: "#22c55e" }}>your mix needs.</span>
+          </h2>
+          <p
+            style={{
+              fontSize: "14px",
+              color: "#888",
+              lineHeight: 1.7,
+              margin: 0,
+            }}
+          >
+            Orion lets you create a custom EQ with anywhere from 1 to 32 points.
+            Keep it simple with broad tonal shaping, or go surgical and place
+            precise bands exactly where your sound needs control.
+          </p>
+        </div>
+      </div>
+
+      {/* Divider */}
+      <div style={{ borderTop: "1px solid #111", position: "relative", zIndex: 1 }} />
+
       {/* How it works */}
       <div
         style={{
