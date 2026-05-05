@@ -197,6 +197,26 @@ export default function Merchandise() {
             Explore current drops, seasonal capsules, and artist-first essentials.
           </p>
 
+          <div
+            style={{
+              display: "inline-block",
+              marginBottom: "14px",
+              padding: "6px 14px",
+              borderRadius: "999px",
+              border: "1px solid rgba(201,168,76,0.45)",
+              background: "rgba(201,168,76,0.08)",
+              color: "#e8c76a",
+              fontSize: "10px",
+              fontWeight: 700,
+              letterSpacing: "0.16em",
+              textTransform: "uppercase",
+            }}
+          >
+            Coming Soon
+          </div>
+
+          <br />
+
           <Link href="/shop">
             <button
               style={{
