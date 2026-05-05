@@ -680,6 +680,71 @@ export default function ARK() {
             </p>
           </div>
 
+          {/* Olympus FX Rack included section */}
+          <div
+            style={{
+              position: "relative",
+              zIndex: 1,
+              maxWidth: "1100px",
+              margin: "0 auto",
+              padding: "80px 24px",
+              display: "flex",
+              alignItems: "center",
+              gap: "48px",
+            }}
+          >
+            <div style={{ flex: "0 0 auto", maxWidth: "520px" }}>
+              <img
+                src="/ARKFXRACK.png"
+                alt="3LIXIR Olympus Plugin Suite FX Rack"
+                style={{
+                  width: "100%",
+                  height: "auto",
+                  borderRadius: "12px",
+                }}
+              />
+            </div>
+
+            <div style={{ flex: 1 }}>
+              <div
+                style={{
+                  fontSize: "11px",
+                  fontWeight: 700,
+                  letterSpacing: "0.2em",
+                  textTransform: "uppercase",
+                  color: "#C9A84C",
+                  marginBottom: "16px",
+                }}
+              >
+                Included Bonus Suite
+              </div>
+              <h2
+                style={{
+                  fontSize: "clamp(24px, 3vw, 36px)",
+                  fontWeight: 800,
+                  letterSpacing: "-0.03em",
+                  margin: "0 0 16px 0",
+                  lineHeight: 1.2,
+                }}
+              >
+                The official 3LIXIR MUSIC
+                <br />
+                <span style={{ color: "#C9A84C" }}>Olympus plugin suite included.</span>
+              </h2>
+              <p
+                style={{
+                  fontSize: "15px",
+                  color: "#888",
+                  lineHeight: 1.8,
+                  margin: 0,
+                }}
+              >
+                Every ARK purchase comes bundled with the official 3LIXIR MUSIC Olympus plugin suite,
+                giving you an expanded FX rack for sculpting, enhancing, and finishing your sound right out of the box.
+              </p>
+            </div>
+          </div>
+
           {/* Divider */}
           <div style={{ borderTop: "1px solid #111", position: "relative", zIndex: 1 }} />
 
