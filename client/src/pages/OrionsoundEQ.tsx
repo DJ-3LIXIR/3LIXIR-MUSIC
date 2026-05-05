@@ -300,7 +300,7 @@ export default function OrionSoundEQ() {
           alt="Orion Sound EQ Product Box"
           style={{
             width: "100%",
-            maxWidth: "560px",
+            maxWidth: "980px",
             height: "auto",
             borderRadius: "16px",
             boxShadow: "0 0 60px rgba(34,197,94,0.1)",
