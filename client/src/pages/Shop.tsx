@@ -217,8 +217,12 @@ export default function Shop() {
     item.id.startsWith("subscription-"),
   );
 
-  const hasLicenseInCart = validItems.some((item) =>
+  const licenseItems = validItems.filter((item) =>
     item.id.startsWith("license-"),
+  );
+  const licenseCount = licenseItems.reduce(
+    (sum, item) => sum + (item.quantity || 0),
+    0,
   );
 
   const isCryptoDisabled = hasSubscription;
@@ -260,16 +264,13 @@ export default function Shop() {
     return () => window.removeEventListener("message", handleMessage);
   }, []);
 
-  const royaltyTokens = validItems.find((item) => item.id === "royalty-token");
-  const tokenCount = royaltyTokens ? royaltyTokens.quantity : 0;
-  
   const activeTiers = ["gold", "diamond", "platinum"];
   const hasActiveMembership =
     userProfile?.subscription_tier &&
     activeTiers.includes(userProfile.subscription_tier.toLowerCase());
 
   const hasProperLicensing =
-    hasActiveMembership || hasSubscription || hasLicenseInCart || tokenCount >= totalBeats;
+    hasActiveMembership || hasSubscription || licenseCount >= totalBeats;
 
   const [isPayPalReady, setIsPayPalReady] = useState(false);
 
@@ -1460,15 +1461,12 @@ export default function Shop() {
             <p className="text-muted-foreground text-center mb-8">
               You have {totalBeats} beat{totalBeats > 1 ? "s" : ""} in your
               cart.
-              {tokenCount > 0 &&
-                ` You currently have ${tokenCount} royalty token${tokenCount > 1 ? "s" : ""}.`}{" "}
-              You need{" "}
-              {hasSubscription
-                ? "proper licensing"
-                : tokenCount < totalBeats
-                  ? `${totalBeats - tokenCount} more token${totalBeats - tokenCount > 1 ? "s" : ""}`
-                  : "a subscription, a license, or tokens"}{" "}
-              to proceed with checkout.
+              {" "}You currently have {licenseCount} Black License
+              {licenseCount === 1 ? "" : "s"}. You need{" "}
+              {Math.max(totalBeats - licenseCount, 0)} more Black License
+              {Math.max(totalBeats - licenseCount, 0) === 1 ? "" : "s"} to
+              proceed with checkout (unless you have an active subscription
+              license).
             </p>
 
             <Button
