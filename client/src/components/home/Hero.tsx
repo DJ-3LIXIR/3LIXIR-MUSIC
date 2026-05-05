@@ -45,6 +45,15 @@ export function Hero() {
                 Explore Catalog
               </Button>
             </Link>
+            <Link href="/vst">
+              <Button
+                size="lg"
+                variant="outline"
+                className="h-14 px-8 rounded-full border-[hsl(var(--gold))]/40 bg-[hsl(var(--gold))]/10 hover:bg-[hsl(var(--gold))]/20 text-[hsl(var(--gold))] text-xs font-bold uppercase tracking-widest transition-all hover:scale-105"
+              >
+                Explore Plugins
+              </Button>
+            </Link>
             <Button
               size="lg"
               variant="outline"
