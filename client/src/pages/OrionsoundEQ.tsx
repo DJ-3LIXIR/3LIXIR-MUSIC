@@ -294,6 +294,19 @@ export default function OrionSoundEQ() {
           Official Plugin
         </div>
 
+        {/* Product Image */}
+        <img
+          src="/OrionSoundEQ.png"
+          alt="Orion Sound EQ Product Box"
+          style={{
+            width: "100%",
+            maxWidth: "560px",
+            height: "auto",
+            borderRadius: "16px",
+            boxShadow: "0 0 60px rgba(34,197,94,0.1)",
+          }}
+        />
+
         {/* App icon */}
         <div
           style={{
