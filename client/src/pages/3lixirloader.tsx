@@ -386,6 +386,25 @@ export default function LoaderPage() {
         <p style={{ fontSize: "12px", color: "#333", margin: 0 }}>
           Free · macOS 11+ · Windows 10+ · v1.0.2
         </p>
+
+        <Link href="/loader/install-guide">
+          <button
+            style={{
+              padding: "12px 22px",
+              background: "transparent",
+              color: "#22c55e",
+              fontSize: "11px",
+              fontWeight: 700,
+              letterSpacing: "0.14em",
+              textTransform: "uppercase",
+              borderRadius: "999px",
+              border: "1px solid rgba(34,197,94,0.45)",
+              cursor: "pointer",
+            }}
+          >
+            Installation Guide
+          </button>
+        </Link>
       </div>
 
       {/* Divider */}
