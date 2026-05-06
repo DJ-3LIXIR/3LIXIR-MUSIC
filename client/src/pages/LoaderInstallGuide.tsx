@@ -175,7 +175,7 @@ export default function LoaderInstallGuide() {
                 Back to Loader
               </button>
             </Link>
-            <a href="https://support.ujam.com/hc/en-us/articles/22567195167260-Resolving-Plugin-Issues-in-Logic-Pro" target="_blank" rel="noopener noreferrer" style={{ display: "inline-flex", alignItems: "center", padding: "14px 24px", borderRadius: "999px", border: "1px solid rgba(34,197,94,0.4)", color: "#22c55e", textDecoration: "none", fontWeight: 700, letterSpacing: "0.1em", textTransform: "uppercase", fontSize: "12px" }}>
+            <a href="https://en.wikipedia.org/wiki/Gatekeeper_(macOS)" target="_blank" rel="noopener noreferrer" style={{ display: "inline-flex", alignItems: "center", padding: "14px 24px", borderRadius: "999px", border: "1px solid rgba(34,197,94,0.4)", color: "#22c55e", textDecoration: "none", fontWeight: 700, letterSpacing: "0.1em", textTransform: "uppercase", fontSize: "12px" }}>
               Reference Support Article
             </a>
           </div>
