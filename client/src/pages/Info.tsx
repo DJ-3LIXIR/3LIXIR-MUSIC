@@ -2551,8 +2551,8 @@ const InfoPage = () => {
                 We're here to help.
               </p>
               <div className="border border-white/10 rounded-xl p-6 bg-white/5 space-y-4">
-                <div className="flex items-center justify-center gap-3">
-                  <Mail className="w-5 h-5 text-[hsl(var(--gold))]" />
+                <div className="flex items-start justify-center gap-3">
+                  <Mail className="w-5 h-5 text-[hsl(var(--gold))] mt-1" />
                   <div className="text-center">
                     <p className="font-semibold">Email</p>
                     <p className="text-muted-foreground">
