@@ -41,7 +41,7 @@ export const SocialMedia = () => {
     {
       platform: "YouTube",
       url: "https://youtube.com/@dj3lixir",
-      qrCodeUrl: "/qr-codes/youtube-qr.png",
+      qrCodeUrl: "/qrcode.png",
       icon: <YouTubeIcon />,
       color: "#FF0000",
     },
