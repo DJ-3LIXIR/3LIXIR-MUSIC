@@ -2560,11 +2560,13 @@ const InfoPage = () => {
                     </p>
                   </div>
                 </div>
-                <div className="flex items-center justify-center gap-3">
-                  <Phone className="w-5 h-5 text-[hsl(var(--gold))]" />
+                <div className="flex items-start justify-center gap-3">
+                  <Phone className="w-5 h-5 text-[hsl(var(--gold))] mt-1" />
                   <div className="text-center">
-                    <p className="font-semibold">Response Time</p>
-                    <p className="text-muted-foreground">Within 24-48 hours</p>
+                    <p className="font-semibold">949 308 5144</p>
+                    <p className="text-muted-foreground mt-2">
+                      Response Time: Within 24-48 hours
+                    </p>
                   </div>
                 </div>
               </div>
