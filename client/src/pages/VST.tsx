@@ -13,6 +13,7 @@ interface Plugin {
   price: string;
   url: string | null;
   image: string | null;
+  status: string | null;
 }
 
 const navItems = ["All", "Instruments", "Audio Units", "Libraries"];
@@ -53,6 +54,7 @@ export default function VST() {
           : "$0",
         url: item.url || item.product_url || item.link || null,
         image: item.image || item.image_url || item.thumbnail || null,
+        status: item.status || null,
       }));
 
       setPlugins(mapped);
@@ -76,6 +78,8 @@ export default function VST() {
   };
 
   const handleAddToCart = (plugin: Plugin) => {
+      if (plugin.status?.toLowerCase() === "coming soon") return; // 👈 safety guard
+
     const numericPrice = parsePrice(plugin.price);
     addToCart({
       id: String(plugin.id),
@@ -445,6 +449,7 @@ export default function VST() {
           {filtered.map((plugin) => {
             const isHovered = hoveredPlugin === plugin.id;
             const isInCart = addedPlugins.has(plugin.id) || addedPlugins.has(String(plugin.id));
+            const isComingSoon = plugin.status?.toLowerCase() === "coming soon";
             return (
               <div
                 key={plugin.id}
@@ -572,9 +577,11 @@ export default function VST() {
                     >
                       {plugin.price}
                     </span>
+
                     <div
                       onClick={(e) => {
                         e.stopPropagation();
+                        if (isComingSoon) return; // 👈 blocks add to cart
                         if (isInCart) {
                           setLocation("/shop");
                         } else {
@@ -586,26 +593,32 @@ export default function VST() {
                         fontWeight: 700,
                         letterSpacing: "0.1em",
                         textTransform: "uppercase",
-                        color: isInCart
+                        color: isComingSoon
+                          ? "#444"
+                          : isInCart
                           ? "#000"
                           : isHovered
                           ? "#000"
                           : "#C9A84C",
-                        background: isInCart
+                        background: isComingSoon
+                          ? "transparent"
+                          : isInCart
                           ? "#22c55e"
                           : isHovered
                           ? "#C9A84C"
                           : "transparent",
-                        border: isInCart
+                        border: isComingSoon
+                          ? "1px solid #333"
+                          : isInCart
                           ? "1px solid #22c55e"
                           : "1px solid rgba(201,168,76,0.4)",
                         borderRadius: "100px",
                         padding: "5px 14px",
                         transition: "background 0.2s ease, color 0.2s ease",
-                        cursor: "pointer",
+                        cursor: isComingSoon ? "not-allowed" : "pointer",
                       }}
                     >
-                      {isInCart ? "In Cart" : "Add"}
+                      {isComingSoon ? "Coming Soon" : isInCart ? "In Cart" : "Add"}
                     </div>
                   </div>
                 </div>
