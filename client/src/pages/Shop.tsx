@@ -30,15 +30,13 @@ type PaymentMethod = "stripe" | "paypal" | "crypto";
 type ViewMode = "cart" | "favorites";
 
 // Initialize Stripe
-const stripePromise = loadStripe(
-  "pk_test_51Spw6HG4NUYiO6WbvkHI9nZxHSWSGUho6J9ZXinBUCpEt3BCdN78JffsCnPetEJIXTtwE6jRDdO7DIrlvMvZZlP1008shelj29",
-);
+const stripePromise = loadStripe(import.meta.env.VITE_STRIPE_PUBLISHABLE_KEY);
 
 // PayPal Plan IDs
 const PAYPAL_PLAN_IDS = {
-  "subscription-gold": "P-398129005T965961NNFYZVCI",
-  "subscription-diamond": "P-55L371070A602070FNFYZVCQ",
-  "subscription-platinum": "P-1MY38620WT494822WNFYZVCY",
+  "subscription-gold": import.meta.env.VITE_PAYPAL_PLAN_GOLD,
+  "subscription-diamond": import.meta.env.VITE_PAYPAL_PLAN_DIAMOND,
+  "subscription-platinum": import.meta.env.VITE_PAYPAL_PLAN_PLATINUM,
 };
 
 // Add global type for PayPal
@@ -279,8 +277,7 @@ export default function Shop() {
     if (!showPaymentModal || selectedPaymentMethod !== "paypal") return;
 
     setIsPayPalReady(false);
-    const clientId =
-      "AZToHZYjUTiMaTHZZnA0ZM1GBR1Bd4avfBQB3n46dgp6hkaN3ZnOMn3LC2m1OGOBZRP3xmzjflT3T4JD";
+    const clientId = import.meta.env.VITE_PAYPAL_CLIENT_ID;
 
     // Remove existing script to ensure clean slate with correct intent
     const existingScript = document.querySelector(
