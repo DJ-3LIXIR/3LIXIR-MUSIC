@@ -196,8 +196,27 @@ export default function Shop() {
     (item) => item && typeof item.price === "number",
   );
 
+  const currentTier = userProfile?.subscription_tier?.toLowerCase() || "";
+  const membershipDiscountRate =
+    currentTier === "diamond" ? 0.1 : currentTier === "platinum" ? 0.15 : 0;
+  const getDiscountedUnitPrice = (item: any) => {
+    if (membershipDiscountRate <= 0) return item.price || 0;
+    if (item.id?.startsWith("subscription-")) return item.price || 0;
+    return Number(((item.price || 0) * (1 - membershipDiscountRate)).toFixed(2));
+  };
+
+  const discountEligibleSubtotal = validItems.reduce((sum, item) => {
+    if (item.id?.startsWith("subscription-")) return sum;
+    return sum + (item.price || 0) * (item.quantity || 1);
+  }, 0);
+  const membershipDiscountAmount = Number(
+    (discountEligibleSubtotal * membershipDiscountRate).toFixed(2),
+  );
+  const discountedSubtotal = Number(
+    (Math.max(subtotal - membershipDiscountAmount, 0)).toFixed(2),
+  );
   const tax = 0;
-  const total = subtotal;
+  const total = discountedSubtotal;
 
   const beatItems = validItems.filter(
     (item) =>
@@ -374,7 +393,7 @@ export default function Shop() {
                       value: total.toFixed(2),
                       breakdown: {
                         item_total: {
-                          value: subtotal.toFixed(2),
+                          value: discountedSubtotal.toFixed(2),
                           currency_code: "USD",
                         },
                       },
@@ -383,7 +402,7 @@ export default function Shop() {
                       name: item.title || "Unknown Item",
                       description: `By ${item.artist || "Unknown Artist"}`,
                       unit_amount: {
-                        value: (item.price || 0).toFixed(2),
+                        value: getDiscountedUnitPrice(item).toFixed(2),
                         currency_code: "USD",
                       },
                       quantity: item.quantity || 1,
@@ -536,6 +555,7 @@ export default function Shop() {
         // Ensure items have a name property
         const itemsToSave = validItems.map((item) => ({
           ...item,
+          price: getDiscountedUnitPrice(item),
           name: item.name || item.title || "Unknown Item",
         }));
 
@@ -546,7 +566,7 @@ export default function Shop() {
             payment_method: method,
             transaction_id: transactionId,
             items: itemsToSave,
-            subtotal: subtotal,
+            subtotal: discountedSubtotal,
             tax: tax,
             total: total,
             status: "completed",
@@ -805,7 +825,7 @@ export default function Shop() {
               name: item.title || "Unknown Item",
               description: `By ${item.artist || "Unknown Artist"}`,
             },
-            unit_amount: Math.round((item.price || 0) * 100),
+            unit_amount: Math.round(getDiscountedUnitPrice(item) * 100),
             tax_behavior: "exclusive",
           },
           quantity: item.quantity || 1,
@@ -813,7 +833,7 @@ export default function Shop() {
 
         const cartBackup = {
           items: validItems,
-          subtotal: subtotal,
+          subtotal: discountedSubtotal,
           timestamp: Date.now(),
         };
         localStorage.setItem("stripe_cart_backup", JSON.stringify(cartBackup));
@@ -955,7 +975,8 @@ export default function Shop() {
           try {
             cartItems = JSON.parse(cartData);
             calculatedSubtotal = cartItems.reduce(
-              (sum: number, item: any) => sum + item.price * item.quantity,
+              (sum: number, item: any) =>
+                sum + getDiscountedUnitPrice(item) * (item.quantity || 1),
               0,
             );
             console.log("Retrieved cart from localStorage:", cartItems);
@@ -967,7 +988,7 @@ export default function Shop() {
 
       if (!cartItems || cartItems.length === 0) {
         cartItems = validItems;
-        calculatedSubtotal = subtotal;
+        calculatedSubtotal = discountedSubtotal;
         console.log("Using validItems as fallback:", cartItems);
       }
 
@@ -1001,6 +1022,7 @@ export default function Shop() {
       // Ensure items have a name property (map title to name if needed)
       const itemsToSave = hydratedItems.map((item: any) => ({
         ...item,
+        price: getDiscountedUnitPrice(item),
         name: item.name || item.title || "Unknown Item",
       }));
 
@@ -1519,6 +1541,14 @@ export default function Shop() {
                 <span className="text-muted-foreground">Subtotal</span>
                 <span>${subtotal.toFixed(2)}</span>
               </div>
+              {membershipDiscountAmount > 0 && (
+                <div className="flex justify-between mb-2">
+                  <span className="text-muted-foreground">
+                    Membership Discount ({Math.round(membershipDiscountRate * 100)}%)
+                  </span>
+                  <span>- ${membershipDiscountAmount.toFixed(2)}</span>
+                </div>
+              )}
               <div className="flex justify-between mb-2">
                 <span className="text-muted-foreground text-sm">Tax</span>
                 <span className="text-sm text-muted-foreground">
@@ -1902,6 +1932,14 @@ export default function Shop() {
                           <span>Subtotal</span>
                           <span>${subtotal.toFixed(2)}</span>
                         </div>
+                        {membershipDiscountAmount > 0 && (
+                          <div className="flex justify-between text-muted-foreground">
+                            <span>
+                              Membership Discount ({Math.round(membershipDiscountRate * 100)}%)
+                            </span>
+                            <span>- ${membershipDiscountAmount.toFixed(2)}</span>
+                          </div>
+                        )}
                         <div className="flex justify-between text-muted-foreground text-sm">
                           <span>Tax</span>
                           <span>Calculated at checkout</span>
