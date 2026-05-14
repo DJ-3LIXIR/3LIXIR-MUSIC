@@ -2,6 +2,7 @@
 import { useState } from "react";
 import { Link } from "wouter";
 import { Navbar } from "@/components/layout/Navbar";
+import { useIsMobile } from "@/hooks/use-mobile";
 
 const features = [
   {
@@ -74,6 +75,7 @@ const steps = [
 ];
 
 export default function ARK() {
+  const isMobile = useIsMobile();
   const [hoveredFeature, setHoveredFeature] = useState<number | null>(null);
   const [hoveredStep, setHoveredStep] = useState<number | null>(null);
 
@@ -159,9 +161,9 @@ export default function ARK() {
         style={{
           borderTop: "1px solid #C9A84C",
           borderBottom: "1px solid #C9A84C",
-          display: "flex",
-          justifyContent: "center",
-          alignItems: "center",
+          display: "grid",
+          gridTemplateColumns: isMobile ? "repeat(2, minmax(0, 1fr))" : "repeat(4, minmax(0, 1fr))",
+          alignItems: "stretch",
           background: "#000",
           width: "100%",
           position: "relative",
@@ -177,16 +179,22 @@ export default function ARK() {
           <Link key={item.href + index} href={item.href}>
             <div
               style={{
-                padding: "16px 80px",
+                padding: isMobile ? "16px 12px" : "16px 24px",
                 fontSize: "12px",
                 fontWeight: 700,
                 letterSpacing: "0.15em",
                 textTransform: "uppercase",
                 color: "#C9A84C",
                 cursor: "pointer",
-                borderLeft: index !== 0 ? "1px solid rgba(201,168,76,0.2)" : "none",
+                borderLeft:
+                  !isMobile && index !== 0 ? "1px solid rgba(201,168,76,0.2)" : "none",
+                borderTop:
+                  isMobile && index >= 2 ? "1px solid rgba(201,168,76,0.2)" : "none",
+                borderRight:
+                  isMobile && index % 2 === 0 ? "1px solid rgba(201,168,76,0.2)" : "none",
                 transition: "background 0.2s ease, color 0.2s ease",
                 whiteSpace: "nowrap",
+                textAlign: "center",
               }}
               onMouseEnter={(e) => {
                 (e.currentTarget as HTMLElement).style.background = "rgba(201,168,76,0.07)";

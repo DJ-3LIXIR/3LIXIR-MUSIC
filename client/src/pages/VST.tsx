@@ -4,6 +4,7 @@ import { Navbar } from "@/components/layout/Navbar";
 import { supabase } from "@/supabaseClient";
 import { useCart } from "@/contexts/CartContext";
 import { useLocation } from "wouter";
+import { useIsMobile } from "@/hooks/use-mobile";
 
 interface Plugin {
   id: string | number;
@@ -19,6 +20,7 @@ interface Plugin {
 const navItems = ["All", "Instruments", "Audio Units", "Libraries"];
 
 export default function VST() {
+  const isMobile = useIsMobile();
   const [activeTab, setActiveTab] = useState("All");
   const [hoveredPlugin, setHoveredPlugin] = useState<string | number | null>(null);
   const [plugins, setPlugins] = useState<Plugin[]>([]);
@@ -318,9 +320,9 @@ export default function VST() {
         style={{
           borderTop: "1px solid #C9A84C",
           borderBottom: "1px solid #C9A84C",
-          display: "flex",
-          justifyContent: "center",
-          alignItems: "center",
+          display: "grid",
+          gridTemplateColumns: isMobile ? "repeat(2, minmax(0, 1fr))" : "repeat(4, minmax(0, 1fr))",
+          alignItems: "stretch",
           background: "#000",
           width: "100%",
           position: "sticky",
@@ -333,7 +335,7 @@ export default function VST() {
             key={item}
             onClick={() => setActiveTab(item)}
             style={{
-              padding: "16px 56px",
+              padding: isMobile ? "16px 12px" : "16px 24px",
               fontSize: "12px",
               fontWeight: 700,
               letterSpacing: "0.15em",
@@ -341,10 +343,16 @@ export default function VST() {
               color: activeTab === item ? "#000" : "#C9A84C",
               background: activeTab === item ? "#C9A84C" : "transparent",
               cursor: "pointer",
-              borderLeft: index !== 0 ? "1px solid rgba(201,168,76,0.2)" : "none",
               border: "none",
+              borderLeft:
+                !isMobile && index !== 0 ? "1px solid rgba(201,168,76,0.2)" : "none",
+              borderTop:
+                isMobile && index >= 2 ? "1px solid rgba(201,168,76,0.2)" : "none",
+              borderRight:
+                isMobile && index % 2 === 0 ? "1px solid rgba(201,168,76,0.2)" : "none",
               transition: "background 0.2s ease, color 0.2s ease",
               whiteSpace: "nowrap",
+              textAlign: "center",
             }}
             onMouseEnter={(e) => {
               if (activeTab !== item) {
