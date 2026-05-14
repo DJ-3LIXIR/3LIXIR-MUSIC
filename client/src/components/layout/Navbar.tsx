@@ -187,6 +187,12 @@ export function Navbar() {
     setMobileSubMenuOpen(mobileSubMenuOpen === menu ? null : menu);
   };
 
+  const isInfoMenuState = (value) =>
+    value === "info" ||
+    value === "about" ||
+    value === "artist" ||
+    value === "policy";
+
   const handleSearch = (e) => {
     e.preventDefault();
     if (searchQuery.trim()) {
@@ -534,16 +540,22 @@ export function Navbar() {
                     Info
                   </button>
                   <button
-                    onClick={() => toggleMobileSubMenu("info")}
+                    onClick={() => {
+                      if (isInfoMenuState(mobileSubMenuOpen)) {
+                        setMobileSubMenuOpen(null);
+                      } else {
+                        setMobileSubMenuOpen("info");
+                      }
+                    }}
                     className="p-1 hover:text-white transition-colors"
                     aria-label="Toggle info menu"
                   >
                     <ChevronDown
-                      className={`w-4 h-4 transition-transform ${mobileSubMenuOpen === "info" ? "rotate-180" : ""}`}
+                      className={`w-4 h-4 transition-transform ${isInfoMenuState(mobileSubMenuOpen) ? "rotate-180" : ""}`}
                     />
                   </button>
                 </div>
-                {mobileSubMenuOpen === "info" && (
+                {isInfoMenuState(mobileSubMenuOpen) && (
                   <div className="ml-4 mt-2 space-y-1">
                     {infoMenuItems.map((item) => {
                       const Icon = item.icon;
