@@ -526,15 +526,23 @@ export function Navbar() {
             <div className="container mx-auto px-6 py-8 flex flex-col gap-4">
               {/* Info Mobile Menu */}
               <div>
-                <button
-                  onClick={() => toggleMobileSubMenu("info")}
-                  className="w-full flex items-center justify-between px-4 py-2 text-lg font-medium text-muted-foreground hover:text-white transition-colors"
-                >
-                  Info
-                  <ChevronDown
-                    className={`w-4 h-4 transition-transform ${mobileSubMenuOpen === "info" ? "rotate-180" : ""}`}
-                  />
-                </button>
+                <div className="w-full flex items-center justify-between px-4 py-2 text-lg font-medium text-muted-foreground transition-colors">
+                  <button
+                    onClick={() => handleInfoClick("about")}
+                    className="text-left hover:text-white transition-colors"
+                  >
+                    Info
+                  </button>
+                  <button
+                    onClick={() => toggleMobileSubMenu("info")}
+                    className="p-1 hover:text-white transition-colors"
+                    aria-label="Toggle info menu"
+                  >
+                    <ChevronDown
+                      className={`w-4 h-4 transition-transform ${mobileSubMenuOpen === "info" ? "rotate-180" : ""}`}
+                    />
+                  </button>
+                </div>
                 {mobileSubMenuOpen === "info" && (
                   <div className="ml-4 mt-2 space-y-1">
                     {infoMenuItems.map((item) => {
@@ -542,18 +550,24 @@ export function Navbar() {
                       if (item.id === "about") {
                         return (
                           <div key={item.id}>
-                            <button
-                              onClick={() => toggleMobileSubMenu("about")}
-                              className="w-full flex items-center justify-between px-4 py-2.5 text-sm text-muted-foreground hover:text-white hover:bg-white/5 rounded-lg transition-colors"
-                            >
-                              <span className="flex items-center gap-2">
+                            <div className="w-full flex items-center justify-between px-4 py-2.5 text-sm text-muted-foreground hover:bg-white/5 rounded-lg transition-colors">
+                              <button
+                                onClick={() => handleInfoClick(item.section)}
+                                className="flex items-center gap-2 hover:text-white transition-colors"
+                              >
                                 <Icon className="w-4 h-4" />
                                 {item.label}
-                              </span>
+                              </button>
+                              <button
+                                onClick={() => toggleMobileSubMenu("about")}
+                                className="p-1 hover:text-white transition-colors"
+                                aria-label="Toggle About Us submenu"
+                              >
                               <ChevronDown
                                 className={`w-4 h-4 transition-transform ${mobileSubMenuOpen === "about" ? "rotate-180" : ""}`}
                               />
-                            </button>
+                              </button>
+                            </div>
                             {mobileSubMenuOpen === "about" && (
                               <div className="ml-4 mt-1 space-y-1">
                                 {aboutSubItems.map((subItem) => (
@@ -573,18 +587,24 @@ export function Navbar() {
                       if (item.id === "artist") {
                         return (
                           <div key={item.id}>
-                            <button
-                              onClick={() => toggleMobileSubMenu("artist")}
-                              className="w-full flex items-center justify-between px-4 py-2.5 text-sm text-muted-foreground hover:text-white hover:bg-white/5 rounded-lg transition-colors"
-                            >
-                              <span className="flex items-center gap-2">
+                            <div className="w-full flex items-center justify-between px-4 py-2.5 text-sm text-muted-foreground hover:bg-white/5 rounded-lg transition-colors">
+                              <button
+                                onClick={() => handleInfoClick(item.section)}
+                                className="flex items-center gap-2 hover:text-white transition-colors"
+                              >
                                 <Icon className="w-4 h-4" />
                                 {item.label}
-                              </span>
+                              </button>
+                              <button
+                                onClick={() => toggleMobileSubMenu("artist")}
+                                className="p-1 hover:text-white transition-colors"
+                                aria-label="Toggle Meet the Artist submenu"
+                              >
                               <ChevronDown
                                 className={`w-4 h-4 transition-transform ${mobileSubMenuOpen === "artist" ? "rotate-180" : ""}`}
                               />
-                            </button>
+                              </button>
+                            </div>
                             {mobileSubMenuOpen === "artist" && (
                               <div className="ml-4 mt-1 space-y-1">
                                 {artistSubItems.map((subItem) => (
@@ -606,18 +626,24 @@ export function Navbar() {
                       if (item.id === "policy") {
                         return (
                           <div key={item.id}>
-                            <button
-                              onClick={() => toggleMobileSubMenu("policy")}
-                              className="w-full flex items-center justify-between px-4 py-2.5 text-sm text-muted-foreground hover:text-white hover:bg-white/5 rounded-lg transition-colors"
-                            >
-                              <span className="flex items-center gap-2">
+                            <div className="w-full flex items-center justify-between px-4 py-2.5 text-sm text-muted-foreground hover:bg-white/5 rounded-lg transition-colors">
+                              <button
+                                onClick={() => handleInfoClick(item.section)}
+                                className="flex items-center gap-2 hover:text-white transition-colors"
+                              >
                                 <Icon className="w-4 h-4" />
                                 {item.label}
-                              </span>
+                              </button>
+                              <button
+                                onClick={() => toggleMobileSubMenu("policy")}
+                                className="p-1 hover:text-white transition-colors"
+                                aria-label="Toggle Policies submenu"
+                              >
                               <ChevronDown
                                 className={`w-4 h-4 transition-transform ${mobileSubMenuOpen === "policy" ? "rotate-180" : ""}`}
                               />
-                            </button>
+                              </button>
+                            </div>
                             {mobileSubMenuOpen === "policy" && (
                               <div className="ml-4 mt-1 space-y-1">
                                 {policySubItems.map((subItem) => {
