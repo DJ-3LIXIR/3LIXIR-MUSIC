@@ -37,6 +37,7 @@ import Oyster from "@/pages/OYSTER";
 import OrionSoundEQ from "@/pages/OrionsoundEQ";
 import Merchandise from "@/pages/Merchandise";
 import LoaderInstallGuide from "@/pages/LoaderInstallGuide";
+import Tools from "@/pages/Tools";
 
 // Contract Pages
 import Terms from "@/components/Shop/Contract/Terms";
@@ -71,6 +72,7 @@ function Router() {
       <Route path="/vst" component={VST} />
       <Route path="/loader" component={LoaderPage} />
       <Route path="/loader/install-guide" component={LoaderInstallGuide} />
+      <Route path="/tools" component={Tools} />
       <Route path="/ark" component={ARK} />
       <Route path="/apollo" component={Apollo} />
       <Route path="/hades" component={Hades} />

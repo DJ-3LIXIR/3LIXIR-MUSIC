@@ -251,6 +251,13 @@ export function Navbar() {
 
             <span className="text-white/20">|</span>
             <Link
+              href="/tools"
+              className="text-sm font-medium text-muted-foreground hover:text-white transition-colors"
+            >
+              Tools
+            </Link>
+            <span className="text-white/20">|</span>
+            <Link
               href="/store"
               className="text-sm font-medium text-muted-foreground hover:text-white transition-colors"
             >
@@ -693,6 +700,13 @@ export function Navbar() {
                 )}
               </div>
 
+              <Link
+                href="/tools"
+                onClick={() => setMobileMenuOpen(false)}
+                className="text-lg font-medium text-muted-foreground hover:text-white transition-colors px-4 py-2"
+              >
+                Tools
+              </Link>
               <Link
                 href="/store"
                 onClick={() => setMobileMenuOpen(false)}
