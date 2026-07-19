@@ -39,6 +39,7 @@ import Merchandise from "@/pages/Merchandise";
 import LoaderInstallGuide from "@/pages/LoaderInstallGuide";
 import Tools from "@/pages/Tools";
 import VideoConverter from "@/pages/VideoConverter";
+import SampleGenerator from "@/pages/SampleGenerator";
 
 // Contract Pages
 import Terms from "@/components/Shop/Contract/Terms";
@@ -75,6 +76,7 @@ function Router() {
       <Route path="/loader/install-guide" component={LoaderInstallGuide} />
       <Route path="/tools" component={Tools} />
       <Route path="/tools/video-converter" component={VideoConverter} />
+      <Route path="/tools/sample-generator" component={SampleGenerator} />
       <Route path="/ark" component={ARK} />
       <Route path="/apollo" component={Apollo} />
       <Route path="/hades" component={Hades} />

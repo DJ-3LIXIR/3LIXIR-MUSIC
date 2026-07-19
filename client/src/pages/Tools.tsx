@@ -117,7 +117,7 @@ export default function Tools() {
       >
         {[
           { label: "Video Converter", href: "/tools/video-converter" },
-          { label: "Sample Generator", href: "/tools" },
+          { label: "Sample Generator", href: "/tools/sample-generator" },
           { label: "Stem Splitter", href: "/tools" },
         ].map((item, index) => (
           <Link key={item.label} href={item.href}>
