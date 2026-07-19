@@ -1,7 +1,8 @@
 // client/src/pages/VideoConverter.tsx
 import { useState } from "react";
-import { Link } from "wouter";
+import { Link, useLocation } from "wouter";
 import { Navbar } from "@/components/layout/Navbar";
+import { useAuth } from "@/contexts/AuthContext";
 
 const OUTPUT_FORMATS = [
   { value: "mp3", label: "MP3 · Audio" },
@@ -14,15 +15,68 @@ const OUTPUT_FORMATS = [
 const GOLD = "#C9A84C";
 const GOLD_LIGHT = "#e8c76a";
 
+// Free daily conversions for signed-in, non-member users.
+const DAILY_FREE_LIMIT = 10;
+// Paid membership tiers get unlimited usage.
+const MEMBER_TIERS = ["gold", "diamond", "platinum"];
+
+// NOTE: This client-side counter is a UX layer only. The real quota MUST be
+// enforced server-side in /api/convert once the backend is built — the server
+// returns the authoritative "remaining" count. localStorage is trivially
+// bypassable and exists here purely to drive the UI before that lands.
+function usageKey(userId: string) {
+  const today = new Date().toISOString().slice(0, 10); // YYYY-MM-DD
+  return `vc_usage_${userId}_${today}`;
+}
+
+function getUsedToday(userId: string): number {
+  try {
+    return parseInt(localStorage.getItem(usageKey(userId)) || "0", 10) || 0;
+  } catch {
+    return 0;
+  }
+}
+
+function incrementUsage(userId: string): void {
+  try {
+    localStorage.setItem(usageKey(userId), String(getUsedToday(userId) + 1));
+  } catch {
+    /* ignore */
+  }
+}
+
 export default function VideoConverter() {
+  const { user, openAuthModal } = useAuth();
+  const [, setLocation] = useLocation();
   const [url, setUrl] = useState("");
   const [format, setFormat] = useState("mp3");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
   const [success, setSuccess] = useState("");
   const [urlFocused, setUrlFocused] = useState(false);
+  const [usedToday, setUsedToday] = useState(() =>
+    user ? getUsedToday(user.id) : 0
+  );
+
+  const isMember =
+    !!user?.subscription_tier &&
+    MEMBER_TIERS.includes(user.subscription_tier.toLowerCase());
+  const remaining = Math.max(0, DAILY_FREE_LIMIT - usedToday);
+  const limitReached = !!user && !isMember && remaining <= 0;
 
   const handleConvert = async () => {
+    // Must be signed in to use the converter.
+    if (!user) {
+      openAuthModal();
+      return;
+    }
+
+    // Free tier exhausted for the day — send them to membership plans.
+    if (limitReached) {
+      setLocation("/vip");
+      return;
+    }
+
     if (!url.trim()) {
       setError("Please enter a valid URL");
       return;
@@ -44,6 +98,12 @@ export default function VideoConverter() {
       const data = await response.json();
       setSuccess(`Conversion started! Download link: ${data.downloadUrl}`);
       setUrl("");
+
+      // Count the successful conversion against the daily free quota.
+      if (!isMember) {
+        incrementUsage(user.id);
+        setUsedToday((n) => n + 1);
+      }
     } catch (err) {
       setError(
         err instanceof Error ? err.message : "An error occurred during conversion"
@@ -228,6 +288,52 @@ export default function VideoConverter() {
                 boxShadow: `0 0 60px ${GOLD}12, inset 0 1px 0 ${GOLD}18`,
               }}
             >
+              {/* Usage status */}
+              <div
+                style={{
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "space-between",
+                  gap: "12px",
+                  padding: "12px 16px",
+                  marginBottom: "24px",
+                  background: "#000",
+                  border: `1px solid ${isMember ? GOLD + "55" : "#2a2620"}`,
+                  borderRadius: "12px",
+                }}
+              >
+                <span
+                  style={{
+                    fontSize: "13px",
+                    fontWeight: 600,
+                    color: isMember ? GOLD_LIGHT : "#aaa",
+                  }}
+                >
+                  {!user
+                    ? "Sign in to use — 10 free / day"
+                    : isMember
+                      ? "★ Member · Unlimited"
+                      : `${remaining} of ${DAILY_FREE_LIMIT} free left today`}
+                </span>
+                {user && !isMember && (
+                  <Link href="/vip">
+                    <span
+                      style={{
+                        fontSize: "11px",
+                        fontWeight: 800,
+                        letterSpacing: "0.1em",
+                        textTransform: "uppercase",
+                        color: GOLD,
+                        cursor: "pointer",
+                        whiteSpace: "nowrap",
+                      }}
+                    >
+                      Go Unlimited →
+                    </span>
+                  </Link>
+                )}
+              </div>
+
               {/* URL Input */}
               <label
                 style={{
@@ -334,6 +440,36 @@ export default function VideoConverter() {
                 </div>
               )}
 
+              {/* Upgrade banner when free limit is reached */}
+              {limitReached && (
+                <Link href="/vip">
+                  <div
+                    style={{
+                      background: `linear-gradient(160deg, ${GOLD}1c, ${GOLD}0a)`,
+                      border: `1px solid ${GOLD}55`,
+                      borderRadius: "12px",
+                      padding: "16px 18px",
+                      marginBottom: "20px",
+                      cursor: "pointer",
+                    }}
+                  >
+                    <div
+                      style={{
+                        fontSize: "13px",
+                        fontWeight: 800,
+                        color: GOLD_LIGHT,
+                        marginBottom: "4px",
+                      }}
+                    >
+                      Out of free conversions for today
+                    </div>
+                    <div style={{ fontSize: "12px", color: "#999", lineHeight: 1.5 }}>
+                      Go unlimited with a membership → tap to view plans.
+                    </div>
+                  </div>
+                </Link>
+              )}
+
               {/* Convert Button */}
               <button
                 onClick={handleConvert}
@@ -365,7 +501,13 @@ export default function VideoConverter() {
                     "translateY(0)";
                 }}
               >
-                {loading ? "Converting..." : "Convert & Download"}
+                {loading
+                  ? "Converting..."
+                  : !user
+                    ? "Sign In to Convert"
+                    : limitReached
+                      ? "Upgrade for Unlimited"
+                      : "Convert & Download"}
               </button>
 
               {/* Info note */}
