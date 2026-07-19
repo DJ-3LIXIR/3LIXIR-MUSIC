@@ -17,8 +17,9 @@ const GOLD_LIGHT = "#e8c76a";
 
 // Free daily conversions for signed-in, non-member users.
 const DAILY_FREE_LIMIT = 10;
-// Paid membership tiers get unlimited usage.
-const MEMBER_TIERS = ["gold", "diamond", "platinum"];
+// Non-member tiers (everything else = paid member with unlimited usage).
+// Matches the convention used across the VIP pages.
+const FREE_TIERS = ["tier_zero", "black", ""];
 
 // NOTE: This client-side counter is a UX layer only. The real quota MUST be
 // enforced server-side in /api/convert once the backend is built — the server
@@ -46,7 +47,7 @@ function incrementUsage(userId: string): void {
 }
 
 export default function VideoConverter() {
-  const { user, openAuthModal } = useAuth();
+  const { user, userProfile, openAuthModal } = useAuth();
   const [, setLocation] = useLocation();
   const [url, setUrl] = useState("");
   const [format, setFormat] = useState("mp3");
@@ -58,9 +59,14 @@ export default function VideoConverter() {
     user ? getUsedToday(user.id) : 0
   );
 
-  const isMember =
-    !!user?.subscription_tier &&
-    MEMBER_TIERS.includes(user.subscription_tier.toLowerCase());
+  // Prefer userProfile.subscription_tier — it's reliably populated, unlike the
+  // tier merged onto the user object (which can be stale in AuthContext).
+  const tier = (
+    userProfile?.subscription_tier ||
+    user?.subscription_tier ||
+    ""
+  ).toLowerCase();
+  const isMember = !!user && !FREE_TIERS.includes(tier);
   const remaining = Math.max(0, DAILY_FREE_LIMIT - usedToday);
   const limitReached = !!user && !isMember && remaining <= 0;
 
