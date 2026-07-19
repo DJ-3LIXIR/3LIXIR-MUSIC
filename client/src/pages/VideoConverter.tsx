@@ -67,7 +67,7 @@ export default function VideoConverter() {
       <div
         style={{
           display: "grid",
-          gridTemplateColumns: "1fr 2px 3fr 2px 1fr",
+          gridTemplateColumns: "1fr 2px 2fr 2px 1fr",
           minHeight: "calc(100vh - 80px)",
           position: "relative",
         }}
