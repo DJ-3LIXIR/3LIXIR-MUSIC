@@ -1,5 +1,5 @@
 // client/src/pages/VideoConverter.tsx
-import { useState } from "react";
+import { useRef, useState } from "react";
 import { Link, useLocation } from "wouter";
 import { Navbar } from "@/components/layout/Navbar";
 import { useAuth } from "@/contexts/AuthContext";
@@ -55,9 +55,30 @@ export default function VideoConverter() {
   const [error, setError] = useState("");
   const [success, setSuccess] = useState("");
   const [urlFocused, setUrlFocused] = useState(false);
+  const [file, setFile] = useState<File | null>(null);
+  const [dragActive, setDragActive] = useState(false);
+  const fileInputRef = useRef<HTMLInputElement>(null);
   const [usedToday, setUsedToday] = useState(() =>
     user ? getUsedToday(user.id) : 0
   );
+
+  const handleFiles = (files: FileList | null) => {
+    if (!files || files.length === 0) return;
+    const f = files[0];
+    if (!f.type.startsWith("video/") && !f.type.startsWith("audio/")) {
+      setError("Please drop a video or audio file.");
+      return;
+    }
+    setError("");
+    setUrl(""); // file and URL are mutually exclusive
+    setFile(f);
+  };
+
+  const handleDrop = (e: React.DragEvent) => {
+    e.preventDefault();
+    setDragActive(false);
+    handleFiles(e.dataTransfer.files);
+  };
 
   // Prefer userProfile.subscription_tier — it's reliably populated, unlike the
   // tier merged onto the user object (which can be stale in AuthContext).
@@ -83,8 +104,8 @@ export default function VideoConverter() {
       return;
     }
 
-    if (!url.trim()) {
-      setError("Please enter a valid URL");
+    if (!url.trim() && !file) {
+      setError("Paste a URL or drop a file to convert.");
       return;
     }
 
@@ -93,17 +114,28 @@ export default function VideoConverter() {
     setSuccess("");
 
     try {
-      const response = await fetch("/api/convert", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ url: url.trim(), format }),
-      });
+      let response: Response;
+      if (file) {
+        // Upload a local file as multipart form data.
+        const form = new FormData();
+        form.append("file", file);
+        form.append("format", format);
+        response = await fetch("/api/convert", { method: "POST", body: form });
+      } else {
+        // Convert from a remote URL.
+        response = await fetch("/api/convert", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ url: url.trim(), format }),
+        });
+      }
 
       if (!response.ok) throw new Error("Conversion failed");
 
       const data = await response.json();
       setSuccess(`Conversion started! Download link: ${data.downloadUrl}`);
       setUrl("");
+      setFile(null);
 
       // Count the successful conversion against the daily free quota.
       if (!isMember) {
@@ -357,7 +389,10 @@ export default function VideoConverter() {
               <input
                 placeholder="https://youtube.com/watch?v=..."
                 value={url}
-                onChange={(e) => setUrl(e.target.value)}
+                onChange={(e) => {
+                  setUrl(e.target.value);
+                  if (file) setFile(null);
+                }}
                 onFocus={() => setUrlFocused(true)}
                 onBlur={() => setUrlFocused(false)}
                 style={{
@@ -370,10 +405,117 @@ export default function VideoConverter() {
                   color: "#fff",
                   outline: "none",
                   boxSizing: "border-box",
-                  marginBottom: "24px",
+                  marginBottom: "20px",
                   transition: "border-color 0.2s",
                 }}
               />
+
+              {/* OR divider */}
+              <div
+                style={{
+                  display: "flex",
+                  alignItems: "center",
+                  gap: "14px",
+                  marginBottom: "20px",
+                }}
+              >
+                <div style={{ flex: 1, height: "1px", background: "#2a2620" }} />
+                <span
+                  style={{
+                    fontSize: "11px",
+                    fontWeight: 700,
+                    letterSpacing: "0.15em",
+                    color: "#555",
+                  }}
+                >
+                  OR
+                </span>
+                <div style={{ flex: 1, height: "1px", background: "#2a2620" }} />
+              </div>
+
+              {/* Drag & Drop Zone */}
+              <input
+                ref={fileInputRef}
+                type="file"
+                accept="video/*,audio/*"
+                style={{ display: "none" }}
+                onChange={(e) => handleFiles(e.target.files)}
+              />
+              <div
+                onClick={() => fileInputRef.current?.click()}
+                onDragOver={(e) => {
+                  e.preventDefault();
+                  setDragActive(true);
+                }}
+                onDragLeave={(e) => {
+                  e.preventDefault();
+                  setDragActive(false);
+                }}
+                onDrop={handleDrop}
+                style={{
+                  border: `2px dashed ${dragActive ? GOLD : file ? GOLD + "88" : "#2a2620"}`,
+                  background: dragActive ? `${GOLD}0f` : "#000",
+                  borderRadius: "12px",
+                  padding: "28px 18px",
+                  marginBottom: "28px",
+                  textAlign: "center",
+                  cursor: "pointer",
+                  transition: "border-color 0.2s, background 0.2s",
+                }}
+              >
+                {file ? (
+                  <div
+                    style={{
+                      display: "flex",
+                      alignItems: "center",
+                      justifyContent: "center",
+                      gap: "10px",
+                    }}
+                  >
+                    <span
+                      style={{
+                        fontSize: "14px",
+                        fontWeight: 600,
+                        color: GOLD_LIGHT,
+                        wordBreak: "break-all",
+                      }}
+                    >
+                      {file.name}
+                    </span>
+                    <span
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        setFile(null);
+                        if (fileInputRef.current) fileInputRef.current.value = "";
+                      }}
+                      style={{
+                        fontSize: "16px",
+                        color: "#888",
+                        cursor: "pointer",
+                        lineHeight: 1,
+                      }}
+                    >
+                      ✕
+                    </span>
+                  </div>
+                ) : (
+                  <>
+                    <div
+                      style={{
+                        fontSize: "14px",
+                        fontWeight: 600,
+                        color: "#aaa",
+                        marginBottom: "4px",
+                      }}
+                    >
+                      Drag & drop a file here
+                    </div>
+                    <div style={{ fontSize: "12px", color: "#555" }}>
+                      or click to browse · video &amp; audio files
+                    </div>
+                  </>
+                )}
+              </div>
 
               {/* Format Selection */}
               <label
