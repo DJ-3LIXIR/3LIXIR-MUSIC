@@ -3,6 +3,10 @@ import { useRef, useState } from "react";
 import { Link, useLocation } from "wouter";
 import { Navbar } from "@/components/layout/Navbar";
 import { useAuth } from "@/contexts/AuthContext";
+import { supabase } from "@/supabaseClient";
+
+// Base URL of the tools backend (Render). Empty = same origin (local dev/proxy).
+const API_BASE = import.meta.env.VITE_TOOLS_API_URL || "";
 
 const OUTPUT_FORMATS = [
   { value: "mp3", label: "MP3 · Audio" },
@@ -114,33 +118,64 @@ export default function VideoConverter() {
     setSuccess("");
 
     try {
+      // Attach the user's Supabase access token so the backend can enforce quota.
+      const {
+        data: { session },
+      } = await supabase.auth.getSession();
+      const token = session?.access_token;
+      if (!token) {
+        openAuthModal();
+        return;
+      }
+      const authHeader = { Authorization: `Bearer ${token}` };
+
       let response: Response;
       if (file) {
         // Upload a local file as multipart form data.
         const form = new FormData();
         form.append("file", file);
         form.append("format", format);
-        response = await fetch("/api/convert", { method: "POST", body: form });
+        response = await fetch(`${API_BASE}/api/convert`, {
+          method: "POST",
+          headers: authHeader,
+          body: form,
+        });
       } else {
         // Convert from a remote URL.
-        response = await fetch("/api/convert", {
+        response = await fetch(`${API_BASE}/api/convert`, {
           method: "POST",
-          headers: { "Content-Type": "application/json" },
+          headers: { ...authHeader, "Content-Type": "application/json" },
           body: JSON.stringify({ url: url.trim(), format }),
         });
       }
 
-      if (!response.ok) throw new Error("Conversion failed");
+      // Server-enforced daily limit.
+      if (response.status === 429) {
+        setUsedToday(DAILY_FREE_LIMIT); // flips UI to "limit reached"
+        setError("You've used your free conversions for today.");
+        return;
+      }
+
+      if (!response.ok) {
+        const body = await response.json().catch(() => null);
+        throw new Error(body?.error || "Conversion failed");
+      }
 
       const data = await response.json();
-      setSuccess(`Conversion started! Download link: ${data.downloadUrl}`);
+      const downloadUrl = `${API_BASE}${data.downloadUrl}`;
+      setSuccess("Done! Your download is starting…");
+      window.open(downloadUrl, "_blank");
       setUrl("");
       setFile(null);
 
-      // Count the successful conversion against the daily free quota.
+      // Sync the local counter with the server's authoritative remaining count.
       if (!isMember) {
-        incrementUsage(user.id);
-        setUsedToday((n) => n + 1);
+        if (typeof data.remaining === "number") {
+          setUsedToday(DAILY_FREE_LIMIT - data.remaining);
+        } else {
+          incrementUsage(user.id);
+          setUsedToday((n) => n + 1);
+        }
       }
     } catch (err) {
       setError(
