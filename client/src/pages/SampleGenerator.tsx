@@ -141,13 +141,37 @@ export default function SampleGenerator() {
     >
       <Navbar />
 
+      {/* Brick-framed layout (matches the other tool pages) */}
       <div
         style={{
-          maxWidth: "1440px",
-          margin: "0 auto",
-          padding: "104px 24px 60px",
+          display: "grid",
+          gridTemplateColumns: isMobile ? "1fr" : "120px 2px 1fr 2px 120px",
+          minHeight: "calc(100vh - 80px)",
         }}
       >
+        {/* Left brick + divider */}
+        {!isMobile && (
+          <>
+            <div
+              style={{
+                background: 'url("/black_gold_brick_texture.png")',
+                backgroundSize: "cover",
+                backgroundPosition: "center",
+                backgroundRepeat: "repeat",
+                opacity: 0.55,
+              }}
+            />
+            <div
+              style={{
+                background: `linear-gradient(to bottom, transparent, ${GOLD}, transparent)`,
+                width: "2px",
+              }}
+            />
+          </>
+        )}
+
+        {/* Center content */}
+        <div style={{ padding: "104px 40px 60px", minWidth: 0 }}>
         {/* Top row */}
         <div
           style={{
@@ -545,6 +569,30 @@ export default function SampleGenerator() {
             </div>
           </div>
         </div>
+        </div>
+        {/* end center content */}
+
+        {/* Right divider + brick */}
+        {!isMobile && (
+          <>
+            <div
+              style={{
+                background: `linear-gradient(to bottom, transparent, ${GOLD}, transparent)`,
+                width: "2px",
+              }}
+            />
+            <div
+              style={{
+                background: 'url("/black_gold_brick_texture.png")',
+                backgroundSize: "cover",
+                backgroundPosition: "center",
+                backgroundRepeat: "repeat",
+                opacity: 0.55,
+                transform: "scaleX(-1)",
+              }}
+            />
+          </>
+        )}
       </div>
     </div>
   );
