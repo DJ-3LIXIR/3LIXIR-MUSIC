@@ -11,8 +11,16 @@ const SAMPLE_TYPES = [
   { value: "all", label: "Everything" },
 ];
 
+const SLICE_COUNTS = [8, 16, 32];
+
 const GOLD = "#C9A84C";
 const GOLD_LIGHT = "#e8c76a";
+
+// Static decorative waveform shape (bar heights in %). Stands in for the real
+// waveform until the backend returns actual audio peak data.
+const WAVE = Array.from({ length: 60 }, (_, i) =>
+  22 + Math.abs(Math.sin(i * 0.45) * Math.cos(i * 0.19) + Math.sin(i * 0.11)) * 74
+);
 
 // Free daily generations for signed-in, non-member users.
 const DAILY_FREE_LIMIT = 10;
@@ -48,6 +56,8 @@ export default function SampleGenerator() {
   const [, setLocation] = useLocation();
   const [url, setUrl] = useState("");
   const [sampleType, setSampleType] = useState("loops");
+  const [slices, setSlices] = useState(16);
+  const [activePad, setActivePad] = useState<number | null>(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
   const [success, setSuccess] = useState("");
@@ -68,6 +78,7 @@ export default function SampleGenerator() {
   const isMember = !!user && !FREE_TIERS.includes(tier);
   const remaining = Math.max(0, DAILY_FREE_LIMIT - usedToday);
   const limitReached = !!user && !isMember && remaining <= 0;
+  const hasSource = !!url.trim() || !!file;
 
   const handleFiles = (files: FileList | null) => {
     if (!files || files.length === 0) return;
@@ -115,6 +126,7 @@ export default function SampleGenerator() {
         const form = new FormData();
         form.append("file", file);
         form.append("sampleType", sampleType);
+        form.append("slices", String(slices));
         response = await fetch("/api/generate-samples", {
           method: "POST",
           body: form,
@@ -123,7 +135,7 @@ export default function SampleGenerator() {
         response = await fetch("/api/generate-samples", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ url: url.trim(), sampleType }),
+          body: JSON.stringify({ url: url.trim(), sampleType, slices }),
         });
       }
 
@@ -515,7 +527,7 @@ export default function SampleGenerator() {
                 )}
               </div>
 
-              {/* Sample Type Selection */}
+              {/* Waveform + slice grid */}
               <label
                 style={{
                   display: "block",
@@ -527,31 +539,216 @@ export default function SampleGenerator() {
                   marginBottom: "10px",
                 }}
               >
-                Sample Type
+                Waveform
               </label>
-              <select
-                value={sampleType}
-                onChange={(e) => setSampleType(e.target.value)}
+              <div
                 style={{
-                  width: "100%",
+                  position: "relative",
+                  height: "96px",
                   background: "#000",
                   border: "1px solid #2a2620",
                   borderRadius: "12px",
-                  padding: "16px 18px",
-                  fontSize: "15px",
-                  color: "#fff",
-                  outline: "none",
-                  boxSizing: "border-box",
-                  marginBottom: "28px",
-                  cursor: "pointer",
+                  padding: "0 12px",
+                  marginBottom: "22px",
+                  display: "flex",
+                  alignItems: "center",
+                  gap: "2px",
+                  overflow: "hidden",
                 }}
               >
-                {SAMPLE_TYPES.map((t) => (
-                  <option key={t.value} value={t.value}>
-                    {t.label}
-                  </option>
+                {WAVE.map((h, i) => (
+                  <div
+                    key={i}
+                    style={{
+                      flex: 1,
+                      height: `${h}%`,
+                      background: hasSource
+                        ? `linear-gradient(to top, ${GOLD}, ${GOLD_LIGHT})`
+                        : "#222",
+                      borderRadius: "2px",
+                      transition: "background 0.3s",
+                    }}
+                  />
                 ))}
-              </select>
+                {/* Slice divider lines */}
+                {Array.from({ length: slices - 1 }).map((_, i) => (
+                  <div
+                    key={`slice-${i}`}
+                    style={{
+                      position: "absolute",
+                      top: 0,
+                      bottom: 0,
+                      left: `${((i + 1) / slices) * 100}%`,
+                      width: "1px",
+                      background: hasSource ? `${GOLD}66` : "#1a1a1a",
+                    }}
+                  />
+                ))}
+                {!hasSource && (
+                  <span
+                    style={{
+                      position: "absolute",
+                      left: 0,
+                      right: 0,
+                      textAlign: "center",
+                      fontSize: "12px",
+                      color: "#555",
+                      letterSpacing: "0.05em",
+                    }}
+                  >
+                    Load a source to slice
+                  </span>
+                )}
+              </div>
+
+              {/* Controls: Slices + Sample Type */}
+              <div
+                style={{
+                  display: "grid",
+                  gridTemplateColumns: "1fr 1fr",
+                  gap: "16px",
+                  marginBottom: "22px",
+                }}
+              >
+                <div>
+                  <label
+                    style={{
+                      display: "block",
+                      fontSize: "11px",
+                      fontWeight: 700,
+                      letterSpacing: "0.15em",
+                      textTransform: "uppercase",
+                      color: GOLD,
+                      marginBottom: "10px",
+                    }}
+                  >
+                    Slices
+                  </label>
+                  <select
+                    value={slices}
+                    onChange={(e) => setSlices(parseInt(e.target.value, 10))}
+                    style={{
+                      width: "100%",
+                      background: "#000",
+                      border: "1px solid #2a2620",
+                      borderRadius: "12px",
+                      padding: "14px 16px",
+                      fontSize: "15px",
+                      color: "#fff",
+                      outline: "none",
+                      boxSizing: "border-box",
+                      cursor: "pointer",
+                    }}
+                  >
+                    {SLICE_COUNTS.map((c) => (
+                      <option key={c} value={c}>
+                        {c} slices
+                      </option>
+                    ))}
+                  </select>
+                </div>
+                <div>
+                  <label
+                    style={{
+                      display: "block",
+                      fontSize: "11px",
+                      fontWeight: 700,
+                      letterSpacing: "0.15em",
+                      textTransform: "uppercase",
+                      color: GOLD,
+                      marginBottom: "10px",
+                    }}
+                  >
+                    Type
+                  </label>
+                  <select
+                    value={sampleType}
+                    onChange={(e) => setSampleType(e.target.value)}
+                    style={{
+                      width: "100%",
+                      background: "#000",
+                      border: "1px solid #2a2620",
+                      borderRadius: "12px",
+                      padding: "14px 16px",
+                      fontSize: "15px",
+                      color: "#fff",
+                      outline: "none",
+                      boxSizing: "border-box",
+                      cursor: "pointer",
+                    }}
+                  >
+                    {SAMPLE_TYPES.map((t) => (
+                      <option key={t.value} value={t.value}>
+                        {t.label}
+                      </option>
+                    ))}
+                  </select>
+                </div>
+              </div>
+
+              {/* Pad grid */}
+              <label
+                style={{
+                  display: "block",
+                  fontSize: "11px",
+                  fontWeight: 700,
+                  letterSpacing: "0.15em",
+                  textTransform: "uppercase",
+                  color: GOLD,
+                  marginBottom: "10px",
+                }}
+              >
+                Pads
+              </label>
+              <div
+                style={{
+                  display: "grid",
+                  gridTemplateColumns: "repeat(4, 1fr)",
+                  gap: "8px",
+                  marginBottom: "28px",
+                }}
+              >
+                {Array.from({ length: 16 }).map((_, i) => {
+                  const isActive = activePad === i;
+                  const lit = hasSource;
+                  return (
+                    <div
+                      key={i}
+                      onMouseDown={() => setActivePad(i)}
+                      onMouseUp={() => setActivePad(null)}
+                      onMouseLeave={() => activePad === i && setActivePad(null)}
+                      style={{
+                        aspectRatio: "1",
+                        borderRadius: "10px",
+                        border: `1px solid ${lit ? GOLD + "55" : "#1e1c18"}`,
+                        background: isActive
+                          ? `linear-gradient(160deg, ${GOLD}, ${GOLD_LIGHT})`
+                          : lit
+                            ? `linear-gradient(160deg, ${GOLD}22, ${GOLD}0a)`
+                            : "#0d0c0a",
+                        display: "flex",
+                        alignItems: "flex-end",
+                        justifyContent: "flex-start",
+                        padding: "6px",
+                        cursor: lit ? "pointer" : "default",
+                        transition: "background 0.1s, transform 0.1s",
+                        transform: isActive ? "scale(0.95)" : "scale(1)",
+                        boxShadow: isActive ? `0 0 16px ${GOLD}55` : "none",
+                      }}
+                    >
+                      <span
+                        style={{
+                          fontSize: "10px",
+                          fontWeight: 700,
+                          color: isActive ? "#000" : lit ? GOLD_LIGHT : "#333",
+                        }}
+                      >
+                        {String(i + 1).padStart(2, "0")}
+                      </span>
+                    </div>
+                  );
+                })}
+              </div>
 
               {error && (
                 <div
