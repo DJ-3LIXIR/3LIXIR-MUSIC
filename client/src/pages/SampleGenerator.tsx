@@ -145,7 +145,7 @@ export default function SampleGenerator() {
       <div
         style={{
           display: "grid",
-          gridTemplateColumns: isMobile ? "1fr" : "120px 2px 1fr 2px 120px",
+          gridTemplateColumns: isMobile ? "1fr" : "1fr 2px 2fr 2px 1fr",
           minHeight: "calc(100vh - 80px)",
         }}
       >
@@ -250,7 +250,7 @@ export default function SampleGenerator() {
         <div
           style={{
             display: "grid",
-            gridTemplateColumns: isMobile ? "1fr" : "340px 1fr 320px",
+            gridTemplateColumns: isMobile ? "1fr" : "minmax(260px, 300px) 1fr minmax(240px, 280px)",
             gap: "20px",
             alignItems: "start",
           }}
