@@ -23,7 +23,7 @@ const LIMITS = { convert: 10, dig: 25 };
 const AUDIO = new Set(["mp3", "wav", "m4a"]);
 const VIDEO = new Set(["mp4", "webm"]);
 
-const FILE_TTL_MS = 60 * 60 * 1000; // keep converted files 1 hour
+const FILE_TTL_MS = 3 * 60 * 60 * 1000; // keep converted files 3 hours
 
 const app = express();
 
@@ -77,11 +77,18 @@ app.post("/api/convert", upload.single("file"), async (req, res) => {
       }
     }
 
+    // Each job gets its own directory, so the output keeps its real name
+    // (the YouTube title, or the uploaded file's name) for the download.
     const id = randomUUID();
-    const outPath = path.join(OUT_DIR, `${id}.${format}`);
+    const jobDir = path.join(OUT_DIR, id);
+    await fsp.mkdir(jobDir, { recursive: true });
 
     if (uploadPath) {
-      // Local file upload → ffmpeg transcode.
+      // Local file upload → ffmpeg transcode, keep the original base name.
+      const base =
+        safeName(path.parse(req.file.originalname || "converted").name) ||
+        "converted";
+      const outPath = path.join(jobDir, `${base}.${format}`);
       await execFileP(
         "ffmpeg",
         ["-y", "-i", uploadPath, ...ffmpegArgs(format), outPath],
@@ -90,14 +97,18 @@ app.post("/api/convert", upload.single("file"), async (req, res) => {
     } else {
       const url = String(req.body.url || "").trim();
       if (!url) return res.status(400).json({ error: "No URL or file provided" });
-      await downloadAndConvert(url, format, id, outPath);
+      await downloadAndConvert(url, format, jobDir);
     }
 
-    if (!fs.existsSync(outPath)) throw new Error("Conversion produced no file");
+    // The produced file is named by title / original name.
+    const produced = (await fsp.readdir(jobDir)).filter(
+      (f) => !f.endsWith(".part")
+    );
+    if (!produced.length) throw new Error("Conversion produced no file");
+    const filename = produced[0];
 
     // Consume quota only on success. A quota-recording failure (e.g. a bad
-    // service-role key) must NOT discard an already-finished conversion — log
-    // it and still return the file.
+    // service-role key) must NOT discard an already-finished conversion.
     let remaining = null;
     if (!isMember) {
       try {
@@ -111,7 +122,7 @@ app.post("/api/convert", upload.single("file"), async (req, res) => {
       }
     }
 
-    res.json({ downloadUrl: `/api/download/${id}.${format}`, remaining });
+    res.json({ downloadUrl: `/api/download/${id}`, filename, remaining });
   } catch (err) {
     console.error("[convert]", err);
     res.status(500).json({ error: "Conversion failed. Check the URL and try again." });
@@ -120,17 +131,32 @@ app.post("/api/convert", upload.single("file"), async (req, res) => {
   }
 });
 
-// Serve (and let the browser download) a finished file.
-app.get("/api/download/:file", (req, res) => {
-  const file = path.basename(req.params.file);
-  const p = path.join(OUT_DIR, file);
-  if (!fs.existsSync(p)) {
+// Serve (and let the browser download) a finished file by job id. The browser
+// saves it under its real name via the Content-Disposition header.
+app.get("/api/download/:id", async (req, res) => {
+  const id = path.basename(req.params.id);
+  const jobDir = path.join(OUT_DIR, id);
+  let files;
+  try {
+    files = (await fsp.readdir(jobDir)).filter((f) => !f.endsWith(".part"));
+  } catch {
     return res.status(404).json({ error: "File not found or expired" });
   }
-  res.download(p);
+  if (!files.length) {
+    return res.status(404).json({ error: "File not found or expired" });
+  }
+  res.download(path.join(jobDir, files[0]), files[0]);
 });
 
 // --- helpers ---------------------------------------------------------------
+// Strip characters that are unsafe in filenames / HTTP headers.
+function safeName(s) {
+  return String(s)
+    .replace(/[/\\?%*:|"<>\n\r]/g, "")
+    .trim()
+    .slice(0, 120);
+}
+
 function ffmpegArgs(format) {
   switch (format) {
     case "mp3":
@@ -187,8 +213,9 @@ const YTDLP_COMMON = [
   "youtube:player_client=default,web_safari,tv,ios",
 ];
 
-async function downloadAndConvert(url, format, id, outPath) {
-  const template = path.join(OUT_DIR, `${id}.%(ext)s`);
+async function downloadAndConvert(url, format, jobDir) {
+  // %(title)s names the file after the video (yt-dlp sanitizes path-illegal chars).
+  const template = path.join(jobDir, "%(title)s.%(ext)s");
 
   if (AUDIO.has(format)) {
     await execFileP(
@@ -204,37 +231,29 @@ async function downloadAndConvert(url, format, id, outPath) {
     );
   }
 
-  // yt-dlp usually lands the file at <id>.<format>.
-  const expected = path.join(OUT_DIR, `${id}.${format}`);
-  if (fs.existsSync(expected)) {
-    if (expected !== outPath) await fsp.rename(expected, outPath);
-    return;
+  // If the single produced file isn't already the requested format, transcode it.
+  const files = (await fsp.readdir(jobDir)).filter((f) => !f.endsWith(".part"));
+  if (!files.length) throw new Error("Download failed");
+  if (files.length === 1 && !files[0].toLowerCase().endsWith(`.${format}`)) {
+    const src = path.join(jobDir, files[0]);
+    const out = path.join(jobDir, `${path.parse(files[0]).name}.${format}`);
+    await execFileP("ffmpeg", ["-y", "-i", src, ...ffmpegArgs(format), out], {
+      timeout: 10 * 60 * 1000,
+    });
+    await fsp.unlink(src).catch(() => {});
   }
-
-  // Fallback: find whatever <id>.* was produced and transcode it.
-  const files = await fsp.readdir(OUT_DIR);
-  const match = files.find((f) => f.startsWith(`${id}.`));
-  if (!match) throw new Error("Download failed");
-
-  const src = path.join(OUT_DIR, match);
-  await execFileP(
-    "ffmpeg",
-    ["-y", "-i", src, ...ffmpegArgs(format), outPath],
-    { timeout: 10 * 60 * 1000 }
-  );
-  await fsp.unlink(src).catch(() => {});
 }
 
-// Periodic cleanup of expired output files.
+// Periodic cleanup of expired job directories.
 setInterval(async () => {
   try {
-    const files = await fsp.readdir(OUT_DIR);
+    const entries = await fsp.readdir(OUT_DIR, { withFileTypes: true });
     const now = Date.now();
-    for (const f of files) {
-      const p = path.join(OUT_DIR, f);
+    for (const ent of entries) {
+      const p = path.join(OUT_DIR, ent.name);
       const stat = await fsp.stat(p).catch(() => null);
       if (stat && now - stat.mtimeMs > FILE_TTL_MS) {
-        await fsp.unlink(p).catch(() => {});
+        await fsp.rm(p, { recursive: true, force: true }).catch(() => {});
       }
     }
   } catch (err) {
