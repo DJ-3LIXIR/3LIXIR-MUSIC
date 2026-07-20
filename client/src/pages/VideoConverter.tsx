@@ -5,8 +5,9 @@ import { Navbar } from "@/components/layout/Navbar";
 import { useAuth } from "@/contexts/AuthContext";
 import { supabase } from "@/supabaseClient";
 
-// Base URL of the tools backend (Render). Empty = same origin (local dev/proxy).
-const API_BASE = import.meta.env.VITE_TOOLS_API_URL || "";
+// Base URL of the tools backend (Render). Override with VITE_TOOLS_API_URL.
+const API_BASE =
+  import.meta.env.VITE_TOOLS_API_URL || "https://threelixir-music.onrender.com";
 
 const OUTPUT_FORMATS = [
   { value: "mp3", label: "MP3 · Audio" },
