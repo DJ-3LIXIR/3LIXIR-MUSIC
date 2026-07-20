@@ -1,5 +1,5 @@
 // client/src/pages/VideoConverter.tsx
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Link, useLocation } from "wouter";
 import { Navbar } from "@/components/layout/Navbar";
 import { useAuth } from "@/contexts/AuthContext";
@@ -51,6 +51,55 @@ function incrementUsage(userId: string): void {
   }
 }
 
+// --- Recent downloads history (per user, in the browser) -------------------
+interface HistoryItem {
+  filename: string;
+  url: string; // relative, e.g. /api/download/<id>
+  format: string;
+  ts: number;
+}
+
+function historyKey(userId: string) {
+  return `vc_history_${userId}`;
+}
+
+function loadHistory(userId?: string): HistoryItem[] {
+  if (!userId) return [];
+  try {
+    return JSON.parse(localStorage.getItem(historyKey(userId)) || "[]");
+  } catch {
+    return [];
+  }
+}
+
+function saveHistory(userId: string, items: HistoryItem[]) {
+  try {
+    localStorage.setItem(historyKey(userId), JSON.stringify(items.slice(0, 20)));
+  } catch {
+    /* ignore */
+  }
+}
+
+// Reliable download trigger (an <a> click isn't blocked like window.open).
+function triggerDownload(url: string, filename: string) {
+  const a = document.createElement("a");
+  a.href = url;
+  a.download = filename;
+  a.rel = "noopener";
+  document.body.appendChild(a);
+  a.click();
+  a.remove();
+}
+
+function timeAgo(ts: number): string {
+  const s = Math.floor((Date.now() - ts) / 1000);
+  if (s < 60) return "just now";
+  const m = Math.floor(s / 60);
+  if (m < 60) return `${m}m ago`;
+  const h = Math.floor(m / 60);
+  return `${h}h ago`;
+}
+
 export default function VideoConverter() {
   const { user, userProfile, openAuthModal } = useAuth();
   const [, setLocation] = useLocation();
@@ -66,6 +115,16 @@ export default function VideoConverter() {
   const [usedToday, setUsedToday] = useState(() =>
     user ? getUsedToday(user.id) : 0
   );
+  const [elapsed, setElapsed] = useState(0);
+  const timerRef = useRef<ReturnType<typeof setInterval> | null>(null);
+  const [history, setHistory] = useState<HistoryItem[]>(() =>
+    loadHistory(user?.id)
+  );
+
+  // Load this user's history once their session resolves.
+  useEffect(() => {
+    if (user?.id) setHistory(loadHistory(user.id));
+  }, [user?.id]);
 
   const handleFiles = (files: FileList | null) => {
     if (!files || files.length === 0) return;
@@ -117,6 +176,8 @@ export default function VideoConverter() {
     setLoading(true);
     setError("");
     setSuccess("");
+    setElapsed(0);
+    timerRef.current = setInterval(() => setElapsed((s) => s + 1), 1000);
 
     try {
       // Attach the user's Supabase access token so the backend can enforce quota.
@@ -163,11 +224,22 @@ export default function VideoConverter() {
       }
 
       const data = await response.json();
-      const downloadUrl = `${API_BASE}${data.downloadUrl}`;
-      setSuccess("Done! Your download is starting…");
-      window.open(downloadUrl, "_blank");
+      const filename = data.filename || "download";
+      triggerDownload(`${API_BASE}${data.downloadUrl}`, filename);
+      setSuccess(`Done — “${filename}” downloaded.`);
       setUrl("");
       setFile(null);
+
+      // Record it in the recent-downloads history.
+      const item: HistoryItem = {
+        filename,
+        url: data.downloadUrl,
+        format,
+        ts: Date.now(),
+      };
+      const next = [item, ...history].slice(0, 20);
+      setHistory(next);
+      saveHistory(user.id, next);
 
       // Sync the local counter with the server's authoritative remaining count.
       if (!isMember) {
@@ -184,6 +256,10 @@ export default function VideoConverter() {
       );
     } finally {
       setLoading(false);
+      if (timerRef.current) {
+        clearInterval(timerRef.current);
+        timerRef.current = null;
+      }
     }
   };
 
@@ -686,13 +762,27 @@ export default function VideoConverter() {
                 }}
               >
                 {loading
-                  ? "Converting..."
+                  ? `Converting… ${elapsed}s`
                   : !user
                     ? "Sign In to Convert"
                     : limitReached
                       ? "Upgrade for Unlimited"
                       : "Convert & Download"}
               </button>
+
+              {loading && (
+                <p
+                  style={{
+                    fontSize: "12px",
+                    color: GOLD,
+                    textAlign: "center",
+                    marginTop: "14px",
+                    marginBottom: 0,
+                  }}
+                >
+                  Working on it — longer videos take more time ({elapsed}s)
+                </p>
+              )}
 
               {/* Info note */}
               <p
@@ -709,6 +799,108 @@ export default function VideoConverter() {
                 have the rights to use.
               </p>
             </div>
+
+            {/* Recent downloads */}
+            {history.length > 0 && (
+              <div style={{ marginTop: "28px" }}>
+                <div
+                  style={{
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "space-between",
+                    marginBottom: "14px",
+                  }}
+                >
+                  <span
+                    style={{
+                      fontSize: "11px",
+                      fontWeight: 700,
+                      letterSpacing: "0.15em",
+                      textTransform: "uppercase",
+                      color: GOLD,
+                    }}
+                  >
+                    Recent Downloads
+                  </span>
+                  <span
+                    onClick={() => {
+                      setHistory([]);
+                      if (user) saveHistory(user.id, []);
+                    }}
+                    style={{ fontSize: "11px", color: "#555", cursor: "pointer" }}
+                  >
+                    Clear
+                  </span>
+                </div>
+
+                <div style={{ display: "flex", flexDirection: "column", gap: "8px" }}>
+                  {history.map((h, i) => (
+                    <div
+                      key={i}
+                      style={{
+                        display: "flex",
+                        alignItems: "center",
+                        justifyContent: "space-between",
+                        gap: "12px",
+                        background: "#0a0a0a",
+                        border: "1px solid #1a1a1a",
+                        borderRadius: "12px",
+                        padding: "12px 14px",
+                      }}
+                    >
+                      <div style={{ minWidth: 0 }}>
+                        <div
+                          style={{
+                            fontSize: "13px",
+                            fontWeight: 600,
+                            color: "#eee",
+                            whiteSpace: "nowrap",
+                            overflow: "hidden",
+                            textOverflow: "ellipsis",
+                          }}
+                        >
+                          {h.filename}
+                        </div>
+                        <div style={{ fontSize: "11px", color: "#555" }}>
+                          {h.format.toUpperCase()} · {timeAgo(h.ts)}
+                        </div>
+                      </div>
+                      <a
+                        href={`${API_BASE}${h.url}`}
+                        download={h.filename}
+                        style={{
+                          flexShrink: 0,
+                          fontSize: "11px",
+                          fontWeight: 800,
+                          letterSpacing: "0.1em",
+                          textTransform: "uppercase",
+                          color: GOLD,
+                          border: `1px solid ${GOLD}55`,
+                          borderRadius: "100px",
+                          padding: "7px 14px",
+                          textDecoration: "none",
+                          whiteSpace: "nowrap",
+                        }}
+                      >
+                        Download
+                      </a>
+                    </div>
+                  ))}
+                </div>
+
+                <p
+                  style={{
+                    fontSize: "11px",
+                    color: "#444",
+                    marginTop: "12px",
+                    marginBottom: 0,
+                    textAlign: "center",
+                  }}
+                >
+                  Files are kept for a few hours — older links may have expired.
+                </p>
+              </div>
+            )}
           </div>
         </div>
 
