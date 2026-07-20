@@ -10,7 +10,6 @@ import {
   Star,
   Sparkles,
   TrendingUp,
-  MoreHorizontal,
   Play,
   ChevronDown,
 } from "lucide-react";
@@ -247,14 +246,16 @@ export default function SampleGenerator() {
         </div>
 
         {/* Workspace */}
-        <div
-          style={{
-            display: "grid",
-            gridTemplateColumns: isMobile ? "1fr" : "minmax(260px, 300px) 1fr minmax(240px, 280px)",
-            gap: "20px",
-            alignItems: "start",
-          }}
-        >
+        <div style={{ display: "flex", flexDirection: "column", gap: "20px" }}>
+          {/* Top: metadata + player */}
+          <div
+            style={{
+              display: "grid",
+              gridTemplateColumns: isMobile ? "1fr" : "minmax(260px, 320px) 1fr",
+              gap: "20px",
+              alignItems: "start",
+            }}
+          >
           {/* LEFT — Metadata */}
           <div style={{ ...card, padding: "24px" }}>
             <div
@@ -451,66 +452,34 @@ export default function SampleGenerator() {
             </div>
           </div>
 
-          {/* RIGHT — Queue */}
-          <div style={{ ...card, padding: "14px" }}>
-            {/* Now playing */}
+          </div>
+          {/* end top: metadata + player */}
+
+          {/* BOTTOM — Queue (full width) */}
+          <div style={{ ...card, padding: "18px" }}>
+            {/* Header: label + controls */}
             <div
               style={{
                 display: "flex",
                 alignItems: "center",
                 gap: "12px",
-                padding: "10px",
-                borderRadius: "12px",
-                background: "#181818",
-                marginBottom: "12px",
-              }}
-            >
-              <div
-                style={{
-                  width: "42px",
-                  height: "42px",
-                  borderRadius: "8px",
-                  background: `linear-gradient(135deg, ${GOLD}55, #222)`,
-                  display: "flex",
-                  alignItems: "center",
-                  justifyContent: "center",
-                  flexShrink: 0,
-                }}
-              >
-                <Play size={16} color={GOLD} fill={GOLD} />
-              </div>
-              <div style={{ minWidth: 0, flex: 1 }}>
-                <div
-                  style={{
-                    fontSize: "13px",
-                    fontWeight: 700,
-                    whiteSpace: "nowrap",
-                    overflow: "hidden",
-                    textOverflow: "ellipsis",
-                  }}
-                >
-                  Sound Of Rock (A*S*Y*S…)
-                </div>
-                <div style={{ fontSize: "12px", color: "#888" }}>
-                  {TRACK.artist} · {TRACK.year}
-                </div>
-              </div>
-              <Star size={16} color="#666" />
-              <MoreHorizontal size={16} color="#666" />
-            </div>
-
-            {/* Queue controls */}
-            <div
-              style={{
-                display: "flex",
-                alignItems: "center",
-                gap: "10px",
-                padding: "6px 4px 12px",
+                paddingBottom: "14px",
+                marginBottom: "16px",
                 borderBottom: "1px solid #1e1e1e",
-                marginBottom: "12px",
                 color: "#888",
               }}
             >
+              <span
+                style={{
+                  fontSize: "12px",
+                  fontWeight: 800,
+                  letterSpacing: "0.15em",
+                  textTransform: "uppercase",
+                  color: GOLD,
+                }}
+              >
+                Up Next
+              </span>
               <Shuffle size={16} />
               <div
                 style={{
@@ -530,37 +499,107 @@ export default function SampleGenerator() {
               <Star size={16} />
             </div>
 
-            {/* Queue skeleton list */}
-            <div style={{ display: "flex", flexDirection: "column", gap: "14px" }}>
-              {Array.from({ length: 6 }).map((_, i) => (
+            {/* Horizontal track row */}
+            <div
+              style={{
+                display: "flex",
+                gap: "12px",
+                overflowX: "auto",
+                paddingBottom: "4px",
+              }}
+            >
+              {/* Now playing (highlighted) */}
+              <div
+                style={{
+                  display: "flex",
+                  alignItems: "center",
+                  gap: "10px",
+                  minWidth: "230px",
+                  padding: "10px",
+                  borderRadius: "12px",
+                  background: "#181818",
+                  border: `1px solid ${GOLD}44`,
+                  flexShrink: 0,
+                }}
+              >
+                <div
+                  style={{
+                    width: "40px",
+                    height: "40px",
+                    borderRadius: "8px",
+                    background: `linear-gradient(135deg, ${GOLD}55, #222)`,
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "center",
+                    flexShrink: 0,
+                  }}
+                >
+                  <Play size={16} color={GOLD} fill={GOLD} />
+                </div>
+                <div style={{ minWidth: 0, flex: 1 }}>
+                  <div
+                    style={{
+                      fontSize: "13px",
+                      fontWeight: 700,
+                      whiteSpace: "nowrap",
+                      overflow: "hidden",
+                      textOverflow: "ellipsis",
+                    }}
+                  >
+                    Sound Of Rock (A*S*Y*S…)
+                  </div>
+                  <div style={{ fontSize: "12px", color: "#888" }}>
+                    {TRACK.artist} · {TRACK.year}
+                  </div>
+                </div>
+              </div>
+
+              {/* Upcoming skeletons */}
+              {Array.from({ length: 8 }).map((_, i) => (
                 <div
                   key={i}
-                  style={{ display: "flex", alignItems: "center", gap: "12px" }}
+                  style={{
+                    display: "flex",
+                    alignItems: "center",
+                    gap: "10px",
+                    minWidth: "200px",
+                    padding: "10px",
+                    borderRadius: "12px",
+                    background: "#141414",
+                    flexShrink: 0,
+                  }}
                 >
                   <div
                     style={{
-                      width: "38px",
-                      height: "38px",
-                      borderRadius: "50%",
-                      background: "#181818",
+                      width: "40px",
+                      height: "40px",
+                      borderRadius: "8px",
+                      background: "#1c1c1c",
                       flexShrink: 0,
                     }}
                   />
-                  <div style={{ flex: 1, display: "flex", flexDirection: "column", gap: "7px" }}>
+                  <div
+                    style={{
+                      flex: 1,
+                      display: "flex",
+                      flexDirection: "column",
+                      gap: "7px",
+                    }}
+                  >
                     <div
                       style={{
                         height: "8px",
-                        width: "70%",
+                        width: "75%",
                         borderRadius: "4px",
-                        background: "#181818",
+                        background: "#1c1c1c",
                       }}
                     />
                     <div
                       style={{
                         height: "8px",
-                        width: "45%",
+                        width: "50%",
                         borderRadius: "4px",
-                        background: "#141414",
+                        background: "#181818",
                       }}
                     />
                   </div>
