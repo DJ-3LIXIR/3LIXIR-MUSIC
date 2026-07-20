@@ -42,6 +42,33 @@ const GENRES = [
   "Blues",
 ];
 
+// Regions (Discogs country values) to dig by.
+const COUNTRIES = [
+  "US",
+  "UK",
+  "Germany",
+  "France",
+  "Japan",
+  "Italy",
+  "Canada",
+  "Netherlands",
+  "Sweden",
+  "Brazil",
+  "Jamaica",
+  "Australia",
+  "Spain",
+  "Belgium",
+];
+
+const EMPTY_FILTERS = {
+  genre: "",
+  style: "",
+  country: "",
+  yearMin: "",
+  yearMax: "",
+  q: "",
+};
+
 function usageKey(userId: string) {
   const today = new Date().toISOString().slice(0, 10);
   return `sg_usage_${userId}_${today}`;
@@ -89,7 +116,8 @@ export default function SampleGenerator() {
   const [playing, setPlaying] = useState(false);
   const [digError, setDigError] = useState("");
   const [filtersOpen, setFiltersOpen] = useState(false);
-  const [selectedGenre, setSelectedGenre] = useState<string | null>(null);
+  const [filters, setFilters] = useState({ ...EMPTY_FILTERS });
+  const activeFilters = Object.values(filters).some((v) => v !== "");
 
   const tier = (
     userProfile?.subscription_tier ||
@@ -127,7 +155,14 @@ export default function SampleGenerator() {
           Authorization: `Bearer ${token}`,
           "Content-Type": "application/json",
         },
-        body: JSON.stringify(selectedGenre ? { genre: selectedGenre } : {}),
+        body: JSON.stringify({
+          ...(filters.genre ? { genre: filters.genre } : {}),
+          ...(filters.style ? { style: filters.style } : {}),
+          ...(filters.country ? { country: filters.country } : {}),
+          ...(filters.yearMin ? { yearMin: filters.yearMin } : {}),
+          ...(filters.yearMax ? { yearMax: filters.yearMax } : {}),
+          ...(filters.q ? { q: filters.q } : {}),
+        }),
       });
 
       if (res.status === 429) {
@@ -211,6 +246,27 @@ export default function SampleGenerator() {
     border: "1px solid #262626",
     color: "#aaa",
     cursor: "pointer",
+  };
+
+  const fieldLabel: React.CSSProperties = {
+    display: "block",
+    fontSize: "11px",
+    fontWeight: 700,
+    letterSpacing: "0.12em",
+    textTransform: "uppercase",
+    color: GOLD,
+    marginBottom: "8px",
+  };
+  const fieldInput: React.CSSProperties = {
+    width: "100%",
+    background: "#000",
+    border: "1px solid #2a2620",
+    borderRadius: "10px",
+    padding: "11px 12px",
+    fontSize: "14px",
+    color: "#fff",
+    outline: "none",
+    boxSizing: "border-box",
   };
 
   return (
@@ -553,11 +609,11 @@ export default function SampleGenerator() {
                     style={{
                       ...iconBtn,
                       background:
-                        selectedGenre || filtersOpen ? `${GOLD}1f` : "#1a1a1a",
+                        activeFilters || filtersOpen ? `${GOLD}1f` : "#1a1a1a",
                       border: `1px solid ${
-                        selectedGenre || filtersOpen ? GOLD : "#262626"
+                        activeFilters || filtersOpen ? GOLD : "#262626"
                       }`,
-                      color: selectedGenre || filtersOpen ? GOLD : "#aaa",
+                      color: activeFilters || filtersOpen ? GOLD : "#aaa",
                     }}
                   >
                     <SlidersHorizontal size={18} />
@@ -613,57 +669,153 @@ export default function SampleGenerator() {
                   </button>
                 </div>
 
-                {/* Genre tag menu */}
+                {/* Filter panel */}
                 {filtersOpen && (
-                  <div
-                    style={{
-                      ...card,
-                      marginTop: "12px",
-                      padding: "16px",
-                      display: "flex",
-                      flexWrap: "wrap",
-                      gap: "8px",
-                    }}
-                  >
+                  <div style={{ ...card, marginTop: "12px", padding: "18px" }}>
                     <div
                       style={{
-                        width: "100%",
-                        fontSize: "11px",
-                        fontWeight: 700,
-                        letterSpacing: "0.15em",
-                        textTransform: "uppercase",
-                        color: "#666",
-                        marginBottom: "4px",
+                        display: "grid",
+                        gridTemplateColumns: isMobile ? "1fr" : "1fr 1fr",
+                        gap: "16px",
                       }}
                     >
-                      Dig by genre
-                    </div>
-                    {[null, ...GENRES].map((g) => {
-                      const active = selectedGenre === g;
-                      return (
-                        <span
-                          key={g ?? "all"}
-                          onClick={() => {
-                            setSelectedGenre(g);
-                            setFiltersOpen(false);
-                          }}
-                          style={{
-                            fontSize: "12px",
-                            fontWeight: 600,
-                            padding: "7px 14px",
-                            borderRadius: "100px",
-                            cursor: "pointer",
-                            color: active ? "#000" : "#ccc",
-                            background: active
-                              ? `linear-gradient(90deg, ${GOLD}, ${GOLD_LIGHT})`
-                              : "#1a1a1a",
-                            border: `1px solid ${active ? GOLD : "#2a2a2a"}`,
-                          }}
+                      {/* Genre */}
+                      <div>
+                        <label style={fieldLabel}>Genre</label>
+                        <select
+                          value={filters.genre}
+                          onChange={(e) =>
+                            setFilters((f) => ({ ...f, genre: e.target.value }))
+                          }
+                          style={{ ...fieldInput, cursor: "pointer" }}
                         >
-                          {g === null ? "All / Random" : g}
-                        </span>
-                      );
-                    })}
+                          <option value="">All</option>
+                          {GENRES.map((g) => (
+                            <option key={g} value={g}>
+                              {g}
+                            </option>
+                          ))}
+                        </select>
+                      </div>
+
+                      {/* Region */}
+                      <div>
+                        <label style={fieldLabel}>Region</label>
+                        <select
+                          value={filters.country}
+                          onChange={(e) =>
+                            setFilters((f) => ({ ...f, country: e.target.value }))
+                          }
+                          style={{ ...fieldInput, cursor: "pointer" }}
+                        >
+                          <option value="">Any</option>
+                          {COUNTRIES.map((c) => (
+                            <option key={c} value={c}>
+                              {c}
+                            </option>
+                          ))}
+                        </select>
+                      </div>
+
+                      {/* Style */}
+                      <div>
+                        <label style={fieldLabel}>Style</label>
+                        <input
+                          value={filters.style}
+                          onChange={(e) =>
+                            setFilters((f) => ({ ...f, style: e.target.value }))
+                          }
+                          placeholder="e.g. Acid, Boom Bap, Disco"
+                          style={fieldInput}
+                        />
+                      </div>
+
+                      {/* Search / tags */}
+                      <div>
+                        <label style={fieldLabel}>Search / Tags</label>
+                        <input
+                          value={filters.q}
+                          onChange={(e) =>
+                            setFilters((f) => ({ ...f, q: e.target.value }))
+                          }
+                          placeholder="artist, label, any keyword"
+                          style={fieldInput}
+                        />
+                      </div>
+
+                      {/* Year range (full width) */}
+                      <div style={{ gridColumn: isMobile ? "auto" : "1 / -1" }}>
+                        <label style={fieldLabel}>Year</label>
+                        <div style={{ display: "flex", gap: "10px" }}>
+                          <input
+                            type="number"
+                            value={filters.yearMin}
+                            onChange={(e) =>
+                              setFilters((f) => ({ ...f, yearMin: e.target.value }))
+                            }
+                            placeholder="Min"
+                            style={fieldInput}
+                          />
+                          <input
+                            type="number"
+                            value={filters.yearMax}
+                            onChange={(e) =>
+                              setFilters((f) => ({ ...f, yearMax: e.target.value }))
+                            }
+                            placeholder="Max"
+                            style={fieldInput}
+                          />
+                        </div>
+                      </div>
+                    </div>
+
+                    {/* Actions */}
+                    <div
+                      style={{
+                        display: "flex",
+                        justifyContent: "flex-end",
+                        gap: "10px",
+                        marginTop: "18px",
+                      }}
+                    >
+                      <button
+                        onClick={() => setFilters({ ...EMPTY_FILTERS })}
+                        style={{
+                          background: "transparent",
+                          border: "1px solid #2a2a2a",
+                          borderRadius: "100px",
+                          padding: "9px 20px",
+                          fontSize: "12px",
+                          fontWeight: 700,
+                          letterSpacing: "0.1em",
+                          textTransform: "uppercase",
+                          color: "#aaa",
+                          cursor: "pointer",
+                        }}
+                      >
+                        Reset
+                      </button>
+                      <button
+                        onClick={() => {
+                          setFiltersOpen(false);
+                          handleDig();
+                        }}
+                        style={{
+                          background: `linear-gradient(90deg, ${GOLD}, ${GOLD_LIGHT})`,
+                          border: "none",
+                          borderRadius: "100px",
+                          padding: "9px 24px",
+                          fontSize: "12px",
+                          fontWeight: 800,
+                          letterSpacing: "0.1em",
+                          textTransform: "uppercase",
+                          color: "#000",
+                          cursor: "pointer",
+                        }}
+                      >
+                        Apply & Dig
+                      </button>
+                    </div>
                   </div>
                 )}
               </div>
@@ -708,11 +860,12 @@ export default function SampleGenerator() {
                     gap: "4px",
                     fontSize: "13px",
                     fontWeight: 600,
-                    color: selectedGenre ? GOLD : "#ccc",
+                    color: activeFilters ? GOLD : "#ccc",
                     cursor: "pointer",
                   }}
                 >
-                  {selectedGenre || "Random"} <ChevronDown size={14} />
+                  {filters.genre || (activeFilters ? "Filtered" : "Random")}{" "}
+                  <ChevronDown size={14} />
                 </div>
                 <div style={{ flex: 1 }} />
                 <Sparkles size={16} />
