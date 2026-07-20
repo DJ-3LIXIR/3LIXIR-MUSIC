@@ -1,5 +1,5 @@
 // client/src/pages/SampleGenerator.tsx
-import { useState } from "react";
+import { useRef, useState } from "react";
 import { Link, useLocation } from "wouter";
 import {
   Search,
@@ -12,6 +12,7 @@ import {
   TrendingUp,
   Play,
   ChevronDown,
+  Check,
 } from "lucide-react";
 import { Navbar } from "@/components/layout/Navbar";
 import { useAuth } from "@/contexts/AuthContext";
@@ -118,6 +119,11 @@ export default function SampleGenerator() {
   const [filtersOpen, setFiltersOpen] = useState(false);
   const [filters, setFilters] = useState({ ...EMPTY_FILTERS });
   const activeFilters = Object.values(filters).some((v) => v !== "");
+  const [searchOpen, setSearchOpen] = useState(false);
+  const [searchQuery, setSearchQuery] = useState("");
+  const [copied, setCopied] = useState(false);
+  const tapsRef = useRef<number[]>([]);
+  const [tappedBpm, setTappedBpm] = useState<number | null>(null);
 
   const tier = (
     userProfile?.subscription_tier ||
@@ -128,7 +134,7 @@ export default function SampleGenerator() {
   const remaining = Math.max(0, DAILY_FREE_LIMIT - usedToday);
   const limitReached = !!user && !isMember && remaining <= 0;
 
-  const handleDig = async () => {
+  const runDig = async (body: Record<string, string>) => {
     if (!user) {
       openAuthModal();
       return;
@@ -155,14 +161,7 @@ export default function SampleGenerator() {
           Authorization: `Bearer ${token}`,
           "Content-Type": "application/json",
         },
-        body: JSON.stringify({
-          ...(filters.genre ? { genre: filters.genre } : {}),
-          ...(filters.style ? { style: filters.style } : {}),
-          ...(filters.country ? { country: filters.country } : {}),
-          ...(filters.yearMin ? { yearMin: filters.yearMin } : {}),
-          ...(filters.yearMax ? { yearMax: filters.yearMax } : {}),
-          ...(filters.q ? { q: filters.q } : {}),
-        }),
+        body: JSON.stringify(body),
       });
 
       if (res.status === 429) {
@@ -176,6 +175,9 @@ export default function SampleGenerator() {
       }
 
       const data = await res.json();
+      // New track — reset any tapped tempo.
+      tapsRef.current = [];
+      setTappedBpm(null);
       // Push the outgoing track into the queue, load the new one.
       setCurrent((prev) => {
         if (prev) setQueue((q) => [prev, ...q].slice(0, 12));
@@ -197,6 +199,44 @@ export default function SampleGenerator() {
     }
   };
 
+  const filterBody = () => ({
+    ...(filters.genre ? { genre: filters.genre } : {}),
+    ...(filters.style ? { style: filters.style } : {}),
+    ...(filters.country ? { country: filters.country } : {}),
+    ...(filters.yearMin ? { yearMin: filters.yearMin } : {}),
+    ...(filters.yearMax ? { yearMax: filters.yearMax } : {}),
+    ...(filters.q ? { q: filters.q } : {}),
+  });
+
+  const handleDig = () => runDig(filterBody());
+
+  const handleSearch = () => {
+    const q = searchQuery.trim();
+    if (!q) return;
+    setSearchOpen(false);
+    runDig({ q });
+  };
+
+  // Tap-tempo: tap in time with the track to estimate its BPM.
+  const handleTap = () => {
+    const now = Date.now();
+    const taps = tapsRef.current;
+    // A gap longer than 2s starts a fresh measurement.
+    if (taps.length && now - taps[taps.length - 1] > 2000) {
+      tapsRef.current = [now];
+      setTappedBpm(null);
+      return;
+    }
+    taps.push(now);
+    if (taps.length > 8) taps.shift();
+    if (taps.length >= 2) {
+      let sum = 0;
+      for (let i = 1; i < taps.length; i++) sum += taps[i] - taps[i - 1];
+      const avg = sum / (taps.length - 1);
+      setTappedBpm(Math.round(60000 / avg));
+    }
+  };
+
   const loadFromQueue = (t: DigTrack) => {
     setPlaying(false);
     setCurrent((prev) => {
@@ -212,8 +252,18 @@ export default function SampleGenerator() {
     if (!current) return;
     navigator.clipboard
       ?.writeText(`https://youtu.be/${current.youtubeId}`)
+      .then(() => {
+        setCopied(true);
+        setTimeout(() => setCopied(false), 1500);
+      })
       .catch(() => {});
   };
+
+  const tempoText = current?.bpm
+    ? `${current.bpm} BPM`
+    : tappedBpm
+      ? `${tappedBpm} BPM (tapped)`
+      : "— (tap ⏱)";
 
   const metaRows: [string, string, boolean?][] = current
     ? [
@@ -225,7 +275,7 @@ export default function SampleGenerator() {
         ["Region", current.country || "—"],
         ["Label", current.label || "—"],
         ["Key", current.musicalKey || "— (soon)"],
-        ["Tempo", current.bpm ? `${current.bpm} BPM` : "— (soon)"],
+        ["Tempo", tempoText],
       ]
     : [];
 
@@ -600,9 +650,18 @@ export default function SampleGenerator() {
                     marginTop: "16px",
                   }}
                 >
-                  <div style={iconBtn} title="Search (soon)">
+                  <button
+                    onClick={() => setSearchOpen((v) => !v)}
+                    title="Search records"
+                    style={{
+                      ...iconBtn,
+                      background: searchOpen ? `${GOLD}1f` : "#1a1a1a",
+                      border: `1px solid ${searchOpen ? GOLD : "#262626"}`,
+                      color: searchOpen ? GOLD : "#aaa",
+                    }}
+                  >
                     <Search size={18} />
-                  </div>
+                  </button>
                   <button
                     onClick={() => setFiltersOpen((v) => !v)}
                     title="Filter by genre"
@@ -652,9 +711,20 @@ export default function SampleGenerator() {
                           ? "Upgrade for Unlimited"
                           : "Dig — Random Track"}
                   </button>
-                  <div style={iconBtn} title="Timer (soon)">
-                    <Timer size={18} />
-                  </div>
+                  <button
+                    onClick={handleTap}
+                    title="Tap tempo — tap along to the beat"
+                    style={{
+                      ...iconBtn,
+                      background: tappedBpm ? `${GOLD}1f` : "#1a1a1a",
+                      border: `1px solid ${tappedBpm ? GOLD : "#262626"}`,
+                      color: tappedBpm ? GOLD : "#aaa",
+                      fontSize: "13px",
+                      fontWeight: 800,
+                    }}
+                  >
+                    {tappedBpm ? tappedBpm : <Timer size={18} />}
+                  </button>
                   <button
                     onClick={copyLink}
                     disabled={!current}
@@ -662,12 +732,48 @@ export default function SampleGenerator() {
                       ...iconBtn,
                       opacity: current ? 1 : 0.4,
                       cursor: current ? "pointer" : "not-allowed",
+                      color: copied ? GOLD : "#aaa",
+                      border: `1px solid ${copied ? GOLD : "#262626"}`,
                     }}
-                    title="Copy YouTube link"
+                    title={copied ? "Copied!" : "Copy YouTube link"}
                   >
-                    <Link2 size={18} />
+                    {copied ? <Check size={18} /> : <Link2 size={18} />}
                   </button>
                 </div>
+
+                {/* Search bar */}
+                {searchOpen && (
+                  <div style={{ display: "flex", gap: "10px", marginTop: "12px" }}>
+                    <input
+                      autoFocus
+                      value={searchQuery}
+                      onChange={(e) => setSearchQuery(e.target.value)}
+                      onKeyDown={(e) => {
+                        if (e.key === "Enter") handleSearch();
+                      }}
+                      placeholder="Search artist, track, label… then Enter"
+                      style={fieldInput}
+                    />
+                    <button
+                      onClick={handleSearch}
+                      style={{
+                        background: `linear-gradient(90deg, ${GOLD}, ${GOLD_LIGHT})`,
+                        border: "none",
+                        borderRadius: "10px",
+                        padding: "0 22px",
+                        fontSize: "12px",
+                        fontWeight: 800,
+                        letterSpacing: "0.1em",
+                        textTransform: "uppercase",
+                        color: "#000",
+                        cursor: "pointer",
+                        whiteSpace: "nowrap",
+                      }}
+                    >
+                      Search
+                    </button>
+                  </div>
+                )}
 
                 {/* Filter panel */}
                 {filtersOpen && (
