@@ -28,6 +28,20 @@ const GOLD_LIGHT = "#e8c76a";
 const DAILY_FREE_LIMIT = 25;
 const FREE_TIERS = ["tier_zero", "black", ""];
 
+// Genre tags to dig by (must match the backend's DIG_GENRES).
+const GENRES = [
+  "Electronic",
+  "Hip Hop",
+  "Funk / Soul",
+  "Jazz",
+  "Rock",
+  "Reggae",
+  "Latin",
+  "Folk, World, & Country",
+  "Pop",
+  "Blues",
+];
+
 function usageKey(userId: string) {
   const today = new Date().toISOString().slice(0, 10);
   return `sg_usage_${userId}_${today}`;
@@ -74,6 +88,8 @@ export default function SampleGenerator() {
   const [digging, setDigging] = useState(false);
   const [playing, setPlaying] = useState(false);
   const [digError, setDigError] = useState("");
+  const [filtersOpen, setFiltersOpen] = useState(false);
+  const [selectedGenre, setSelectedGenre] = useState<string | null>(null);
 
   const tier = (
     userProfile?.subscription_tier ||
@@ -111,7 +127,7 @@ export default function SampleGenerator() {
           Authorization: `Bearer ${token}`,
           "Content-Type": "application/json",
         },
-        body: JSON.stringify({}),
+        body: JSON.stringify(selectedGenre ? { genre: selectedGenre } : {}),
       });
 
       if (res.status === 429) {
@@ -531,9 +547,21 @@ export default function SampleGenerator() {
                   <div style={iconBtn} title="Search (soon)">
                     <Search size={18} />
                   </div>
-                  <div style={iconBtn} title="Filters (soon)">
+                  <button
+                    onClick={() => setFiltersOpen((v) => !v)}
+                    title="Filter by genre"
+                    style={{
+                      ...iconBtn,
+                      background:
+                        selectedGenre || filtersOpen ? `${GOLD}1f` : "#1a1a1a",
+                      border: `1px solid ${
+                        selectedGenre || filtersOpen ? GOLD : "#262626"
+                      }`,
+                      color: selectedGenre || filtersOpen ? GOLD : "#aaa",
+                    }}
+                  >
                     <SlidersHorizontal size={18} />
-                  </div>
+                  </button>
                   {/* Big shuffle / dig button */}
                   <button
                     onClick={handleDig}
@@ -584,6 +612,60 @@ export default function SampleGenerator() {
                     <Link2 size={18} />
                   </button>
                 </div>
+
+                {/* Genre tag menu */}
+                {filtersOpen && (
+                  <div
+                    style={{
+                      ...card,
+                      marginTop: "12px",
+                      padding: "16px",
+                      display: "flex",
+                      flexWrap: "wrap",
+                      gap: "8px",
+                    }}
+                  >
+                    <div
+                      style={{
+                        width: "100%",
+                        fontSize: "11px",
+                        fontWeight: 700,
+                        letterSpacing: "0.15em",
+                        textTransform: "uppercase",
+                        color: "#666",
+                        marginBottom: "4px",
+                      }}
+                    >
+                      Dig by genre
+                    </div>
+                    {[null, ...GENRES].map((g) => {
+                      const active = selectedGenre === g;
+                      return (
+                        <span
+                          key={g ?? "all"}
+                          onClick={() => {
+                            setSelectedGenre(g);
+                            setFiltersOpen(false);
+                          }}
+                          style={{
+                            fontSize: "12px",
+                            fontWeight: 600,
+                            padding: "7px 14px",
+                            borderRadius: "100px",
+                            cursor: "pointer",
+                            color: active ? "#000" : "#ccc",
+                            background: active
+                              ? `linear-gradient(90deg, ${GOLD}, ${GOLD_LIGHT})`
+                              : "#1a1a1a",
+                            border: `1px solid ${active ? GOLD : "#2a2a2a"}`,
+                          }}
+                        >
+                          {g === null ? "All / Random" : g}
+                        </span>
+                      );
+                    })}
+                  </div>
+                )}
               </div>
             </div>
             {/* end top: metadata + player */}
@@ -619,16 +701,18 @@ export default function SampleGenerator() {
                   onClick={handleDig}
                 />
                 <div
+                  onClick={() => setFiltersOpen((v) => !v)}
                   style={{
                     display: "flex",
                     alignItems: "center",
                     gap: "4px",
                     fontSize: "13px",
                     fontWeight: 600,
-                    color: "#ccc",
+                    color: selectedGenre ? GOLD : "#ccc",
+                    cursor: "pointer",
                   }}
                 >
-                  Random <ChevronDown size={14} />
+                  {selectedGenre || "Random"} <ChevronDown size={14} />
                 </div>
                 <div style={{ flex: 1 }} />
                 <Sparkles size={16} />
