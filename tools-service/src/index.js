@@ -249,37 +249,52 @@ function shuffleArr(a) {
 // Pick a random release matching the filters that has a YouTube video.
 // Filters (all optional): { genre, style, country, yearMin, yearMax, q }.
 async function digRandomTrack(f = {}) {
-  const narrowed = f.genre || f.style || f.country || f.q || f.yearMin || f.yearMax;
+  // Year is applied as a post-filter (not a Discogs param) so the candidate
+  // pool stays large — most releases have no video, so we need many to sift.
+  const yMin = parseInt(f.yearMin, 10);
+  const yMax = parseInt(f.yearMax, 10);
+  const hasYear = !Number.isNaN(yMin) || !Number.isNaN(yMax);
+  const lo = Number.isNaN(yMin) ? 0 : yMin;
+  const hi = Number.isNaN(yMax) ? 9999 : yMax;
 
-  for (let attempt = 0; attempt < 5; attempt++) {
-    const params = new URLSearchParams({ type: "release", per_page: "50" });
+  const narrowed = f.genre || f.style || f.country || f.q || hasYear;
+  const genre =
+    f.genre ||
+    (narrowed ? "" : DIG_GENRES[Math.floor(Math.random() * DIG_GENRES.length)]);
 
-    // With no filters at all, pick a random genre so results feel like digging.
-    const genre =
-      f.genre ||
-      (narrowed ? "" : DIG_GENRES[Math.floor(Math.random() * DIG_GENRES.length)]);
-    if (genre) params.set("genre", genre);
-    if (f.style) params.set("style", String(f.style));
-    if (f.country) params.set("country", String(f.country));
-    if (f.q) params.set("q", String(f.q));
+  const base = new URLSearchParams({ type: "release", per_page: "50" });
+  if (genre) base.set("genre", genre);
+  if (f.style) base.set("style", String(f.style));
+  if (f.country) base.set("country", String(f.country));
+  if (f.q) base.set("q", String(f.q));
 
-    // Discogs year is a single value — pick a random year within the range.
-    const yMin = parseInt(f.yearMin, 10);
-    const yMax = parseInt(f.yearMax, 10);
-    if (!Number.isNaN(yMin) || !Number.isNaN(yMax)) {
-      const lo = Number.isNaN(yMin) ? 1900 : yMin;
-      const hi = Number.isNaN(yMax) ? new Date().getFullYear() : yMax;
-      const span = Math.max(lo, hi) - lo;
-      params.set("year", String(lo + Math.floor(Math.random() * (span + 1))));
+  // Discover how many result pages exist so we don't request empty pages.
+  let pages = 20;
+  try {
+    const first = await discogs(`/database/search?${base.toString()}&page=1`);
+    pages = Math.min(first.pagination?.pages || 1, 50);
+  } catch {
+    /* keep default */
+  }
+
+  const inYear = (r) => {
+    if (!hasYear) return true;
+    const y = parseInt(r.year, 10);
+    return !Number.isNaN(y) && y >= lo && y <= hi;
+  };
+
+  for (let attempt = 0; attempt < 6; attempt++) {
+    const page = 1 + Math.floor(Math.random() * pages);
+    let search;
+    try {
+      search = await discogs(`/database/search?${base.toString()}&page=${page}`);
+    } catch {
+      continue;
     }
-
-    params.set("page", String(1 + Math.floor(Math.random() * 40)));
-
-    const search = await discogs(`/database/search?${params.toString()}`);
-    const results = (search.results || []).filter((r) => r.id);
+    const results = (search.results || []).filter((r) => r.id && inYear(r));
     if (!results.length) continue;
 
-    for (const r of shuffleArr(results).slice(0, 6)) {
+    for (const r of shuffleArr(results).slice(0, 8)) {
       let rel;
       try {
         rel = await discogs(`/releases/${r.id}`);
