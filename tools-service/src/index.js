@@ -95,11 +95,20 @@ app.post("/api/convert", upload.single("file"), async (req, res) => {
 
     if (!fs.existsSync(outPath)) throw new Error("Conversion produced no file");
 
-    // Consume quota only on success.
+    // Consume quota only on success. A quota-recording failure (e.g. a bad
+    // service-role key) must NOT discard an already-finished conversion — log
+    // it and still return the file.
     let remaining = null;
     if (!isMember) {
-      const count = await incrementUsage(user.id, "convert");
-      remaining = Math.max(0, LIMITS.convert - count);
+      try {
+        const count = await incrementUsage(user.id, "convert");
+        remaining = Math.max(0, LIMITS.convert - count);
+      } catch (e) {
+        console.error(
+          "[convert] quota update failed (check SUPABASE_SERVICE_ROLE_KEY):",
+          e?.message || e
+        );
+      }
     }
 
     res.json({ downloadUrl: `/api/download/${id}.${format}`, remaining });
