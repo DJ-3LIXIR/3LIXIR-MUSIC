@@ -285,7 +285,7 @@ export default function SampleGenerator() {
       <div
         style={{
           display: "grid",
-          gridTemplateColumns: isMobile ? "1fr" : "1fr 2px 2fr 2px 1fr",
+          gridTemplateColumns: isMobile ? "1fr" : "0.7fr 2px 2.6fr 2px 0.7fr",
           minHeight: "calc(100vh - 80px)",
         }}
       >
@@ -451,7 +451,7 @@ export default function SampleGenerator() {
               </div>
 
               {/* CENTER — Player + controls */}
-              <div>
+              <div style={{ minWidth: 0 }}>
                 {/* Title row */}
                 <div
                   style={{
