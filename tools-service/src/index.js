@@ -18,7 +18,7 @@ const OUT_DIR = path.join(os.tmpdir(), "tool-outputs");
 fs.mkdirSync(OUT_DIR, { recursive: true });
 
 // Daily free limits per tool (members = unlimited).
-const LIMITS = { convert: 10, dig: 25 };
+const LIMITS = { convert: 10, dig: 25, vocals: 10 };
 
 const AUDIO = new Set(["mp3", "wav", "m4a"]);
 const VIDEO = new Set(["mp4", "webm"]);
@@ -144,6 +144,86 @@ app.post("/api/convert", upload.single("file"), async (req, res) => {
   } catch (err) {
     console.error("[convert]", err);
     res.status(500).json({ error: "Conversion failed. Check the URL and try again." });
+  } finally {
+    if (uploadPath) await fsp.unlink(uploadPath).catch(() => {});
+  }
+});
+
+// --- Vocal Remover ---------------------------------------------------------
+// Phase-cancellation "remove vocals" (center channel) → instrumental. Free,
+// runs on ffmpeg. Best on tracks with center-panned vocals; not AI stems.
+app.post("/api/remove-vocals", upload.single("file"), async (req, res) => {
+  let uploadPath = req.file?.path;
+  try {
+    const token = bearerToken(req);
+    if (!token) return res.status(401).json({ error: "Sign in required" });
+    const { user, isMember } = await getUserContext(token);
+    if (!user) return res.status(401).json({ error: "Invalid session" });
+
+    const format = String(req.body.format || "mp3").toLowerCase();
+    if (!AUDIO.has(format)) {
+      return res.status(400).json({ error: "Unsupported format" });
+    }
+
+    if (!isMember) {
+      const used = await getUsageToday(user.id, "vocals");
+      if (used >= LIMITS.vocals) {
+        return res
+          .status(429)
+          .json({ error: "Daily free limit reached", remaining: 0 });
+      }
+    }
+
+    const id = randomUUID();
+    const jobDir = path.join(OUT_DIR, id);
+    await fsp.mkdir(jobDir, { recursive: true });
+
+    // Resolve the source audio + a base name.
+    let srcPath;
+    let base;
+    if (uploadPath) {
+      srcPath = uploadPath;
+      base = safeName(path.parse(req.file.originalname || "track").name) || "track";
+    } else {
+      const url = String(req.body.url || "").trim();
+      if (!url) return res.status(400).json({ error: "No URL or file provided" });
+      await execFileP(
+        "yt-dlp",
+        [...YTDLP_COMMON, "-x", "--audio-format", "wav", "-o", path.join(jobDir, "%(title)s.%(ext)s"), url],
+        { timeout: 10 * 60 * 1000 }
+      );
+      const got = (await fsp.readdir(jobDir)).find((f) => f.toLowerCase().endsWith(".wav"));
+      if (!got) throw new Error("Download failed");
+      srcPath = path.join(jobDir, got);
+      base = path.parse(got).name;
+    }
+
+    const outPath = path.join(jobDir, `${base} (Instrumental).${format}`);
+    await execFileP(
+      "ffmpeg",
+      ["-y", "-i", srcPath, ...vocalRemoveArgs(format), outPath],
+      { timeout: 10 * 60 * 1000 }
+    );
+    // Drop the intermediate download so only the result remains in the job dir.
+    if (!uploadPath && srcPath !== outPath) await fsp.unlink(srcPath).catch(() => {});
+
+    if (!fs.existsSync(outPath)) throw new Error("Processing produced no file");
+    const filename = path.basename(outPath);
+
+    let remaining = null;
+    if (!isMember) {
+      try {
+        const count = await incrementUsage(user.id, "vocals");
+        remaining = Math.max(0, LIMITS.vocals - count);
+      } catch (e) {
+        console.error("[vocals] quota update failed:", e?.message || e);
+      }
+    }
+
+    res.json({ downloadUrl: `/api/download/${id}`, filename, remaining });
+  } catch (err) {
+    console.error("[vocals]", err);
+    res.status(500).json({ error: "Vocal removal failed. Check the URL/file and try again." });
   } finally {
     if (uploadPath) await fsp.unlink(uploadPath).catch(() => {});
   }
@@ -329,6 +409,15 @@ async function digRandomTrack(f = {}) {
     }
   }
   throw new Error("No release with a video found");
+}
+
+// Vocal removal: subtract the two channels to cancel the center (vocals),
+// duplicated back to stereo. Plus the audio codec for the chosen format.
+function vocalRemoveArgs(format) {
+  const filter = ["-af", "pan=stereo|c0=0.5*c0-0.5*c1|c1=0.5*c0-0.5*c1", "-vn"];
+  if (format === "mp3") return [...filter, "-b:a", "192k"];
+  if (format === "m4a") return [...filter, "-c:a", "aac", "-b:a", "192k"];
+  return filter; // wav → default pcm
 }
 
 function ffmpegArgs(format) {
