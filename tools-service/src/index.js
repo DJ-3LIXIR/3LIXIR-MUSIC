@@ -139,19 +139,35 @@ function ffmpegArgs(format) {
   }
 }
 
+// Evasion args to improve odds against YouTube's bot/rate-limit blocking from
+// datacenter IPs. Not a guaranteed bypass — YouTube actively fights this.
+const YTDLP_COMMON = [
+  "--force-ipv4",
+  "--retries",
+  "5",
+  "--retry-sleep",
+  "3",
+  "--sleep-requests",
+  "1",
+  "--user-agent",
+  "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36",
+  "--extractor-args",
+  "youtube:player_client=default,web_safari,tv,ios",
+];
+
 async function downloadAndConvert(url, format, id, outPath) {
   const template = path.join(OUT_DIR, `${id}.%(ext)s`);
 
   if (AUDIO.has(format)) {
     await execFileP(
       "yt-dlp",
-      ["-x", "--audio-format", format, "--audio-quality", "0", "-o", template, url],
+      [...YTDLP_COMMON, "-x", "--audio-format", format, "--audio-quality", "0", "-o", template, url],
       { timeout: 10 * 60 * 1000 }
     );
   } else {
     await execFileP(
       "yt-dlp",
-      ["-f", "bv*+ba/b", "--merge-output-format", format, "-o", template, url],
+      [...YTDLP_COMMON, "-f", "bv*+ba/b", "--merge-output-format", format, "-o", template, url],
       { timeout: 15 * 60 * 1000 }
     );
   }
