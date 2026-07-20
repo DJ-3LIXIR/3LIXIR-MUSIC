@@ -142,11 +142,21 @@ function ffmpegArgs(format) {
 // YouTube cookies (Netscape format) let yt-dlp authenticate as a logged-in
 // user, which gets past the "confirm you're not a bot" wall from datacenter IPs.
 // On Render, upload it as a Secret File named yt-cookies.txt (mounted at
-// /etc/secrets/yt-cookies.txt). Override the path with YT_COOKIES_FILE.
-const COOKIES_FILE = process.env.YT_COOKIES_FILE || "/etc/secrets/yt-cookies.txt";
-const HAS_COOKIES = fs.existsSync(COOKIES_FILE);
-if (HAS_COOKIES) {
-  console.log(`Using YouTube cookies from ${COOKIES_FILE}`);
+// /etc/secrets/yt-cookies.txt, read-only). Override source with YT_COOKIES_FILE.
+//
+// yt-dlp rewrites the cookies file when it exits, so we copy the read-only
+// secret to a writable temp path and hand yt-dlp that copy instead.
+const COOKIES_SRC = process.env.YT_COOKIES_FILE || "/etc/secrets/yt-cookies.txt";
+let COOKIES_PATH = null;
+if (fs.existsSync(COOKIES_SRC)) {
+  try {
+    COOKIES_PATH = path.join(os.tmpdir(), "yt-cookies.txt");
+    fs.copyFileSync(COOKIES_SRC, COOKIES_PATH);
+    console.log(`Using YouTube cookies (writable copy at ${COOKIES_PATH})`);
+  } catch (e) {
+    console.error("Failed to copy cookies file:", e);
+    COOKIES_PATH = null;
+  }
 } else {
   console.log("No YouTube cookies file found — YouTube may block from this IP.");
 }
@@ -154,7 +164,7 @@ if (HAS_COOKIES) {
 // Evasion args to improve odds against YouTube's bot/rate-limit blocking from
 // datacenter IPs. Cookies (above) are the real fix; these help on top.
 const YTDLP_COMMON = [
-  ...(HAS_COOKIES ? ["--cookies", COOKIES_FILE] : []),
+  ...(COOKIES_PATH ? ["--cookies", COOKIES_PATH] : []),
   "--force-ipv4",
   "--retries",
   "5",
