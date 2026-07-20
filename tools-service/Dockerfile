@@ -1,5 +1,6 @@
 # 3LIXIR tools backend — Node + ffmpeg + yt-dlp
-FROM node:20-slim
+# Node 22 (native WebSocket — required by @supabase/supabase-js realtime client)
+FROM node:22-slim
 
 # System deps: ffmpeg for conversion, yt-dlp (standalone Linux binary, no python needed)
 RUN apt-get update \
