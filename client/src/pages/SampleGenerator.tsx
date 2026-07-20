@@ -21,7 +21,7 @@ const GOLD = "#C9A84C";
 const GOLD_LIGHT = "#e8c76a";
 
 // Free daily "digs" (shuffles) for signed-in, non-member users.
-const DAILY_FREE_LIMIT = 10;
+const DAILY_FREE_LIMIT = 25;
 const FREE_TIERS = ["tier_zero", "black", ""];
 
 // NOTE: Client-side counter is a UX layer only — real quota is enforced
@@ -239,7 +239,7 @@ export default function SampleGenerator() {
               >
                 {user
                   ? `${remaining} free digs left · Go Unlimited`
-                  : "Sign in · 10 free digs / day"}
+                  : `Sign in · ${DAILY_FREE_LIMIT} free digs / day`}
               </span>
             </Link>
           )}
