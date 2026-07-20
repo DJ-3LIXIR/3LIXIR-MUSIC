@@ -1,0 +1,16 @@
+{
+  "name": "3lixir-tools-service",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "description": "Shared backend for 3LIXIR producer tools (Video Converter + Sample Digger)",
+  "scripts": {
+    "start": "node src/index.js"
+  },
+  "dependencies": {
+    "@supabase/supabase-js": "^2.45.0",
+    "cors": "^2.8.5",
+    "express": "^4.19.2",
+    "multer": "^1.4.5-lts.1"
+  }
+}
