@@ -23,6 +23,24 @@ const LIMITS = { convert: 10, dig: 25 };
 const AUDIO = new Set(["mp3", "wav", "m4a"]);
 const VIDEO = new Set(["mp4", "webm"]);
 
+// --- Sample Digger (Discogs) config ---------------------------------------
+// Free personal access token: discogs.com → Settings → Developers.
+const DISCOGS_TOKEN = process.env.DISCOGS_TOKEN || "";
+const DISCOGS_UA = "3LIXIR-Tools/1.0 (+https://3-lixir-music.vercel.app)";
+// Genres we randomly dig through (Discogs top-level genres).
+const DIG_GENRES = [
+  "Electronic",
+  "Hip Hop",
+  "Funk / Soul",
+  "Jazz",
+  "Rock",
+  "Reggae",
+  "Latin",
+  "Folk, World, & Country",
+  "Pop",
+  "Blues",
+];
+
 const FILE_TTL_MS = 3 * 60 * 60 * 1000; // keep converted files 3 hours
 
 const app = express();
@@ -148,6 +166,53 @@ app.get("/api/download/:id", async (req, res) => {
   res.download(path.join(jobDir, files[0]), files[0]);
 });
 
+// --- Sample Digger ---------------------------------------------------------
+// Returns a random Discogs release that has an associated YouTube video.
+app.post("/api/dig", async (req, res) => {
+  try {
+    const token = bearerToken(req);
+    if (!token) return res.status(401).json({ error: "Sign in required" });
+
+    const { user, isMember } = await getUserContext(token);
+    if (!user) return res.status(401).json({ error: "Invalid session" });
+
+    if (!DISCOGS_TOKEN) {
+      return res.status(503).json({ error: "Digger not configured yet" });
+    }
+
+    // Quota check (25/day free; members unlimited).
+    if (!isMember) {
+      const used = await getUsageToday(user.id, "dig");
+      if (used >= LIMITS.dig) {
+        return res
+          .status(429)
+          .json({ error: "Daily free limit reached", remaining: 0 });
+      }
+    }
+
+    const genre =
+      String(req.body?.genre || "") ||
+      DIG_GENRES[Math.floor(Math.random() * DIG_GENRES.length)];
+    const track = await digRandomTrack(genre);
+
+    // Consume quota (non-fatal on failure).
+    let remaining = null;
+    if (!isMember) {
+      try {
+        const count = await incrementUsage(user.id, "dig");
+        remaining = Math.max(0, LIMITS.dig - count);
+      } catch (e) {
+        console.error("[dig] quota update failed:", e?.message || e);
+      }
+    }
+
+    res.json({ track, remaining });
+  } catch (err) {
+    console.error("[dig]", err);
+    res.status(502).json({ error: "Couldn't find a track. Try digging again." });
+  }
+});
+
 // --- helpers ---------------------------------------------------------------
 // Strip characters that are unsafe in filenames / HTTP headers.
 function safeName(s) {
@@ -155,6 +220,82 @@ function safeName(s) {
     .replace(/[/\\?%*:|"<>\n\r]/g, "")
     .trim()
     .slice(0, 120);
+}
+
+// Fetch JSON from the Discogs API with auth + required User-Agent.
+async function discogs(pathAndQuery) {
+  const r = await fetch(`https://api.discogs.com${pathAndQuery}`, {
+    headers: {
+      "User-Agent": DISCOGS_UA,
+      Authorization: `Discogs token=${DISCOGS_TOKEN}`,
+    },
+  });
+  if (!r.ok) throw new Error(`Discogs ${r.status}`);
+  return r.json();
+}
+
+// Extract an 11-char YouTube video id from a URL.
+function ytId(url) {
+  const m = String(url).match(/(?:v=|youtu\.be\/|embed\/)([A-Za-z0-9_-]{11})/);
+  return m ? m[1] : null;
+}
+
+function shuffleArr(a) {
+  const arr = [...a];
+  for (let i = arr.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [arr[i], arr[j]] = [arr[j], arr[i]];
+  }
+  return arr;
+}
+
+// Pick a random release in a genre that has a YouTube video; return metadata.
+async function digRandomTrack(genre) {
+  for (let attempt = 0; attempt < 5; attempt++) {
+    const page = 1 + Math.floor(Math.random() * 40);
+    const search = await discogs(
+      `/database/search?type=release&genre=${encodeURIComponent(
+        genre
+      )}&per_page=50&page=${page}`
+    );
+    const results = (search.results || []).filter((r) => r.id);
+    if (!results.length) continue;
+
+    for (const r of shuffleArr(results).slice(0, 6)) {
+      let rel;
+      try {
+        rel = await discogs(`/releases/${r.id}`);
+      } catch {
+        continue;
+      }
+      const vids = (rel.videos || [])
+        .map((v) => ({ id: ytId(v.uri), title: v.title }))
+        .filter((v) => v.id);
+      if (!vids.length) continue;
+
+      const artist =
+        (rel.artists || []).map((a) => a.name).join(", ") ||
+        rel.artists_sort ||
+        "Unknown";
+      return {
+        artist,
+        title: rel.title || "Untitled",
+        year: rel.year || null,
+        label: (rel.labels || [])[0]?.name || null,
+        genre: (rel.genres || []).join(", ") || null,
+        style: (rel.styles || []).join(", ") || null,
+        country: rel.country || null,
+        youtubeId: vids[0].id,
+        videoTitle: vids[0].title || null,
+        thumb: rel.thumb || (rel.images || [])[0]?.uri150 || null,
+        discogsUrl: rel.uri || null,
+        // Not available from Discogs — computed later (phase 2).
+        musicalKey: null,
+        bpm: null,
+      };
+    }
+  }
+  throw new Error("No release with a video found");
 }
 
 function ffmpegArgs(format) {
