@@ -190,10 +190,7 @@ app.post("/api/dig", async (req, res) => {
       }
     }
 
-    const genre =
-      String(req.body?.genre || "") ||
-      DIG_GENRES[Math.floor(Math.random() * DIG_GENRES.length)];
-    const track = await digRandomTrack(genre);
+    const track = await digRandomTrack(req.body || {});
 
     // Consume quota (non-fatal on failure).
     let remaining = null;
@@ -249,15 +246,36 @@ function shuffleArr(a) {
   return arr;
 }
 
-// Pick a random release in a genre that has a YouTube video; return metadata.
-async function digRandomTrack(genre) {
+// Pick a random release matching the filters that has a YouTube video.
+// Filters (all optional): { genre, style, country, yearMin, yearMax, q }.
+async function digRandomTrack(f = {}) {
+  const narrowed = f.genre || f.style || f.country || f.q || f.yearMin || f.yearMax;
+
   for (let attempt = 0; attempt < 5; attempt++) {
-    const page = 1 + Math.floor(Math.random() * 40);
-    const search = await discogs(
-      `/database/search?type=release&genre=${encodeURIComponent(
-        genre
-      )}&per_page=50&page=${page}`
-    );
+    const params = new URLSearchParams({ type: "release", per_page: "50" });
+
+    // With no filters at all, pick a random genre so results feel like digging.
+    const genre =
+      f.genre ||
+      (narrowed ? "" : DIG_GENRES[Math.floor(Math.random() * DIG_GENRES.length)]);
+    if (genre) params.set("genre", genre);
+    if (f.style) params.set("style", String(f.style));
+    if (f.country) params.set("country", String(f.country));
+    if (f.q) params.set("q", String(f.q));
+
+    // Discogs year is a single value — pick a random year within the range.
+    const yMin = parseInt(f.yearMin, 10);
+    const yMax = parseInt(f.yearMax, 10);
+    if (!Number.isNaN(yMin) || !Number.isNaN(yMax)) {
+      const lo = Number.isNaN(yMin) ? 1900 : yMin;
+      const hi = Number.isNaN(yMax) ? new Date().getFullYear() : yMax;
+      const span = Math.max(lo, hi) - lo;
+      params.set("year", String(lo + Math.floor(Math.random() * (span + 1))));
+    }
+
+    params.set("page", String(1 + Math.floor(Math.random() * 40)));
+
+    const search = await discogs(`/database/search?${params.toString()}`);
     const results = (search.results || []).filter((r) => r.id);
     if (!results.length) continue;
 
