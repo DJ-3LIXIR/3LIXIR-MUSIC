@@ -102,8 +102,8 @@ export default function VST() {
   // so they license/fulfill normally through the existing checkout.
   const BUNDLE_DISCOUNT = 0.15;
   const BUNDLES = [
-    { id: "bundle-ark", name: "Ark Bundle", accent: "#C9A84C", plugins: ["ark", "oyster"] },
-    { id: "bundle-olympus", name: "Olympus Bundle", accent: "#22d3ee", plugins: ["apollo", "hades", "orion"] },
+    { id: "bundle-ark", name: "Noah's Ark Bundle", accent: "#C9A84C", image: "/noahs-ark-bundle.png", plugins: ["ark", "oyster"] },
+    { id: "bundle-olympus", name: "Olympus Bundle", accent: "#22d3ee", image: "/olympus-bundle.png", plugins: ["apollo", "hades", "orion"] },
   ];
   // Match on substring so "orion" finds "Orion Sound EQ", "apollo" finds
   // "Apollo Reverb", etc. (the 5 plugin names don't overlap).
@@ -535,15 +535,8 @@ export default function VST() {
                   <div
                     style={{
                       aspectRatio: "16 / 10",
-                      background: `radial-gradient(circle at 30% 20%, ${bundle.accent}22, #0a0a0a 70%)`,
-                      display: "flex",
-                      flexDirection: "column",
-                      alignItems: "center",
-                      justifyContent: "center",
-                      gap: "8px",
+                      background: `url("${bundle.image}") center / cover no-repeat, radial-gradient(circle at 30% 20%, ${bundle.accent}22, #0a0a0a 70%)`,
                       position: "relative",
-                      padding: "16px",
-                      textAlign: "center",
                     }}
                   >
                     <span
@@ -563,25 +556,6 @@ export default function VST() {
                     >
                       Bundle · Save 15%
                     </span>
-                    <div
-                      style={{
-                        fontSize: "26px",
-                        fontWeight: 800,
-                        letterSpacing: "-0.02em",
-                        color: "#fff",
-                      }}
-                    >
-                      {bundle.name}
-                    </div>
-                    <div
-                      style={{
-                        fontSize: "12px",
-                        color: "#999",
-                        fontWeight: 600,
-                      }}
-                    >
-                      {items.map((p) => p.name).join(" + ")}
-                    </div>
                   </div>
 
                   {/* Body */}
@@ -591,10 +565,20 @@ export default function VST() {
                         fontSize: "18px",
                         fontWeight: 800,
                         color: "#fff",
-                        marginBottom: "10px",
+                        marginBottom: "4px",
                       }}
                     >
                       {bundle.name}
+                    </div>
+                    <div
+                      style={{
+                        fontSize: "12px",
+                        color: "#999",
+                        fontWeight: 600,
+                        marginBottom: "10px",
+                      }}
+                    >
+                      {items.map((p) => p.name).join(" + ")}
                     </div>
                     <div
                       style={{
