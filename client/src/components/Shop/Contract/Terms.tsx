@@ -241,8 +241,9 @@ export default function Terms() {
                         </table>
                       </div>
                       <p className="text-muted-foreground mt-3">
-                        Subscription benefits apply only while the subscription
-                        is active.
+                        Active subscriptions also include unlimited access to
+                        3LIXIR's producer tools. Subscription benefits apply only
+                        while the subscription is active.
                       </p>
                     </div>
                   </div>
