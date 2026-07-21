@@ -97,6 +97,37 @@ export default function VST() {
     setAddedPlugins((prev) => new Set(prev).add(plugin.id));
   };
 
+  // Plugin bundles — 15% off the combined price of the included plugins.
+  // Adding a bundle drops its plugins into the cart, each discounted 15%,
+  // so they license/fulfill normally through the existing checkout.
+  const BUNDLE_DISCOUNT = 0.15;
+  const BUNDLES = [
+    { id: "bundle-ark", name: "Ark Bundle", accent: "#C9A84C", plugins: ["ark", "oyster"] },
+    { id: "bundle-olympus", name: "Olympus Bundle", accent: "#22d3ee", plugins: ["apollo", "hades", "orion"] },
+  ];
+  const findPlugin = (n: string) =>
+    plugins.find((p) => p.name.trim().toLowerCase() === n.toLowerCase());
+
+  const handleAddBundle = (pluginNames: string[]) => {
+    pluginNames.forEach((n) => {
+      const p = findPlugin(n);
+      if (!p || p.status?.toLowerCase() === "coming soon") return;
+      addToCart({
+        id: String(p.id),
+        title: p.name,
+        artist: "3LIXIR Music",
+        price: Number((parsePrice(p.price) * (1 - BUNDLE_DISCOUNT)).toFixed(2)),
+        cover: p.image || "",
+        quantity: 1,
+        type: "plugin",
+        category: p.category,
+        image: p.image || undefined,
+      });
+      setAddedPlugins((prev) => new Set(prev).add(p.id));
+    });
+    setLocation("/shop");
+  };
+
   const normalizeCategory = (str: string) => str.toLowerCase().trim().replace(/s$/, "");
   const filtered = activeTab === "All"
     ? plugins
@@ -454,6 +485,165 @@ export default function VST() {
             gap: "16px",
           }}
         >
+          {/* Bundles — only under the All tab */}
+          {activeTab === "All" &&
+            BUNDLES.map((bundle) => {
+              const items = bundle.plugins
+                .map(findPlugin)
+                .filter(Boolean) as Plugin[];
+              if (items.length !== bundle.plugins.length) return null;
+              const original = items.reduce(
+                (s, p) => s + parsePrice(p.price),
+                0
+              );
+              if (original <= 0) return null;
+              const price = Number(
+                (original * (1 - BUNDLE_DISCOUNT)).toFixed(2)
+              );
+              const isHovered = hoveredPlugin === bundle.id;
+              return (
+                <div
+                  key={bundle.id}
+                  onMouseEnter={() => setHoveredPlugin(bundle.id)}
+                  onMouseLeave={() => setHoveredPlugin(null)}
+                  style={{
+                    borderRadius: "16px",
+                    overflow: "hidden",
+                    border: `1px solid ${
+                      isHovered ? bundle.accent : "rgba(201,168,76,0.25)"
+                    }`,
+                    background: "#0a0a0a",
+                    display: "flex",
+                    flexDirection: "column",
+                    transition: "border-color 0.2s ease",
+                  }}
+                >
+                  {/* Header */}
+                  <div
+                    style={{
+                      aspectRatio: "16 / 10",
+                      background: `radial-gradient(circle at 30% 20%, ${bundle.accent}22, #0a0a0a 70%)`,
+                      display: "flex",
+                      flexDirection: "column",
+                      alignItems: "center",
+                      justifyContent: "center",
+                      gap: "8px",
+                      position: "relative",
+                      padding: "16px",
+                      textAlign: "center",
+                    }}
+                  >
+                    <span
+                      style={{
+                        position: "absolute",
+                        top: "12px",
+                        left: "12px",
+                        fontSize: "10px",
+                        fontWeight: 800,
+                        letterSpacing: "0.15em",
+                        textTransform: "uppercase",
+                        color: "#000",
+                        background: bundle.accent,
+                        borderRadius: "100px",
+                        padding: "3px 10px",
+                      }}
+                    >
+                      Bundle · Save 15%
+                    </span>
+                    <div
+                      style={{
+                        fontSize: "26px",
+                        fontWeight: 800,
+                        letterSpacing: "-0.02em",
+                        color: "#fff",
+                      }}
+                    >
+                      {bundle.name}
+                    </div>
+                    <div
+                      style={{
+                        fontSize: "12px",
+                        color: "#999",
+                        fontWeight: 600,
+                      }}
+                    >
+                      {items.map((p) => p.name).join(" + ")}
+                    </div>
+                  </div>
+
+                  {/* Body */}
+                  <div style={{ padding: "16px" }}>
+                    <div
+                      style={{
+                        fontSize: "18px",
+                        fontWeight: 800,
+                        color: "#fff",
+                        marginBottom: "10px",
+                      }}
+                    >
+                      {bundle.name}
+                    </div>
+                    <div
+                      style={{
+                        display: "flex",
+                        justifyContent: "space-between",
+                        alignItems: "center",
+                      }}
+                    >
+                      <span
+                        style={{
+                          display: "flex",
+                          alignItems: "baseline",
+                          gap: "8px",
+                        }}
+                      >
+                        <span
+                          style={{
+                            fontSize: "13px",
+                            fontWeight: 600,
+                            color: "#777",
+                            textDecoration: "line-through",
+                          }}
+                        >
+                          ${original}
+                        </span>
+                        <span
+                          style={{
+                            fontSize: "16px",
+                            fontWeight: 800,
+                            color: "#C9A84C",
+                          }}
+                        >
+                          ${price}
+                        </span>
+                      </span>
+                      <div
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          handleAddBundle(bundle.plugins);
+                        }}
+                        style={{
+                          fontSize: "11px",
+                          fontWeight: 700,
+                          letterSpacing: "0.1em",
+                          textTransform: "uppercase",
+                          color: isHovered ? "#000" : bundle.accent,
+                          background: isHovered ? bundle.accent : "transparent",
+                          border: `1px solid ${bundle.accent}66`,
+                          borderRadius: "100px",
+                          padding: "5px 14px",
+                          transition: "background 0.2s ease, color 0.2s ease",
+                          cursor: "pointer",
+                        }}
+                      >
+                        Add Bundle
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              );
+            })}
+
           {filtered.map((plugin) => {
             const isHovered = hoveredPlugin === plugin.id;
             const isInCart = addedPlugins.has(plugin.id) || addedPlugins.has(String(plugin.id));
