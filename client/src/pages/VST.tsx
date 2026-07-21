@@ -17,7 +17,7 @@ interface Plugin {
   status: string | null;
 }
 
-const navItems = ["All", "Instruments", "Audio Units", "Libraries"];
+const navItems = ["All", "Instruments", "Audio Units", "Bundles"];
 
 export default function VST() {
   const isMobile = useIsMobile();
@@ -456,7 +456,16 @@ export default function VST() {
           }}
         >
           <span style={{ fontSize: "13px", color: "#444" }}>
-            {loading ? "Loading..." : `${filtered.length} ${filtered.length === 1 ? "result" : "results"}`}
+            {loading
+              ? "Loading..."
+              : (() => {
+                  const count =
+                    filtered.length +
+                    (activeTab === "All" || activeTab === "Bundles"
+                      ? BUNDLES.length
+                      : 0);
+                  return `${count} ${count === 1 ? "result" : "results"}`;
+                })()}
           </span>
         </div>
 
@@ -485,8 +494,8 @@ export default function VST() {
             gap: "16px",
           }}
         >
-          {/* Bundles — only under the All tab */}
-          {activeTab === "All" &&
+          {/* Bundles — under the All and Bundles tabs */}
+          {(activeTab === "All" || activeTab === "Bundles") &&
             BUNDLES.map((bundle) => {
               const items = bundle.plugins
                 .map(findPlugin)
