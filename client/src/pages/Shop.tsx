@@ -1900,12 +1900,26 @@ export default function Shop() {
                           >
                             <Trash2 className="w-5 h-5" />
                           </button>
-                          <span className="text-2xl font-bold text-[hsl(var(--gold))]">
-                            $
-                            {((item.price || 0) * (item.quantity || 1)).toFixed(
-                              2,
+                          <div className="flex flex-col items-end">
+                            {["ark", "oyster"].includes(
+                              String(item.title || "").trim().toLowerCase(),
+                            ) && (
+                              <span className="text-sm text-muted-foreground line-through">
+                                $
+                                {(
+                                  (item.price || 0) *
+                                  2 *
+                                  (item.quantity || 1)
+                                ).toFixed(2)}
+                              </span>
                             )}
-                          </span>
+                            <span className="text-2xl font-bold text-[hsl(var(--gold))]">
+                              $
+                              {(
+                                (item.price || 0) * (item.quantity || 1)
+                              ).toFixed(2)}
+                            </span>
+                          </div>
                         </div>
                       </div>
                     ))}
