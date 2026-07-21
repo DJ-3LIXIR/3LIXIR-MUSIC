@@ -233,14 +233,13 @@ export default function Tools() {
           />
           <ToolLink
             reverse
-            comingSoon
-            badge="In Development"
-            title="Sample Generator"
-            titleAccent="From Anything."
-            description="Pull audio off any YouTube video and chop it into loop-ready samples for your next beat — royalty considerations on you."
-            tags={["Loops", "One-Shots", "Chop", "Producer"]}
-            ctaLabel="Coming Soon"
-            href="/tools"
+            badge="Live Now"
+            title="Sample Digger"
+            titleAccent="Dig for Gold."
+            description="Crate-dig random records with full Discogs metadata — filter by genre, era, and region, play them inline, and build a queue."
+            tags={["Crate Dig", "Discogs", "Filter", "Producer"]}
+            ctaLabel="Open Digger"
+            href="/tools/sample-generator"
             accent="#a855f7"
             imageSrc="/sample-digger.png"
             imagePlaceholderLabel="Sampler"
