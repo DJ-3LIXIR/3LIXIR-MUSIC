@@ -242,6 +242,7 @@ export default function Tools() {
             ctaLabel="Coming Soon"
             href="/tools"
             accent="#a855f7"
+            imageSrc="/sample-digger.png"
             imagePlaceholderLabel="Sampler"
             icon={
               <svg width="48" height="48" viewBox="0 0 48 48" fill="none">
@@ -266,6 +267,7 @@ export default function Tools() {
             ctaLabel="Coming Soon"
             href="/tools"
             accent="#C9A84C"
+            imageSrc="/stem-splitter.png"
             imagePlaceholderLabel="Splitter"
             icon={
               <svg width="48" height="48" viewBox="0 0 48 48" fill="none">
