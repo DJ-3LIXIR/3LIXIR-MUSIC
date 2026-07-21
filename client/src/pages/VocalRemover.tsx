@@ -118,6 +118,10 @@ export default function VocalRemover() {
   const [history, setHistory] = useState<HistoryItem[]>(() =>
     loadHistory(user?.id)
   );
+  const [mode, setMode] = useState<"instrumental" | "vocals" | "both">("both");
+  const [results, setResults] = useState<
+    { kind: string; filename: string; downloadUrl: string }[]
+  >([]);
 
   // Load this user's history once their session resolves.
   useEffect(() => {
@@ -174,6 +178,7 @@ export default function VocalRemover() {
     setLoading(true);
     setError("");
     setSuccess("");
+    setResults([]);
     setElapsed(0);
     timerRef.current = setInterval(() => setElapsed((s) => s + 1), 1000);
 
@@ -195,47 +200,52 @@ export default function VocalRemover() {
         const form = new FormData();
         form.append("file", file);
         form.append("format", format);
+        form.append("mode", mode);
         response = await fetch(`${API_BASE}/api/remove-vocals`, {
           method: "POST",
           headers: authHeader,
           body: form,
         });
       } else {
-        // Convert from a remote URL.
+        // Process from a remote URL.
         response = await fetch(`${API_BASE}/api/remove-vocals`, {
           method: "POST",
           headers: { ...authHeader, "Content-Type": "application/json" },
-          body: JSON.stringify({ url: url.trim(), format }),
+          body: JSON.stringify({ url: url.trim(), format, mode }),
         });
       }
 
       // Server-enforced daily limit.
       if (response.status === 429) {
         setUsedToday(DAILY_FREE_LIMIT); // flips UI to "limit reached"
-        setError("You've used your free conversions for today.");
+        setError("You've used your free removals for today.");
         return;
       }
 
       if (!response.ok) {
         const body = await response.json().catch(() => null);
-        throw new Error(body?.error || "Conversion failed");
+        throw new Error(body?.error || "Vocal removal failed");
       }
 
       const data = await response.json();
-      const filename = data.filename || "download";
-      triggerDownload(`${API_BASE}${data.downloadUrl}`, filename);
-      setSuccess(`Done — “${filename}” downloaded.`);
+      const outs = (data.outputs || []) as {
+        kind: string;
+        filename: string;
+        downloadUrl: string;
+      }[];
+      setResults(outs);
+      setSuccess(outs.length ? "Done — preview and download your stems below." : "");
       setUrl("");
       setFile(null);
 
-      // Record it in the recent-downloads history.
-      const item: HistoryItem = {
-        filename,
-        url: data.downloadUrl,
+      // Record each stem in the recent-downloads history.
+      const items: HistoryItem[] = outs.map((o) => ({
+        filename: o.filename,
+        url: o.downloadUrl,
         format,
         ts: Date.now(),
-      };
-      const next = [item, ...history].slice(0, 20);
+      }));
+      const next = [...items, ...history].slice(0, 20);
       setHistory(next);
       saveHistory(user.id, next);
 
@@ -628,7 +638,54 @@ export default function VocalRemover() {
                 )}
               </div>
 
-              {/* Format Selection */}
+              {/* What to extract */}
+              <label
+                style={{
+                  display: "block",
+                  fontSize: "11px",
+                  fontWeight: 700,
+                  letterSpacing: "0.15em",
+                  textTransform: "uppercase",
+                  color: GOLD,
+                  marginBottom: "10px",
+                }}
+              >
+                What do you want?
+              </label>
+              <div style={{ display: "flex", gap: "8px", marginBottom: "20px" }}>
+                {(
+                  [
+                    ["instrumental", "Instrumental"],
+                    ["vocals", "Vocals"],
+                    ["both", "Both"],
+                  ] as const
+                ).map(([val, label]) => {
+                  const active = mode === val;
+                  return (
+                    <button
+                      key={val}
+                      onClick={() => setMode(val)}
+                      style={{
+                        flex: 1,
+                        padding: "13px 8px",
+                        borderRadius: "12px",
+                        fontSize: "13px",
+                        fontWeight: 700,
+                        cursor: "pointer",
+                        color: active ? "#000" : "#ccc",
+                        background: active
+                          ? `linear-gradient(90deg, ${GOLD}, ${GOLD_LIGHT})`
+                          : "#000",
+                        border: `1px solid ${active ? GOLD : "#2a2620"}`,
+                      }}
+                    >
+                      {label}
+                    </button>
+                  );
+                })}
+              </div>
+
+              {/* Format */}
               <label
                 style={{
                   display: "block",
@@ -781,6 +838,88 @@ export default function VocalRemover() {
                 >
                   Working on it — longer videos take more time ({elapsed}s)
                 </p>
+              )}
+
+              {/* Results — preview + download each stem */}
+              {results.length > 0 && (
+                <div style={{ marginTop: "24px", display: "flex", flexDirection: "column", gap: "12px" }}>
+                  {results.map((r) => {
+                    const isVocals = r.kind === "vocals";
+                    return (
+                      <div
+                        key={r.filename}
+                        style={{
+                          background: "#0a0a0a",
+                          border: `1px solid ${GOLD}33`,
+                          borderRadius: "14px",
+                          padding: "16px",
+                        }}
+                      >
+                        <div
+                          style={{
+                            display: "flex",
+                            alignItems: "center",
+                            justifyContent: "space-between",
+                            gap: "12px",
+                            marginBottom: "12px",
+                          }}
+                        >
+                          <div style={{ minWidth: 0 }}>
+                            <div
+                              style={{
+                                fontSize: "13px",
+                                fontWeight: 800,
+                                letterSpacing: "0.1em",
+                                textTransform: "uppercase",
+                                color: GOLD,
+                              }}
+                            >
+                              {isVocals ? "Vocals" : "Instrumental"}
+                              {isVocals && (
+                                <span
+                                  style={{
+                                    marginLeft: "8px",
+                                    fontSize: "10px",
+                                    color: "#777",
+                                    fontWeight: 600,
+                                    letterSpacing: "0.05em",
+                                  }}
+                                >
+                                  rough
+                                </span>
+                              )}
+                            </div>
+                          </div>
+                          <a
+                            href={`${API_BASE}${r.downloadUrl}`}
+                            download={r.filename}
+                            style={{
+                              flexShrink: 0,
+                              fontSize: "11px",
+                              fontWeight: 800,
+                              letterSpacing: "0.1em",
+                              textTransform: "uppercase",
+                              color: "#000",
+                              background: `linear-gradient(90deg, ${GOLD}, ${GOLD_LIGHT})`,
+                              borderRadius: "100px",
+                              padding: "9px 18px",
+                              textDecoration: "none",
+                              whiteSpace: "nowrap",
+                            }}
+                          >
+                            Download
+                          </a>
+                        </div>
+                        <audio
+                          controls
+                          preload="none"
+                          src={`${API_BASE}${r.downloadUrl}?inline=1`}
+                          style={{ width: "100%", height: "40px" }}
+                        />
+                      </div>
+                    );
+                  })}
+                </div>
               )}
 
               {/* Info note */}
