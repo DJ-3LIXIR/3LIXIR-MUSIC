@@ -62,6 +62,88 @@ const SearchPage = () => {
       keywords: ["shop", "cart", "checkout", "purchase", "buy"],
     },
 
+    // Store, Plugins & Merch
+    {
+      title: "Store",
+      path: "/store",
+      icon: ShoppingBag,
+      keywords: ["store", "shop", "catalog", "plugins", "beats", "merch"],
+    },
+    {
+      title: "VST Plugins",
+      path: "/vst",
+      icon: Music,
+      keywords: ["vst", "plugins", "synth", "effects", "instruments", "audio units", "au", "aax"],
+    },
+    {
+      title: "Merchandise",
+      path: "/merchandise",
+      icon: ShoppingBag,
+      keywords: ["merch", "merchandise", "apparel", "clothing", "shirts", "hoodies"],
+    },
+    {
+      title: "Plugin Installer",
+      path: "/loader",
+      icon: Download,
+      keywords: ["installer", "loader", "install", "3lixir loader", "plugin installer", "setup"],
+    },
+    {
+      title: "ARK Synthesizer",
+      path: "/ark",
+      icon: Music,
+      keywords: ["ark", "synth", "synthesizer", "plugin", "vst", "instrument"],
+    },
+    {
+      title: "Apollo Reverb",
+      path: "/apollo",
+      icon: Music,
+      keywords: ["apollo", "reverb", "room", "effect", "plugin", "vst"],
+    },
+    {
+      title: "Hades",
+      path: "/hades",
+      icon: Music,
+      keywords: ["hades", "bass", "distortion", "effect", "plugin", "vst"],
+    },
+    {
+      title: "Oyster Granular Synth",
+      path: "/oyster",
+      icon: Music,
+      keywords: ["oyster", "granular", "synth", "synthesizer", "plugin", "vst"],
+    },
+    {
+      title: "Orion Sound EQ",
+      path: "/orion",
+      icon: Music,
+      keywords: ["orion", "eq", "equalizer", "sound shaping", "plugin", "vst"],
+    },
+
+    // Producer Tools
+    {
+      title: "Producer Tools",
+      path: "/tools",
+      icon: Download,
+      keywords: ["tools", "producer tools", "utilities", "free tools", "audio tools"],
+    },
+    {
+      title: "Video Converter",
+      path: "/tools/video-converter",
+      icon: Download,
+      keywords: ["converter", "video converter", "video downloader", "youtube", "download", "mp3", "wav", "mp4", "convert"],
+    },
+    {
+      title: "Sample Digger",
+      path: "/tools/sample-generator",
+      icon: Music,
+      keywords: ["sample", "digger", "sample digger", "crate dig", "samples", "discogs", "records", "sample generator"],
+    },
+    {
+      title: "Customer Support",
+      path: "/support",
+      icon: MessageSquare,
+      keywords: ["support", "help", "customer service", "contact", "tickets", "assistance"],
+    },
+
     // Profile Pages
     {
       title: "Profile - Settings",

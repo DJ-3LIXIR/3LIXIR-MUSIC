@@ -156,6 +156,39 @@ export default function ARK() {
         />
       </div>
 
+      {/* Development disclaimer */}
+      <div
+        style={{
+          position: "relative",
+          zIndex: 1,
+          background: "rgba(201,168,76,0.08)",
+          borderTop: "1px solid rgba(201,168,76,0.25)",
+          borderBottom: "1px solid rgba(201,168,76,0.25)",
+        }}
+      >
+        <div
+          style={{
+            maxWidth: "1100px",
+            margin: "0 auto",
+            padding: "14px 24px",
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+            gap: "12px",
+            textAlign: "center",
+            flexWrap: "wrap",
+          }}
+        >
+          <span style={{ fontSize: "16px" }}>⚠️</span>
+          <span style={{ fontSize: "13px", color: "#d8c07a", lineHeight: 1.5 }}>
+            <strong style={{ color: "#e8c76a" }}>In active development.</strong>{" "}
+            ARK's preset library is still being expanded and you may run into the
+            occasional bug. The synth engine is fully functional — more presets
+            and fixes are on the way.
+          </span>
+        </div>
+      </div>
+
       {/* Store Sub-Navbar - Full Width */}
       <div
         style={{
