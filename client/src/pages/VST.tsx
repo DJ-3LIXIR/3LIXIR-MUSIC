@@ -458,6 +458,13 @@ export default function VST() {
             const isHovered = hoveredPlugin === plugin.id;
             const isInCart = addedPlugins.has(plugin.id) || addedPlugins.has(String(plugin.id));
             const isComingSoon = plugin.status?.toLowerCase() === "coming soon";
+            // ARK and Oyster are on sale — show their original price (2x) struck through.
+            const isDiscounted = ["ark", "oyster"].includes(
+              plugin.name.trim().toLowerCase()
+            );
+            const originalPrice = isDiscounted
+              ? parsePrice(plugin.price) * 2
+              : 0;
             return (
               <div
                 key={plugin.id}
@@ -578,12 +585,32 @@ export default function VST() {
                   >
                     <span
                       style={{
-                        fontSize: "16px",
-                        fontWeight: 800,
-                        color: "#C9A84C",
+                        display: "flex",
+                        alignItems: "baseline",
+                        gap: "8px",
                       }}
                     >
-                      {plugin.price}
+                      {isDiscounted && (
+                        <span
+                          style={{
+                            fontSize: "13px",
+                            fontWeight: 600,
+                            color: "#777",
+                            textDecoration: "line-through",
+                          }}
+                        >
+                          ${originalPrice}
+                        </span>
+                      )}
+                      <span
+                        style={{
+                          fontSize: "16px",
+                          fontWeight: 800,
+                          color: "#C9A84C",
+                        }}
+                      >
+                        {plugin.price}
+                      </span>
                     </span>
 
                     <div
