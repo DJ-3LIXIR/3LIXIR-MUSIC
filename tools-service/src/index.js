@@ -174,6 +174,13 @@ app.post("/api/remove-vocals", upload.single("file"), async (req, res) => {
       }
     }
 
+    // Which stems to produce: instrumental, vocals, or both.
+    const mode = ["instrumental", "vocals", "both"].includes(
+      String(req.body.mode || "").toLowerCase()
+    )
+      ? String(req.body.mode).toLowerCase()
+      : "both";
+
     const id = randomUUID();
     const jobDir = path.join(OUT_DIR, id);
     await fsp.mkdir(jobDir, { recursive: true });
@@ -181,6 +188,7 @@ app.post("/api/remove-vocals", upload.single("file"), async (req, res) => {
     // Resolve the source audio + a base name.
     let srcPath;
     let base;
+    let intermediate = null;
     if (uploadPath) {
       srcPath = uploadPath;
       base = safeName(path.parse(req.file.originalname || "track").name) || "track";
@@ -195,20 +203,36 @@ app.post("/api/remove-vocals", upload.single("file"), async (req, res) => {
       const got = (await fsp.readdir(jobDir)).find((f) => f.toLowerCase().endsWith(".wav"));
       if (!got) throw new Error("Download failed");
       srcPath = path.join(jobDir, got);
+      intermediate = srcPath; // remove after producing the stems
       base = path.parse(got).name;
     }
 
-    const outPath = path.join(jobDir, `${base} (Instrumental).${format}`);
-    await execFileP(
-      "ffmpeg",
-      ["-y", "-i", srcPath, ...vocalRemoveArgs(format), outPath],
-      { timeout: 10 * 60 * 1000 }
-    );
-    // Drop the intermediate download so only the result remains in the job dir.
-    if (!uploadPath && srcPath !== outPath) await fsp.unlink(srcPath).catch(() => {});
+    const outputs = [];
+    const makeStem = async (kind, argsFn, suffix) => {
+      const out = path.join(jobDir, `${base} (${suffix}).${format}`);
+      await execFileP("ffmpeg", ["-y", "-i", srcPath, ...argsFn(format), out], {
+        timeout: 10 * 60 * 1000,
+      });
+      if (!fs.existsSync(out)) throw new Error(`${suffix} produced no file`);
+      const name = path.basename(out);
+      outputs.push({
+        kind,
+        filename: name,
+        downloadUrl: `/api/download/${id}/${encodeURIComponent(name)}`,
+      });
+    };
 
-    if (!fs.existsSync(outPath)) throw new Error("Processing produced no file");
-    const filename = path.basename(outPath);
+    if (mode === "instrumental" || mode === "both") {
+      await makeStem("instrumental", vocalRemoveArgs, "Instrumental");
+    }
+    if (mode === "vocals" || mode === "both") {
+      await makeStem("vocals", vocalsArgs, "Vocals");
+    }
+
+    // Remove the intermediate download so only the stems remain.
+    if (intermediate) await fsp.unlink(intermediate).catch(() => {});
+
+    if (!outputs.length) throw new Error("Processing produced no file");
 
     let remaining = null;
     if (!isMember) {
@@ -220,7 +244,7 @@ app.post("/api/remove-vocals", upload.single("file"), async (req, res) => {
       }
     }
 
-    res.json({ downloadUrl: `/api/download/${id}`, filename, remaining });
+    res.json({ outputs, remaining });
   } catch (err) {
     console.error("[vocals]", err);
     res.status(500).json({ error: "Vocal removal failed. Check the URL/file and try again." });
@@ -231,7 +255,7 @@ app.post("/api/remove-vocals", upload.single("file"), async (req, res) => {
 
 // Serve (and let the browser download) a finished file by job id. The browser
 // saves it under its real name via the Content-Disposition header.
-app.get("/api/download/:id", async (req, res) => {
+app.get("/api/download/:id/:name?", async (req, res) => {
   const id = path.basename(req.params.id);
   const jobDir = path.join(OUT_DIR, id);
   let files;
@@ -243,7 +267,21 @@ app.get("/api/download/:id", async (req, res) => {
   if (!files.length) {
     return res.status(404).json({ error: "File not found or expired" });
   }
-  res.download(path.join(jobDir, files[0]), files[0]);
+
+  // Pick the named file if given, else the first one.
+  let file = files[0];
+  if (req.params.name) {
+    const wanted = path.basename(decodeURIComponent(req.params.name));
+    file = files.find((f) => f === wanted) || files[0];
+  }
+  const p = path.join(jobDir, file);
+
+  // ?inline=1 serves for in-page preview (audio player); default = download.
+  if (req.query.inline) {
+    res.setHeader("Content-Disposition", `inline; filename="${file}"`);
+    return res.sendFile(p);
+  }
+  res.download(p, file);
 });
 
 // --- Sample Digger ---------------------------------------------------------
@@ -418,6 +456,14 @@ function vocalRemoveArgs(format) {
   if (format === "mp3") return [...filter, "-b:a", "192k"];
   if (format === "m4a") return [...filter, "-c:a", "aac", "-b:a", "192k"];
   return filter; // wav → default pcm
+}
+
+// Rough acapella: keep the center (L+R), high-pass to drop centered bass/kick.
+function vocalsArgs(format) {
+  const filter = ["-af", "pan=mono|c0=0.5*c0+0.5*c1,highpass=f=180", "-vn"];
+  if (format === "mp3") return [...filter, "-b:a", "192k"];
+  if (format === "m4a") return [...filter, "-c:a", "aac", "-b:a", "192k"];
+  return filter;
 }
 
 function ffmpegArgs(format) {
