@@ -4,6 +4,7 @@ import { Link, useLocation } from "wouter";
 import { Navbar } from "@/components/layout/Navbar";
 import { useAuth } from "@/contexts/AuthContext";
 import { supabase } from "@/supabaseClient";
+import { useIsMobile } from "@/hooks/use-mobile";
 
 // Base URL of the tools backend (Render). Override with VITE_TOOLS_API_URL.
 const API_BASE =
@@ -103,6 +104,7 @@ function timeAgo(ts: number): string {
 export default function VideoConverter() {
   const { user, userProfile, openAuthModal } = useAuth();
   const [, setLocation] = useLocation();
+  const isMobile = useIsMobile();
   const [url, setUrl] = useState("");
   const [format, setFormat] = useState("mp3");
   const [loading, setLoading] = useState(false);
@@ -276,34 +278,38 @@ export default function VideoConverter() {
     >
       <Navbar />
 
-      {/* 3-Panel Layout */}
+      {/* 3-Panel Layout (single column on mobile) */}
       <div
         style={{
           display: "grid",
-          gridTemplateColumns: "1fr 2px 2fr 2px 1fr",
+          gridTemplateColumns: isMobile ? "1fr" : "1fr 2px 2fr 2px 1fr",
           minHeight: "calc(100vh - 80px)",
           position: "relative",
         }}
       >
         {/* Left Panel - Brick Texture */}
-        <div
-          style={{
-            background: 'url("/black_gold_brick_texture.png")',
-            backgroundSize: "cover",
-            backgroundPosition: "center",
-            backgroundRepeat: "repeat",
-            opacity: 0.55,
-            position: "relative",
-          }}
-        />
+        {!isMobile && (
+          <>
+            <div
+              style={{
+                background: 'url("/black_gold_brick_texture.png")',
+                backgroundSize: "cover",
+                backgroundPosition: "center",
+                backgroundRepeat: "repeat",
+                opacity: 0.55,
+                position: "relative",
+              }}
+            />
 
-        {/* Left Divider */}
-        <div
-          style={{
-            background: `linear-gradient(to bottom, transparent, ${GOLD}, transparent)`,
-            width: "2px",
-          }}
-        />
+            {/* Left Divider */}
+            <div
+              style={{
+                background: `linear-gradient(to bottom, transparent, ${GOLD}, transparent)`,
+                width: "2px",
+              }}
+            />
+          </>
+        )}
 
         {/* Center Panel - Converter UI */}
         <div
@@ -311,7 +317,7 @@ export default function VideoConverter() {
             position: "relative",
             display: "flex",
             flexDirection: "column",
-            padding: "48px 56px",
+            padding: isMobile ? "88px 20px 40px" : "48px 56px",
             overflow: "hidden",
           }}
         >
@@ -962,26 +968,28 @@ export default function VideoConverter() {
           </div>
         </div>
 
-        {/* Right Divider */}
-        <div
-          style={{
-            background: `linear-gradient(to bottom, transparent, ${GOLD}, transparent)`,
-            width: "2px",
-          }}
-        />
-
-        {/* Right Panel - Brick Texture */}
-        <div
-          style={{
-            background: 'url("/black_gold_brick_texture.png")',
-            backgroundSize: "cover",
-            backgroundPosition: "center",
-            backgroundRepeat: "repeat",
-            opacity: 0.55,
-            position: "relative",
-            transform: "scaleX(-1)",
-          }}
-        />
+        {/* Right Divider + Brick (desktop only) */}
+        {!isMobile && (
+          <>
+            <div
+              style={{
+                background: `linear-gradient(to bottom, transparent, ${GOLD}, transparent)`,
+                width: "2px",
+              }}
+            />
+            <div
+              style={{
+                background: 'url("/black_gold_brick_texture.png")',
+                backgroundSize: "cover",
+                backgroundPosition: "center",
+                backgroundRepeat: "repeat",
+                opacity: 0.55,
+                position: "relative",
+                transform: "scaleX(-1)",
+              }}
+            />
+          </>
+        )}
       </div>
     </div>
   );
