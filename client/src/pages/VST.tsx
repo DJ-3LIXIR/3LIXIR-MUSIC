@@ -105,8 +105,12 @@ export default function VST() {
     { id: "bundle-ark", name: "Ark Bundle", accent: "#C9A84C", plugins: ["ark", "oyster"] },
     { id: "bundle-olympus", name: "Olympus Bundle", accent: "#22d3ee", plugins: ["apollo", "hades", "orion"] },
   ];
+  // Match on substring so "orion" finds "Orion Sound EQ", "apollo" finds
+  // "Apollo Reverb", etc. (the 5 plugin names don't overlap).
   const findPlugin = (n: string) =>
-    plugins.find((p) => p.name.trim().toLowerCase() === n.toLowerCase());
+    plugins.find((p) =>
+      p.name.trim().toLowerCase().includes(n.toLowerCase())
+    );
 
   const handleAddBundle = (pluginNames: string[]) => {
     pluginNames.forEach((n) => {
