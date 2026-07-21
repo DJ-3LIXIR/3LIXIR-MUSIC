@@ -207,6 +207,7 @@ export default function Tools() {
             ctaLabel="Open Converter"
             href="/tools/video-converter"
             accent="#22d3ee"
+            imageSrc="/video-converter.png"
             imagePlaceholderLabel="Converter"
             icon={
               <svg width="48" height="48" viewBox="0 0 48 48" fill="none">
