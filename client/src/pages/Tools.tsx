@@ -118,7 +118,7 @@ export default function Tools() {
         {[
           { label: "Video Converter", href: "/tools/video-converter" },
           { label: "Sample Generator", href: "/tools/sample-generator" },
-          { label: "Vocal Remover", href: "/tools/vocal-remover" },
+          { label: "Stem Splitter", href: "/tools" },
         ].map((item, index) => (
           <Link key={item.label} href={item.href}>
             <div
@@ -256,15 +256,16 @@ export default function Tools() {
             }
           />
           <ToolLink
-            badge="Live Now"
-            title="Vocal Remover"
-            titleAccent="Instant Instrumentals."
-            description="Paste a link or drop a track and pull the vocals out — a clean instrumental in seconds. Free, no AI wait."
-            tags={["Instrumental", "Karaoke", "Free", "Fast"]}
-            ctaLabel="Open Remover"
-            href="/tools/vocal-remover"
+            comingSoon
+            badge="Coming Soon"
+            title="Stem Splitter"
+            titleAccent="Vocals, Drums, Bass."
+            description="AI-powered separation into clean stems — vocals, instrumental, and more. Real isolation, landing once we bring the AI engine online."
+            tags={["Vocals", "Instrumental", "AI", "Soon"]}
+            ctaLabel="Coming Soon"
+            href="/tools"
             accent="#C9A84C"
-            imagePlaceholderLabel="Remover"
+            imagePlaceholderLabel="Splitter"
             icon={
               <svg width="48" height="48" viewBox="0 0 48 48" fill="none">
                 <path
