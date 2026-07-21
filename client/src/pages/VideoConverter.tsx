@@ -120,6 +120,7 @@ export default function VideoConverter() {
   const [history, setHistory] = useState<HistoryItem[]>(() =>
     loadHistory(user?.id)
   );
+  const [showNotice, setShowNotice] = useState(true);
 
   // Load this user's history once their session resolves.
   useEffect(() => {
@@ -329,27 +330,36 @@ export default function VideoConverter() {
             }}
           />
 
-          {/* Back link */}
+          {/* Back button */}
           <Link href="/tools">
             <span
               style={{
                 position: "relative",
                 zIndex: 1,
+                display: "inline-flex",
+                alignItems: "center",
+                gap: "6px",
                 fontSize: "12px",
                 fontWeight: 700,
-                letterSpacing: "0.15em",
+                letterSpacing: "0.1em",
                 textTransform: "uppercase",
-                color: "#555",
+                color: "#bbb",
                 cursor: "pointer",
-                transition: "color 0.2s",
+                transition: "all 0.2s",
                 alignSelf: "flex-start",
+                border: "1px solid #2a2620",
+                borderRadius: "100px",
+                padding: "9px 18px",
+                background: "#0a0a0a",
               }}
-              onMouseEnter={(e) =>
-                ((e.currentTarget as HTMLElement).style.color = GOLD)
-              }
-              onMouseLeave={(e) =>
-                ((e.currentTarget as HTMLElement).style.color = "#555")
-              }
+              onMouseEnter={(e) => {
+                (e.currentTarget as HTMLElement).style.color = GOLD;
+                (e.currentTarget as HTMLElement).style.borderColor = GOLD;
+              }}
+              onMouseLeave={(e) => {
+                (e.currentTarget as HTMLElement).style.color = "#bbb";
+                (e.currentTarget as HTMLElement).style.borderColor = "#2a2620";
+              }}
             >
               ← Back to Tools
             </span>
@@ -425,6 +435,54 @@ export default function VideoConverter() {
                 audio or video — MP3, WAV, MP4 and more.
               </p>
             </div>
+
+            {/* Stability notice */}
+            {showNotice && (
+              <div
+                style={{
+                  position: "relative",
+                  display: "flex",
+                  alignItems: "flex-start",
+                  gap: "12px",
+                  background: `${GOLD}12`,
+                  border: `1px solid ${GOLD}44`,
+                  borderRadius: "14px",
+                  padding: "16px 18px",
+                  marginBottom: "24px",
+                }}
+              >
+                <span style={{ fontSize: "18px", lineHeight: 1 }}>⚠️</span>
+                <div style={{ flex: 1 }}>
+                  <div
+                    style={{
+                      fontSize: "13px",
+                      fontWeight: 800,
+                      color: GOLD_LIGHT,
+                      marginBottom: "4px",
+                    }}
+                  >
+                    YouTube downloads are in beta
+                  </div>
+                  <div style={{ fontSize: "13px", color: "#aaa", lineHeight: 1.5 }}>
+                    YouTube links may be spotty right now while we work on
+                    stability. <strong>File upload always works.</strong> Thanks
+                    for supporting us as we make it more reliable. 🙏
+                  </div>
+                </div>
+                <span
+                  onClick={() => setShowNotice(false)}
+                  style={{
+                    fontSize: "16px",
+                    color: "#888",
+                    cursor: "pointer",
+                    lineHeight: 1,
+                    flexShrink: 0,
+                  }}
+                >
+                  ✕
+                </span>
+              </div>
+            )}
 
             {/* Converter Card */}
             <div
