@@ -99,13 +99,20 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
       return res.status(400).json({ error: "Missing required order data" });
     }
 
+    const zohoEmail = process.env.ZOHO_EMAIL_RECEIPT;
+    const zohoPassword = process.env.ZOHO_PASSWORD_RECEIPT;
+
+    if (!zohoEmail || !zohoPassword) {
+      throw new Error("Zoho SMTP credentials not configured (ZOHO_EMAIL_RECEIPT and ZOHO_PASSWORD_RECEIPT required)");
+    }
+
     const transporter = nodemailer.createTransport({
       host: "smtp.zoho.com",
       port: 587,
       secure: false,
       auth: {
-        user: process.env.ZOHO_EMAIL_RECEIPT || "receipt@3lixirmusic.com",
-        pass: process.env.ZOHO_PASSWORD_RECEIPT || "G7KPtMtXZAD5",
+        user: zohoEmail,
+        pass: zohoPassword,
       },
     });
 

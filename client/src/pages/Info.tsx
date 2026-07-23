@@ -2566,10 +2566,15 @@ const InfoPage = () => {
                     <div className="text-center">
                       <p className="font-semibold">949 308 5144</p>
                       <p className="text-muted-foreground mt-2">
-                        Response Time: Within 24-48 hours
+                        Text or call for website issues only
                       </p>
                     </div>
                   </div>
+                </div>
+                <div className="border-t border-white/10 pt-4 mt-4">
+                  <p className="text-sm text-muted-foreground text-center">
+                    <strong>Communication Preference:</strong> Please initiate all business inquiries via text. Phone calls are reserved for website issues or urgent matters only.
+                  </p>
                 </div>
               </div>
             </section>
