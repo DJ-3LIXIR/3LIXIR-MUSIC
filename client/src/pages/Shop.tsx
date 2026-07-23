@@ -18,6 +18,7 @@ import {
 import { Button } from "@/components/ui/button";
 import { useLocation } from "wouter";
 import { useCart } from "@/contexts/CartContext";
+import { analytics } from "@/utils/analytics";
 import { useAuth } from "@/contexts/AuthContext";
 import { supabase } from "@/supabaseClient";
 import { loadStripe } from "@stripe/stripe-js";
@@ -1390,6 +1391,10 @@ export default function Shop() {
     } catch (error) {
       console.error("Error storing agreement:", error);
     }
+
+    // Track begin checkout
+    const cartTotal = items.reduce((sum, item) => sum + item.price * item.quantity, 0);
+    analytics.beginCheckout(cartTotal, items.length);
 
     setShowPaymentModal(true);
   };

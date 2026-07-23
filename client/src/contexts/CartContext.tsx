@@ -6,6 +6,7 @@ import {
   ReactNode,
 } from "react";
 import { Beat } from "@/lib/data";
+import { analytics } from "@/utils/analytics";
 
 // Generic cart item that supports beats, plugins, and other product types
 export interface CartItemBase {
@@ -106,13 +107,21 @@ export function CartProvider({ children }: { children: ReactNode }) {
           image: (item as CartItemBase).image,
           metadata: (item as CartItemBase).metadata,
         };
+        // Track add to cart
+        analytics.addToCart(cartItem.title, cartItem.price, cartItem.category || cartItem.type);
         return [...prevItems, cartItem];
       }
     });
   };
 
   const removeFromCart = (itemId: string) => {
-    setItems((prevItems) => prevItems.filter((item) => item.id !== itemId));
+    setItems((prevItems) => {
+      const itemToRemove = prevItems.find((item) => item.id === itemId);
+      if (itemToRemove) {
+        analytics.removeFromCart(itemToRemove.title, itemToRemove.price);
+      }
+      return prevItems.filter((item) => item.id !== itemId);
+    });
   };
 
   const updateQuantity = (itemId: string, quantity: number) => {
