@@ -143,6 +143,8 @@ app.post("/api/convert", upload.single("file"), async (req, res) => {
     res.json({ downloadUrl: `/api/download/${id}`, filename, remaining });
   } catch (err) {
     console.error("[convert]", err);
+    const classified = classifyDownloadError(err);
+    if (classified) return res.status(classified.status).json({ error: classified.error });
     res.status(500).json({ error: "Conversion failed. Check the URL and try again." });
   } finally {
     if (uploadPath) await fsp.unlink(uploadPath).catch(() => {});
@@ -247,6 +249,8 @@ app.post("/api/remove-vocals", upload.single("file"), async (req, res) => {
     res.json({ outputs, remaining });
   } catch (err) {
     console.error("[vocals]", err);
+    const classified = classifyDownloadError(err);
+    if (classified) return res.status(classified.status).json({ error: classified.error });
     res.status(500).json({ error: "Vocal removal failed. Check the URL/file and try again." });
   } finally {
     if (uploadPath) await fsp.unlink(uploadPath).catch(() => {});
@@ -505,10 +509,23 @@ if (fs.existsSync(COOKIES_SRC)) {
   console.log("No YouTube cookies file found — YouTube may block from this IP.");
 }
 
+// Optional residential proxy. YouTube rate-limits (HTTP 429) and bot-walls
+// datacenter IPs like Render's; routing through a residential proxy is the only
+// reliable fix. Set YT_PROXY on Render to a proxy URL (e.g.
+// http://user:pass@host:port) to enable. Leave unset to go direct.
+//
+// Do NOT use a free/public proxy here: account cookies pass through the proxy,
+// so an untrusted operator could steal the Google session, and free proxies are
+// datacenter IPs that YouTube blocks just the same.
+const YT_PROXY = (process.env.YT_PROXY || "").trim();
+if (YT_PROXY) console.log("Using proxy for yt-dlp requests.");
+
 // Evasion args to improve odds against YouTube's bot/rate-limit blocking from
-// datacenter IPs. Cookies (above) are the real fix; these help on top.
+// datacenter IPs. Cookies (above) and a proxy are the real fixes; these help on
+// top. "ios" is intentionally omitted — it can't use cookies (yt-dlp skips it).
 const YTDLP_COMMON = [
   ...(COOKIES_PATH ? ["--cookies", COOKIES_PATH] : []),
+  ...(YT_PROXY ? ["--proxy", YT_PROXY] : []),
   "--force-ipv4",
   "--retries",
   "5",
@@ -519,8 +536,31 @@ const YTDLP_COMMON = [
   "--user-agent",
   "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36",
   "--extractor-args",
-  "youtube:player_client=default,web_safari,tv,ios",
+  "youtube:player_client=default,web_safari,tv,mweb",
 ];
+
+// Map a yt-dlp failure to a user-facing message + HTTP status. YouTube's
+// blocking modes look different to the user, so we surface which one hit.
+function classifyDownloadError(err) {
+  const text = `${err?.stderr || ""}\n${err?.message || ""}`;
+  if (/no longer valid|rotated in the browser|Sign in to confirm/i.test(text)) {
+    return {
+      status: 403,
+      error:
+        "YouTube blocked this download (login cookies expired). This is a server-side limit, not your account — try again later while we refresh access.",
+    };
+  }
+  if (/HTTP Error 429|Too Many Requests/i.test(text)) {
+    return {
+      status: 429,
+      error: "YouTube is rate-limiting downloads right now. Please try again in a few minutes.",
+    };
+  }
+  if (/Video unavailable|Private video|members-only|removed/i.test(text)) {
+    return { status: 400, error: "This video isn't available for download (private, removed, or restricted)." };
+  }
+  return null;
+}
 
 async function downloadAndConvert(url, format, jobDir) {
   // %(title)s names the file after the video (yt-dlp sanitizes path-illegal chars).
