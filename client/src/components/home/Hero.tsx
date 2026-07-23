@@ -54,6 +54,15 @@ export function Hero() {
                 Explore Plugins
               </Button>
             </Link>
+            <Link href="/tools">
+              <Button
+                size="lg"
+                variant="outline"
+                className="h-14 px-8 rounded-full border-purple-500/40 bg-purple-500/10 hover:bg-purple-500/20 text-purple-400 text-xs font-bold uppercase tracking-widest transition-all hover:scale-105"
+              >
+                Web Tools
+              </Button>
+            </Link>
             <Button
               size="lg"
               variant="outline"
