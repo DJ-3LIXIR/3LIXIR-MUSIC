@@ -27,7 +27,7 @@ export function Navbar() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [location, setLocation] = useLocation();
   const { totalItems } = useCart();
-  const { user, openAuthModal, signOut } = useAuth();
+  const { user, userProfile, openAuthModal, signOut } = useAuth();
   const [scrolled, setScrolled] = useState(false);
   const [activeDropdown, setActiveDropdown] = useState(null);
   const [mobileSubMenuOpen, setMobileSubMenuOpen] = useState(null);
@@ -323,7 +323,12 @@ export function Navbar() {
                 onClick={(e) => e.stopPropagation()}
               >
                 <button className="flex items-center gap-2 p-2 hover:bg-white/5 rounded-lg transition-colors">
-                  <div className="w-8 h-8 rounded-full bg-gradient-to-br from-[hsl(var(--gold))] to-orange-600 flex items-center justify-center">
+                  <div
+                    className="w-8 h-8 rounded-full flex items-center justify-center"
+                    style={{
+                      backgroundColor: userProfile?.profile_color || "#f59e0b",
+                    }}
+                  >
                     <span className="text-sm font-bold text-black">
                       {user.email?.charAt(0).toUpperCase() || "U"}
                     </span>
