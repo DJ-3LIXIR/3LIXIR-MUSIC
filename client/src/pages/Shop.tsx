@@ -500,6 +500,17 @@ export default function Shop() {
 
         console.log("PayPal subscription created:", subscriptionId);
 
+        // Track purchase for analytics
+        if (subscriptionOrder) {
+          analytics.purchase(subscriptionOrder.id, subscriptionItem.price, [
+            {
+              name: subscriptionItem.title || "Subscription",
+              price: subscriptionItem.price,
+              category: "subscription",
+            },
+          ]);
+        }
+
         // Update subscription_licenses status if ID is present
         if (subscriptionItem.metadata?.subscriptionLicenseId) {
           const { error: licenseError } = await supabase
@@ -1118,6 +1129,15 @@ export default function Shop() {
       }
 
       console.log("Order saved successfully!");
+
+      // Track purchase for analytics
+      if (orderData && orderData.items) {
+        analytics.purchase(orderData.id, orderData.total, orderData.items.map((item: any) => ({
+          name: item.title || item.name || "Unknown Item",
+          price: item.price || 0,
+          category: item.type || item.category || "unknown",
+        })));
+      }
 
       // Update profile with order_id
       if (orderData) {
