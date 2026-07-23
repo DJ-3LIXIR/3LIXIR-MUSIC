@@ -3,6 +3,8 @@ import { Hero } from "@/components/home/Hero";
 import { ElixirVision } from "@/components/home/ElixirVision";
 import { ExploreArtist } from "@/components/home/ExploreArtist";
 import { GetStarted } from "@/components/home/GetStarted";
+import { ToolsPreview } from "@/components/home/ToolsPreview";
+import { StorePreview } from "@/components/home/StorePreview";
 import { BeatList } from "@/components/store/BeatList";
 import { Links } from "@/components/home/Links";
 import { useState, useEffect } from "react";
@@ -294,6 +296,8 @@ export default function Home() {
         </div>
         {/* Final content */}
         <div className="bg-black">
+          <ToolsPreview />
+          <StorePreview />
           <BeatList />
           <Links />
         </div>
