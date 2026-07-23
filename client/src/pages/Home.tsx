@@ -143,7 +143,15 @@ export default function Home() {
   const artistSticky = 1500;
   const artistAnimation = getSectionAnimation(artistStart, artistSticky);
   const artistEnd = artistStart + artistAnimation.totalHeight;
-  const startedStart = artistEnd;
+  const toolsStart = artistEnd;
+  const toolsSticky = 1200;
+  const toolsAnimation = getSectionAnimation(toolsStart, toolsSticky);
+  const toolsEnd = toolsStart + toolsAnimation.totalHeight;
+  const storeStart = toolsEnd;
+  const storeSticky = 1200;
+  const storeAnimation = getSectionAnimation(storeStart, storeSticky);
+  const storeEnd = storeStart + storeAnimation.totalHeight;
+  const startedStart = storeEnd;
   const startedSticky = 1500;
   // Custom animation for GetStarted section
   const getStartedAnimation = () => {
@@ -275,10 +283,43 @@ export default function Home() {
             <ExploreArtist />
           </div>
         </div>
-        {/* Final content - Tools & Store before License */}
-        <div className="bg-black">
-          <ToolsPreview />
-          <StorePreview />
+        {/* ToolsPreview Section */}
+        <div
+          style={{ height: `${toolsAnimation.totalHeight}px` }}
+          className="relative"
+        >
+          <div
+            style={{
+              opacity: toolsAnimation.opacity,
+              position: toolsAnimation.position,
+              top: toolsAnimation.top,
+              left: 0,
+              right: 0,
+              transform: toolsAnimation.transform,
+            }}
+            className="bg-black"
+          >
+            <ToolsPreview />
+          </div>
+        </div>
+        {/* StorePreview Section */}
+        <div
+          style={{ height: `${storeAnimation.totalHeight}px` }}
+          className="relative"
+        >
+          <div
+            style={{
+              opacity: storeAnimation.opacity,
+              position: storeAnimation.position,
+              top: storeAnimation.top,
+              left: 0,
+              right: 0,
+              transform: storeAnimation.transform,
+            }}
+            className="bg-black"
+          >
+            <StorePreview />
+          </div>
         </div>
         {/* GetStarted Section */}
         <div
