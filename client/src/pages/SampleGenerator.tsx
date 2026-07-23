@@ -8,8 +8,6 @@ import {
   Timer,
   Link2,
   Diamond,
-  Sparkles,
-  TrendingUp,
   Play,
   ChevronDown,
   Check,
@@ -986,8 +984,6 @@ export default function SampleGenerator() {
                   <ChevronDown size={14} />
                 </div>
                 <div style={{ flex: 1 }} />
-                <Sparkles size={16} />
-                <TrendingUp size={16} />
                 <Diamond
                   size={16}
                   onClick={() => current && toggleFavorite(current)}
