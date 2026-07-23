@@ -4,8 +4,10 @@ import { motion } from "framer-motion";
 import { Link } from "wouter";
 
 export function BeatList() {
-  // Get only the 6 most recent beats
-  const recentBeats = beats.slice(0, 6);
+  // Sort by release date (newest first) and get the 6 most recent
+  const recentBeats = [...beats]
+    .sort((a, b) => new Date(b.releaseDate).getTime() - new Date(a.releaseDate).getTime())
+    .slice(0, 6);
 
   return (
     <section id="beatlist" className="py-24 bg-black relative">
