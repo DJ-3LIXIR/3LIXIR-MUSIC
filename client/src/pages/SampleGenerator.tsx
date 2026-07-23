@@ -7,7 +7,7 @@ import {
   Shuffle,
   Timer,
   Link2,
-  Star,
+  Diamond,
   Sparkles,
   TrendingUp,
   Play,
@@ -124,6 +124,18 @@ export default function SampleGenerator() {
   const [copied, setCopied] = useState(false);
   const tapsRef = useRef<number[]>([]);
   const [tappedBpm, setTappedBpm] = useState<number | null>(null);
+  const [favorites, setFavorites] = useState<DigTrack[]>([]);
+
+  const toggleFavorite = (track: DigTrack) => {
+    setFavorites((prev) =>
+      prev.some((t) => t.youtubeId === track.youtubeId)
+        ? prev.filter((t) => t.youtubeId !== track.youtubeId)
+        : [...prev, track]
+    );
+  };
+
+  const isFavorited = (track: DigTrack | null) =>
+    track ? favorites.some((t) => t.youtubeId === track.youtubeId) : false;
 
   const tier = (
     userProfile?.subscription_tier ||
@@ -976,7 +988,16 @@ export default function SampleGenerator() {
                 <div style={{ flex: 1 }} />
                 <Sparkles size={16} />
                 <TrendingUp size={16} />
-                <Star size={16} />
+                <Diamond
+                  size={16}
+                  onClick={() => current && toggleFavorite(current)}
+                  style={{
+                    cursor: current ? "pointer" : "default",
+                    opacity: current ? 1 : 0.5,
+                    fill: isFavorited(current) ? GOLD : "none",
+                    color: isFavorited(current) ? GOLD : "currentColor",
+                  }}
+                />
               </div>
 
               {/* Horizontal track row */}
@@ -1086,6 +1107,109 @@ export default function SampleGenerator() {
                 </div>
               )}
             </div>
+
+            {/* Favorites Section */}
+            {favorites.length > 0 && (
+              <div
+                style={{
+                  marginTop: "20px",
+                  paddingTop: "16px",
+                  borderTop: `1px solid ${GOLD}22`,
+                }}
+              >
+                <div
+                  style={{
+                    fontSize: "12px",
+                    fontWeight: 700,
+                    color: GOLD,
+                    marginBottom: "10px",
+                    textTransform: "uppercase",
+                    letterSpacing: "0.5px",
+                  }}
+                >
+                  ◆ Favorites ({favorites.length})
+                </div>
+                <div
+                  style={{
+                    display: "flex",
+                    gap: "8px",
+                    flexDirection: "column",
+                  }}
+                >
+                  {favorites.map((fav) => (
+                    <div
+                      key={fav.youtubeId}
+                      style={{
+                        display: "flex",
+                        alignItems: "center",
+                        gap: "10px",
+                        padding: "10px",
+                        borderRadius: "8px",
+                        background: "#0d0d0d",
+                        border: `1px solid ${GOLD}33`,
+                        cursor: "pointer",
+                        transition: "all 0.2s",
+                      }}
+                      onClick={() => {
+                        setCurrent(fav);
+                        setQueue((prev) =>
+                          prev.filter((t) => t.youtubeId !== fav.youtubeId)
+                        );
+                      }}
+                      onMouseEnter={(e) => {
+                        (e.currentTarget as HTMLDivElement).style.background = `${GOLD}11`;
+                        (e.currentTarget as HTMLDivElement).style.borderColor = `${GOLD}66`;
+                      }}
+                      onMouseLeave={(e) => {
+                        (e.currentTarget as HTMLDivElement).style.background = "#0d0d0d";
+                        (e.currentTarget as HTMLDivElement).style.borderColor = `${GOLD}33`;
+                      }}
+                    >
+                      <div
+                        style={{
+                          width: "32px",
+                          height: "32px",
+                          borderRadius: "6px",
+                          background: `center / cover no-repeat url("https://img.youtube.com/vi/${fav.youtubeId}/default.jpg")`,
+                          flexShrink: 0,
+                        }}
+                      />
+                      <div style={{ minWidth: 0, flex: 1 }}>
+                        <div
+                          style={{
+                            fontSize: "12px",
+                            fontWeight: 600,
+                            color: "#fff",
+                            whiteSpace: "nowrap",
+                            overflow: "hidden",
+                            textOverflow: "ellipsis",
+                          }}
+                        >
+                          {fav.title}
+                        </div>
+                        <div style={{ fontSize: "11px", color: "#666" }}>
+                          {fav.artist}
+                          {fav.year ? ` · ${fav.year}` : ""}
+                        </div>
+                      </div>
+                      <Diamond
+                        size={14}
+                        style={{
+                          cursor: "pointer",
+                          fill: GOLD,
+                          color: GOLD,
+                          flexShrink: 0,
+                        }}
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          toggleFavorite(fav);
+                        }}
+                      />
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
           </div>
         </div>
         {/* end center content */}
