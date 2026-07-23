@@ -275,6 +275,11 @@ export default function Home() {
             <ExploreArtist />
           </div>
         </div>
+        {/* Final content - Tools & Store before License */}
+        <div className="bg-black">
+          <ToolsPreview />
+          <StorePreview />
+        </div>
         {/* GetStarted Section */}
         <div
           style={{ height: `${startedAnimation.totalHeight}px` }}
@@ -296,8 +301,6 @@ export default function Home() {
         </div>
         {/* Final content */}
         <div className="bg-black">
-          <ToolsPreview />
-          <StorePreview />
           <BeatList />
           <Links />
         </div>
