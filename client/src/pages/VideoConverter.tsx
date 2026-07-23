@@ -367,7 +367,7 @@ export default function VideoConverter() {
                 (e.currentTarget as HTMLElement).style.borderColor = "#2a2620";
               }}
             >
-              ← Back to Tools
+              ← Back
             </span>
           </Link>
 
