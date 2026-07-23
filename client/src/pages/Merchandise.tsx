@@ -223,27 +223,6 @@ export default function Merchandise() {
           >
             Coming Soon
           </div>
-
-          <br />
-
-          <Link href="/shop">
-            <button
-              style={{
-                padding: "14px 28px",
-                borderRadius: "999px",
-                border: "1px solid #C9A84C",
-                background: "rgba(201,168,76,0.12)",
-                color: "#f5d889",
-                fontWeight: 700,
-                letterSpacing: "0.08em",
-                textTransform: "uppercase",
-                fontSize: "12px",
-                cursor: "pointer",
-              }}
-            >
-              Open Merchandise Store
-            </button>
-          </Link>
         </div>
       </div>
     </div>
