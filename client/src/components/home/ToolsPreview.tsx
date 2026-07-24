@@ -44,19 +44,19 @@ export function ToolsPreview() {
           </p>
         </div>
 
-        <div className="grid md:grid-cols-3 gap-6">
+        <div className="grid grid-cols-2 md:grid-cols-3 gap-4 md:gap-6">
           {tools.map((tool) => (
             <Link key={tool.href} href={tool.href}>
-              <div className="group h-full p-6 bg-gradient-to-br from-purple-950/20 to-pink-950/20 border border-purple-500/10 rounded-2xl hover:border-purple-500/30 transition-all duration-300 cursor-pointer hover:shadow-lg hover:shadow-purple-500/10">
-                <div className="space-y-4">
-                  <div className="text-4xl">{tool.icon}</div>
-                  <h3 className="text-xl font-semibold text-white group-hover:text-purple-300 transition-colors">
+              <div className="group h-full p-4 md:p-6 bg-gradient-to-br from-purple-950/20 to-pink-950/20 border border-purple-500/10 rounded-2xl hover:border-purple-500/30 transition-all duration-300 cursor-pointer hover:shadow-lg hover:shadow-purple-500/10">
+                <div className="space-y-2 md:space-y-4">
+                  <div className="text-3xl md:text-4xl">{tool.icon}</div>
+                  <h3 className="text-base md:text-xl font-semibold text-white group-hover:text-purple-300 transition-colors">
                     {tool.title}
                   </h3>
-                  <p className="text-gray-400 text-sm leading-relaxed">
+                  <p className="text-gray-400 text-xs md:text-sm leading-relaxed">
                     {tool.description}
                   </p>
-                  <div className="pt-4">
+                  <div className="pt-2 md:pt-4">
                     <span className="inline-flex items-center text-purple-400 font-semibold group-hover:translate-x-2 transition-transform">
                       Explore →
                     </span>
