@@ -38,14 +38,14 @@ export function StorePreview() {
               Official Store
             </span>
           </div>
-          <h2 className="text-4xl md:text-5xl font-bold leading-tight">
+          <h2 className="text-3xl md:text-5xl font-bold leading-tight">
             <span className="bg-gradient-to-r from-red-400 via-pink-400 to-orange-400 bg-clip-text text-transparent">
               Everything You Need
             </span>
             <br />
             <span className="text-white">In One Place</span>
           </h2>
-          <p className="text-gray-400 max-w-2xl mx-auto text-lg">
+          <p className="text-gray-400 max-w-2xl mx-auto text-base md:text-lg">
             Beats, plugins, merchandise, and tools—everything to level up your music production and support 3LIXIR.
           </p>
         </div>
