@@ -24,8 +24,8 @@ export function ToolsPreview() {
   ];
 
   return (
-    <div className="w-full bg-black text-white py-20 px-6">
-      <div className="max-w-6xl mx-auto space-y-12">
+    <div className="w-full bg-black text-white py-10 md:py-20 px-6">
+      <div className="max-w-6xl mx-auto space-y-6 md:space-y-12">
         <div className="text-center space-y-4">
           <div className="inline-block px-4 py-2 bg-purple-500/10 border border-purple-500/30 rounded-full">
             <span className="text-sm font-semibold text-purple-400 uppercase tracking-wider">
