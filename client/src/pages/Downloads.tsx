@@ -128,6 +128,9 @@ export default function Downloads() {
       "THE CROP BUMPER": "https://pub-478e4664fd2d4d5db031087e022e5fd1.r2.dev/THE%20CROP%20BUMPER.zip",
       EVOLUTION: "https://pub-478e4664fd2d4d5db031087e022e5fd1.r2.dev/EVOLUTION.zip",
       "THE HORYZON": "https://pub-478e4664fd2d4d5db031087e022e5fd1.r2.dev/THE%20HORYZON%20.zip",
+      "ATHERIAL WAVES": "https://pub-478e4664fd2d4d5db031087e022e5fd1.r2.dev/AETHERIAL%20WAVES.zip",
+      LAZERBEAM: "https://pub-478e4664fd2d4d5db031087e022e5fd1.r2.dev/LAZERBEAM.zip",
+      "No Pressure": "https://pub-478e4664fd2d4d5db031087e022e5fd1.r2.dev/NO%20PRESSURE.zip",
     };
 
     const downloadUrl = downloadUrls[beatTitle];
