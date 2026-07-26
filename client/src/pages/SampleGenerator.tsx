@@ -1,5 +1,6 @@
 // client/src/pages/SampleGenerator.tsx
 import { useRef, useState } from "react";
+import { useSEO, toolSchema } from "@/hooks/useSEO";
 import { Link, useLocation } from "wouter";
 import {
   Search,
@@ -103,6 +104,17 @@ interface DigTrack {
 }
 
 export default function SampleGenerator() {
+  useSEO({
+    title: "Free Sample Finder & Crate Digger — Random Record Generator | 3LIXIR",
+    description:
+      "Find samples to flip with our free crate-digging tool. A random record generator with Discogs metadata and genre filtering — discover your next sample to chop.",
+    canonical: "/tools/sample-generator",
+    jsonLd: toolSchema(
+      "3LIXIR Sample Digger",
+      "Free crate-digging tool and random record generator with Discogs metadata for finding samples.",
+      "/tools/sample-generator",
+    ),
+  });
   const { user, userProfile, openAuthModal } = useAuth();
   const [, setLocation] = useLocation();
   const isMobile = useIsMobile();

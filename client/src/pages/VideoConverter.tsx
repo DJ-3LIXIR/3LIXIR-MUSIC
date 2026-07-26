@@ -1,5 +1,6 @@
 // client/src/pages/VideoConverter.tsx
 import { useEffect, useRef, useState } from "react";
+import { useSEO, toolSchema } from "@/hooks/useSEO";
 import { Link, useLocation } from "wouter";
 import { Navbar } from "@/components/layout/Navbar";
 import { useAuth } from "@/contexts/AuthContext";
@@ -102,6 +103,17 @@ function timeAgo(ts: number): string {
 }
 
 export default function VideoConverter() {
+  useSEO({
+    title: "Free YouTube to MP3 & WAV Converter | 3LIXIR",
+    description:
+      "Convert YouTube videos and links to MP3, WAV, or MP4 free. Fast, high-quality audio downloads for producers and creators — no signup, no limits.",
+    canonical: "/tools/video-converter",
+    jsonLd: toolSchema(
+      "3LIXIR Video Converter",
+      "Free online converter for YouTube links and videos to MP3, WAV and MP4.",
+      "/tools/video-converter",
+    ),
+  });
   const { user, userProfile, openAuthModal } = useAuth();
   const [, setLocation] = useLocation();
   const isMobile = useIsMobile();

@@ -1,10 +1,18 @@
 // client/src/pages/Tools.tsx
 import { Link } from "wouter";
+import { useSEO } from "@/hooks/useSEO";
 import { Navbar } from "@/components/layout/Navbar";
 import ToolLink from "@/components/tools/ToolLink";
 import { useIsMobile } from "@/hooks/use-mobile";
 
 export default function Tools() {
+  useSEO({
+    title:
+      "Free Music Production Tools — Vocal Remover, YouTube Converter & Sample Finder | 3LIXIR",
+    description:
+      "Free online tools for music producers: an AI vocal remover / stem splitter, a YouTube to MP3 & WAV converter, and a sample crate-digging generator. No signup required.",
+    canonical: "/tools",
+  });
   const isMobile = useIsMobile();
 
   return (

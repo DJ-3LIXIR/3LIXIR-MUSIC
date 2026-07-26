@@ -1,5 +1,6 @@
 // client/src/pages/VocalRemover.tsx
 import { useEffect, useRef, useState } from "react";
+import { useSEO, toolSchema } from "@/hooks/useSEO";
 import { Link, useLocation } from "wouter";
 import { Navbar } from "@/components/layout/Navbar";
 import { useAuth } from "@/contexts/AuthContext";
@@ -99,6 +100,17 @@ function timeAgo(ts: number): string {
 }
 
 export default function VocalRemover() {
+  useSEO({
+    title: "Free Vocal Remover — Split Vocals & Instrumentals Online | 3LIXIR",
+    description:
+      "Remove vocals from any song free. Our AI stem splitter separates vocals, drums, bass and instruments online — no signup. Make instant acapellas and clean instrumentals.",
+    canonical: "/tools/vocal-remover",
+    jsonLd: toolSchema(
+      "3LIXIR Vocal Remover",
+      "Free online AI vocal remover and stem splitter — separate vocals and instruments from any song.",
+      "/tools/vocal-remover",
+    ),
+  });
   const { user, userProfile, openAuthModal } = useAuth();
   const [, setLocation] = useLocation();
   const [url, setUrl] = useState("");
