@@ -2264,6 +2264,66 @@ const InfoPage = () => {
                     </div>
                   </div>
 
+                  {/* Producer Tools */}
+                  <div className="space-y-4">
+                    <h3 className="text-xl font-semibold text-[hsl(var(--gold))]">
+                      Producer Tools
+                    </h3>
+
+                    <div className="space-y-4">
+                      <div className="bg-white/5 rounded-lg p-5">
+                        <h4 className="font-semibold mb-2 flex items-start gap-2">
+                          <HelpCircle className="w-5 h-5 text-[hsl(var(--gold))] flex-shrink-0 mt-0.5" />
+                          How do I convert a YouTube video to MP3 or WAV?
+                        </h4>
+                        <p className="text-muted-foreground pl-7">
+                          Open the free Video Converter under Tools, paste a
+                          YouTube link (or any video URL), choose your format —
+                          MP3, WAV, M4A, or MP4 — and download. It runs right in
+                          your browser with no software to install.
+                        </p>
+                      </div>
+
+                      <div className="bg-white/5 rounded-lg p-5">
+                        <h4 className="font-semibold mb-2 flex items-start gap-2">
+                          <HelpCircle className="w-5 h-5 text-[hsl(var(--gold))] flex-shrink-0 mt-0.5" />
+                          Are the producer tools free to use?
+                        </h4>
+                        <p className="text-muted-foreground pl-7">
+                          Yes. The Video Converter and Sample Generator are free.
+                          Signed-in members get a set number of free conversions
+                          each day, and VIP members get unlimited use with no
+                          daily cap.
+                        </p>
+                      </div>
+
+                      <div className="bg-white/5 rounded-lg p-5">
+                        <h4 className="font-semibold mb-2 flex items-start gap-2">
+                          <HelpCircle className="w-5 h-5 text-[hsl(var(--gold))] flex-shrink-0 mt-0.5" />
+                          How does the Sample Generator work?
+                        </h4>
+                        <p className="text-muted-foreground pl-7">
+                          It's a crate-digging tool that surfaces random records
+                          with Discogs metadata and genre filtering, so you can
+                          quickly discover new samples to flip for your beats.
+                        </p>
+                      </div>
+
+                      <div className="bg-white/5 rounded-lg p-5">
+                        <h4 className="font-semibold mb-2 flex items-start gap-2">
+                          <HelpCircle className="w-5 h-5 text-[hsl(var(--gold))] flex-shrink-0 mt-0.5" />
+                          How do I remove vocals from a song?
+                        </h4>
+                        <p className="text-muted-foreground pl-7">
+                          Our AI Vocal Remover (stem splitter) separates a track
+                          into vocals and instrumentals so you can make instant
+                          acapellas or clean instrumentals. It's launching soon
+                          under Tools.
+                        </p>
+                      </div>
+                    </div>
+                  </div>
+
                   {/* Still Have Questions */}
                   <div className="bg-gradient-to-r from-[hsl(var(--gold))]/10 to-transparent border border-[hsl(var(--gold))]/20 rounded-lg p-6">
                     <h3 className="text-xl font-semibold mb-2">
