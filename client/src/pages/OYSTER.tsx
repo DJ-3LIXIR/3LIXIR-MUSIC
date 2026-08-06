@@ -370,7 +370,7 @@ export default function OYSTER() {
                   margin: 0,
                 }}
               >
-                Add your Oyster interface description here. Tell producers what they're looking at and how it fits into their workflow.
+                Oyster puts granular sound design front and center. A clean, visual interface lays out the grain engine, dual wavetable oscillators, sub, and modulation in one view — so you can see exactly what you're shaping and start building textures right away.
               </p>
             </div>
           </div>
@@ -421,7 +421,7 @@ export default function OYSTER() {
                   margin: 0,
                 }}
               >
-                Add your Oyster oscillator description here. Describe the sound engine and what makes it unique.
+                At its core, Oyster pairs a granular engine with dual wavetable oscillators. Scatter and stretch grains, morph between wave shapes, and layer in a sub and second oscillator to build everything from glassy pads to gritty, living movement — all from a single sound engine.
               </p>
             </div>
             <div style={{ flex: "1 1 60%" }}>
@@ -449,9 +449,9 @@ export default function OYSTER() {
             >
               OYSTER
               <br />
-              <span style={{ color: "#333" }}>Your tagline.</span>
+              <span style={{ color: "#333" }}>Granular textures,</span>
               <br />
-              <span style={{ color: "#C9A84C" }}>Goes here.</span>
+              <span style={{ color: "#C9A84C" }}>endlessly alive.</span>
             </h1>
 
             <p
@@ -463,7 +463,7 @@ export default function OYSTER() {
                 margin: 0,
               }}
             >
-              Add your Oyster product description here. Tell producers what it is and why they need it.
+              Oyster is a granular synthesizer for producers who want more than presets. Turn any waveform into evolving, organic texture — grains, wavetables, a sub, and a second oscillator, all shaped through a deep modulation engine.
             </p>
 
             {/* CTA buttons */}
@@ -521,8 +521,8 @@ export default function OYSTER() {
               </button>
             </div>
 
-            <p style={{ fontSize: "12px", color: "#333", margin: 0 }}>
-              Add version info or compatibility details here
+            <p style={{ fontSize: "12px", color: "#555", margin: 0 }}>
+              VST3 &amp; AU · macOS &amp; Windows
             </p>
           </div>
 
@@ -725,6 +725,148 @@ export default function OYSTER() {
             </div>
           </div>
 
+          {/* About / Story section */}
+          <div
+            style={{
+              position: "relative",
+              zIndex: 1,
+              maxWidth: "820px",
+              margin: "0 auto",
+              padding: "90px 24px 40px",
+              display: "flex",
+              flexDirection: "column",
+              alignItems: "center",
+              textAlign: "center",
+              gap: "24px",
+            }}
+          >
+            <div
+              style={{
+                fontSize: "11px",
+                fontWeight: 700,
+                letterSpacing: "0.2em",
+                textTransform: "uppercase",
+                color: "#C9A84C",
+              }}
+            >
+              The Story
+            </div>
+            <h2
+              style={{
+                fontSize: "clamp(28px, 4vw, 46px)",
+                fontWeight: 800,
+                letterSpacing: "-0.03em",
+                margin: 0,
+                lineHeight: 1.15,
+              }}
+            >
+              Old sounds in,
+              <br />
+              <span style={{ color: "#C9A84C" }}>new worlds out.</span>
+            </h2>
+            <p style={{ fontSize: "16px", color: "#999", lineHeight: 1.9, margin: 0 }}>
+              Oyster is my take on granular synthesis — a synth built from the
+              ground up in C++ to turn any sound into something new. Feed it a
+              waveform and reshape it grain by grain: scatter, stretch, and morph
+              micro-fragments into evolving, organic textures, then layer dual
+              wavetable oscillators, a sub, and a second voice on top.
+            </p>
+            <p style={{ fontSize: "16px", color: "#999", lineHeight: 1.9, margin: 0 }}>
+              Oyster is in active development, and its preset library is on the
+              way — I'm building toward 300+ presets that arrive free as they're
+              finished. Want the full 3LIXIR sound? Pair Oyster with ARK in the
+              Noah's Ark Bundle and save 15%.
+            </p>
+          </div>
+
+          {/* Spec / technical details table */}
+          <div
+            style={{
+              position: "relative",
+              zIndex: 1,
+              maxWidth: "680px",
+              margin: "0 auto",
+              padding: "40px 24px 90px",
+            }}
+          >
+            <div
+              style={{
+                fontSize: "11px",
+                fontWeight: 700,
+                letterSpacing: "0.2em",
+                textTransform: "uppercase",
+                color: "#C9A84C",
+                marginBottom: "24px",
+                textAlign: "center",
+              }}
+            >
+              Technical Details
+            </div>
+            <div
+              style={{
+                border: "1px solid rgba(201,168,76,0.2)",
+                borderRadius: "14px",
+                overflow: "hidden",
+                background: "rgba(10,10,10,0.6)",
+              }}
+            >
+              {([
+                ["Version", "1.1.0"],
+                ["Formats", "VST3, AU"],
+                ["Platforms", "macOS 11+ · Windows 10+"],
+                ["Architecture", "Universal (Intel + Apple Silicon)"],
+                ["DAW Compatibility", "Any VST3/AU-compatible DAW"],
+                ["Sound Engine", "Granular — grain engine, dual wavetable oscillators, sub oscillator, second oscillator, modulation matrix"],
+                ["Presets", "Growing library — 300+ on the way (free updates)"],
+                ["Bundle", "Noah's Ark Bundle — pair with ARK, save 15%"],
+                ["License", "Unlimited access to the plugin, for life"],
+              ] as [string, string][]).map(([label, value], i, arr) => (
+                <div
+                  key={label}
+                  style={{
+                    display: "flex",
+                    flexDirection: isMobile ? "column" : "row",
+                    justifyContent: "space-between",
+                    alignItems: isMobile ? "flex-start" : "baseline",
+                    gap: isMobile ? "4px" : "24px",
+                    padding: "16px 22px",
+                    borderBottom:
+                      i < arr.length - 1
+                        ? "1px solid rgba(201,168,76,0.1)"
+                        : "none",
+                  }}
+                >
+                  <span
+                    style={{
+                      fontSize: "12px",
+                      fontWeight: 700,
+                      letterSpacing: "0.08em",
+                      textTransform: "uppercase",
+                      color: "#C9A84C",
+                      whiteSpace: "nowrap",
+                      flexShrink: 0,
+                    }}
+                  >
+                    {label}
+                  </span>
+                  <span
+                    style={{
+                      fontSize: "14px",
+                      color: "#ccc",
+                      lineHeight: 1.6,
+                      textAlign: isMobile ? "left" : "right",
+                    }}
+                  >
+                    {value}
+                  </span>
+                </div>
+              ))}
+            </div>
+          </div>
+
+          {/* Divider */}
+          <div style={{ borderTop: "1px solid #111", position: "relative", zIndex: 1 }} />
+
           {/* Bottom CTA */}
           <div
             style={{
@@ -751,10 +893,10 @@ export default function OYSTER() {
             >
               Get Oyster.
               <br />
-              <span style={{ color: "#333" }}>Your tagline.</span>
+              <span style={{ color: "#C9A84C" }}>Nothing else sounds like it.</span>
             </h2>
-            <p style={{ fontSize: "17px", color: "#555", maxWidth: "420px", lineHeight: 1.7, margin: 0 }}>
-              Add your bottom CTA description here. Drive the user to take action.
+            <p style={{ fontSize: "17px", color: "#888", maxWidth: "440px", lineHeight: 1.7, margin: 0 }}>
+              A granular playground for textures you won't find anywhere else. Grab your copy of Oyster and start exploring.
             </p>
 
             <div style={{ display: "flex", gap: "16px", flexWrap: "wrap", justifyContent: "center" }}>
