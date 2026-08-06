@@ -841,6 +841,91 @@ export default function ARK() {
             </p>
           </div>
 
+          {/* Spec / technical details table */}
+          <div
+            style={{
+              position: "relative",
+              zIndex: 1,
+              maxWidth: "680px",
+              margin: "0 auto",
+              padding: "40px 24px 90px",
+            }}
+          >
+            <div
+              style={{
+                fontSize: "11px",
+                fontWeight: 700,
+                letterSpacing: "0.2em",
+                textTransform: "uppercase",
+                color: "#C9A84C",
+                marginBottom: "24px",
+                textAlign: "center",
+              }}
+            >
+              Technical Details
+            </div>
+            <div
+              style={{
+                border: "1px solid rgba(201,168,76,0.2)",
+                borderRadius: "14px",
+                overflow: "hidden",
+                background: "rgba(10,10,10,0.6)",
+              }}
+            >
+              {([
+                ["Version", "1.1.0"],
+                ["Formats", "VST3, AU"],
+                ["Platforms", "macOS 11+ · Windows 10+"],
+                ["Architecture", "Universal (Intel + Apple Silicon)"],
+                ["DAW Compatibility", "Any VST3/AU-compatible DAW"],
+                ["Sound Engine", "Wavetable — 12 oscillators, string + choir generators, arpeggiator, Moog-style ladder filter"],
+                ["Presets", "238 included (building toward 1,500)"],
+                ["Included", "3LIXIR Olympus FX suite"],
+                ["License", "Unlimited access to the plugin, for life"],
+              ] as [string, string][]).map(([label, value], i, arr) => (
+                <div
+                  key={label}
+                  style={{
+                    display: "flex",
+                    flexDirection: isMobile ? "column" : "row",
+                    justifyContent: "space-between",
+                    alignItems: isMobile ? "flex-start" : "baseline",
+                    gap: isMobile ? "4px" : "24px",
+                    padding: "16px 22px",
+                    borderBottom:
+                      i < arr.length - 1
+                        ? "1px solid rgba(201,168,76,0.1)"
+                        : "none",
+                  }}
+                >
+                  <span
+                    style={{
+                      fontSize: "12px",
+                      fontWeight: 700,
+                      letterSpacing: "0.08em",
+                      textTransform: "uppercase",
+                      color: "#C9A84C",
+                      whiteSpace: "nowrap",
+                      flexShrink: 0,
+                    }}
+                  >
+                    {label}
+                  </span>
+                  <span
+                    style={{
+                      fontSize: "14px",
+                      color: "#ccc",
+                      lineHeight: 1.6,
+                      textAlign: isMobile ? "left" : "right",
+                    }}
+                  >
+                    {value}
+                  </span>
+                </div>
+              ))}
+            </div>
+          </div>
+
           {/* Divider */}
           <div style={{ borderTop: "1px solid #111", position: "relative", zIndex: 1 }} />
 
