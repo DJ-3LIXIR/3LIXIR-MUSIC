@@ -337,9 +337,9 @@ export default function ARK() {
             >
               ARK
               <br />
-              <span style={{ color: "#333" }}>Our soloution for.</span>
+              <span style={{ color: "#333" }}>Our solution for</span>
               <br />
-              <span style={{ color: "#C9A84C" }}>Your production needs.</span>
+              <span style={{ color: "#C9A84C" }}>your production needs.</span>
             </h1>
 
             <p
@@ -351,7 +351,7 @@ export default function ARK() {
                 margin: 0,
               }}
             >
-              Come pick up you copy of ARK our 80's style synthesizer. wavetable synthesizer with 12 oscillators, 4 choir generators, and a Moog style ladder filter with 15 different presets.
+              Pick up your copy of ARK — a modern twist on the 80's synthesizer. A wavetable engine with 12 oscillators, 4 choir generators, and a Moog-style ladder filter, loaded with 238 factory presets.
             </p>
 
             {/* CTA buttons */}
@@ -409,8 +409,8 @@ export default function ARK() {
               </button>
             </div>
 
-            <p style={{ fontSize: "12px", color: "#333", margin: 0 }}>
-              Add version info or compatibility details here
+            <p style={{ fontSize: "12px", color: "#555", margin: 0 }}>
+              VST3 &amp; AU · macOS &amp; Windows
             </p>
           </div>
 
@@ -786,6 +786,61 @@ export default function ARK() {
             </div>
           </div>
 
+          {/* About / Story section */}
+          <div
+            style={{
+              position: "relative",
+              zIndex: 1,
+              maxWidth: "820px",
+              margin: "0 auto",
+              padding: "90px 24px 40px",
+              display: "flex",
+              flexDirection: "column",
+              alignItems: "center",
+              textAlign: "center",
+              gap: "24px",
+            }}
+          >
+            <div
+              style={{
+                fontSize: "11px",
+                fontWeight: 700,
+                letterSpacing: "0.2em",
+                textTransform: "uppercase",
+                color: "#C9A84C",
+              }}
+            >
+              The Story
+            </div>
+            <h2
+              style={{
+                fontSize: "clamp(28px, 4vw, 46px)",
+                fontWeight: 800,
+                letterSpacing: "-0.03em",
+                margin: 0,
+                lineHeight: 1.15,
+              }}
+            >
+              Old-school soul,
+              <br />
+              <span style={{ color: "#C9A84C" }}>modern-day engine.</span>
+            </h2>
+            <p style={{ fontSize: "16px", color: "#999", lineHeight: 1.9, margin: 0 }}>
+              ARK is my own modern twist on the classic 80's synthesizer — a
+              wavetable instrument coded from the ground up in C++. Under the
+              hood: 12 oscillators, dedicated string and choir generators, a
+              built-in arpeggiator, and a Moog-style ladder filter, all built
+              around the way producers actually work.
+            </p>
+            <p style={{ fontSize: "16px", color: "#999", lineHeight: 1.9, margin: 0 }}>
+              Every copy ships with 238 factory presets and the full 3LIXIR
+              Olympus FX suite baked in — and this is only the beginning. I'm
+              building toward a 1,500-preset library, with new sounds and
+              refinements rolling out through free updates. ARK is a living
+              instrument that only gets better over time.
+            </p>
+          </div>
+
           {/* Divider */}
           <div style={{ borderTop: "1px solid #111", position: "relative", zIndex: 1 }} />
 
@@ -815,10 +870,10 @@ export default function ARK() {
             >
               Get ARK.
               <br />
-              <span style={{ color: "#333" }}>Your tagline.</span>
+              <span style={{ color: "#C9A84C" }}>A modern twist on the 80's.</span>
             </h2>
-            <p style={{ fontSize: "17px", color: "#555", maxWidth: "420px", lineHeight: 1.7, margin: 0 }}>
-              Add your bottom CTA description here. Drive the user to take action.
+            <p style={{ fontSize: "17px", color: "#888", maxWidth: "440px", lineHeight: 1.7, margin: 0 }}>
+              One synth, endless character. Grab your copy of ARK and start building.
             </p>
 
             <div style={{ display: "flex", gap: "16px", flexWrap: "wrap", justifyContent: "center" }}>
