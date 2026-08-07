@@ -432,7 +432,7 @@ export default function OrionSoundEQ() {
         </div>
 
         <p style={{ fontSize: "12px", color: "#333", margin: 0 }}>
-          Free · macOS 11+ · Windows 10+ · v1.0.0
+          Free · macOS 11+ · Windows 10+ · v1.1.0
         </p>
       </div>
 
@@ -816,6 +816,149 @@ export default function OrionSoundEQ() {
               <div style={{ fontSize: "14px", color: "#555", lineHeight: 1.7 }}>
                 {f.desc}
               </div>
+            </div>
+          ))}
+        </div>
+      </div>
+
+      {/* Divider */}
+      <div style={{ borderTop: "1px solid #111", position: "relative", zIndex: 1 }} />
+
+      {/* About / Story section */}
+      <div
+        style={{
+          position: "relative",
+          zIndex: 1,
+          maxWidth: "820px",
+          margin: "0 auto",
+          padding: "90px 24px 40px",
+          display: "flex",
+          flexDirection: "column",
+          alignItems: "center",
+          textAlign: "center",
+          gap: "24px",
+        }}
+      >
+        <div
+          style={{
+            fontSize: "11px",
+            fontWeight: 700,
+            letterSpacing: "0.2em",
+            textTransform: "uppercase",
+            color: "#22c55e",
+          }}
+        >
+          The Story
+        </div>
+        <h2
+          style={{
+            fontSize: "clamp(28px, 4vw, 46px)",
+            fontWeight: 800,
+            letterSpacing: "-0.03em",
+            margin: 0,
+            lineHeight: 1.15,
+          }}
+        >
+          A pro EQ,
+          <br />
+          <span style={{ color: "#22c55e" }}>for everyone.</span>
+        </h2>
+        <p style={{ fontSize: "16px", color: "#999", lineHeight: 1.9, margin: 0 }}>
+          Orion Sound EQ is my free gift to the 3LIXIR community — a full-featured
+          equalizer coded from the ground up in C++, with no catch and no price
+          tag. Build a custom curve with up to 32 bands, watch every frequency
+          move in the real-time spectrum analyzer, and switch between single-band
+          and multiband processing, all at zero latency.
+        </p>
+        <p style={{ fontSize: "16px", color: "#999", lineHeight: 1.9, margin: 0 }}>
+          It ships with 100+ professionally tuned presets for vocals, drums,
+          instruments, and full mixes, and it's light enough to load on every
+          track. Download it free for Mac or PC and start shaping your sound in
+          under a minute.
+        </p>
+      </div>
+
+      {/* Spec / technical details table */}
+      <div
+        style={{
+          position: "relative",
+          zIndex: 1,
+          maxWidth: "680px",
+          margin: "0 auto",
+          padding: "40px 24px 90px",
+        }}
+      >
+        <div
+          style={{
+            fontSize: "11px",
+            fontWeight: 700,
+            letterSpacing: "0.2em",
+            textTransform: "uppercase",
+            color: "#22c55e",
+            marginBottom: "24px",
+            textAlign: "center",
+          }}
+        >
+          Technical Details
+        </div>
+        <div
+          style={{
+            border: "1px solid rgba(34,197,94,0.2)",
+            borderRadius: "14px",
+            overflow: "hidden",
+            background: "rgba(10,10,10,0.6)",
+          }}
+        >
+          {([
+            ["Version", "1.1.0"],
+            ["Price", "Free"],
+            ["Formats", "VST3, AU"],
+            ["Platforms", "macOS 11+ · Windows 10+"],
+            ["Architecture", "Universal (Intel + Apple Silicon)"],
+            ["DAW Compatibility", "Any VST3/AU-compatible DAW"],
+            ["Type", "Equalizer — single-band & multiband"],
+            ["Features", "Up to 32 bands, spectrum analyzer, zero latency, low CPU"],
+            ["Presets", "100+ factory presets included"],
+            ["License", "Free — yours to keep"],
+          ] as [string, string][]).map(([label, value], i, arr) => (
+            <div
+              key={label}
+              style={{
+                display: "flex",
+                flexDirection: isMobile ? "column" : "row",
+                justifyContent: "space-between",
+                alignItems: isMobile ? "flex-start" : "baseline",
+                gap: isMobile ? "4px" : "24px",
+                padding: "16px 22px",
+                borderBottom:
+                  i < arr.length - 1
+                    ? "1px solid rgba(34,197,94,0.1)"
+                    : "none",
+              }}
+            >
+              <span
+                style={{
+                  fontSize: "12px",
+                  fontWeight: 700,
+                  letterSpacing: "0.08em",
+                  textTransform: "uppercase",
+                  color: "#22c55e",
+                  whiteSpace: "nowrap",
+                  flexShrink: 0,
+                }}
+              >
+                {label}
+              </span>
+              <span
+                style={{
+                  fontSize: "14px",
+                  color: "#ccc",
+                  lineHeight: 1.6,
+                  textAlign: isMobile ? "left" : "right",
+                }}
+              >
+                {value}
+              </span>
             </div>
           ))}
         </div>

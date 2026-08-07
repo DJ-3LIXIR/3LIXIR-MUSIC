@@ -305,9 +305,9 @@ export default function Hades() {
             >
               Hades
               <br />
-              <span style={{ color: "#333" }}>Your tagline.</span>
+              <span style={{ color: "#333" }}>Heavy tone,</span>
               <br />
-              <span style={{ color: "#C9A84C" }}>Goes here.</span>
+              <span style={{ color: "#C9A84C" }}>forged in fire.</span>
             </h1>
 
             <p
@@ -319,7 +319,7 @@ export default function Hades() {
                 margin: 0,
               }}
             >
-              Add your Hades product description here. Tell producers what it is and why they need it.
+              Hades is a guitar and bass amp suite built for heavy music. Drive your tone through thick saturation, dial in crushing low end, and pair it with authentic cabinet emulation — everything you need to go from clean DI to wall-of-sound in one plugin.
             </p>
 
             {/* CTA buttons */}
@@ -377,8 +377,8 @@ export default function Hades() {
               </button>
             </div>
 
-            <p style={{ fontSize: "12px", color: "#333", margin: 0 }}>
-              Add version info or compatibility details here
+            <p style={{ fontSize: "12px", color: "#555", margin: 0 }}>
+              VST3 &amp; AU · macOS &amp; Windows
             </p>
           </div>
 
@@ -506,6 +506,149 @@ export default function Hades() {
             </p>
           </div>
 
+          {/* About / Story section */}
+          <div
+            style={{
+              position: "relative",
+              zIndex: 1,
+              maxWidth: "820px",
+              margin: "0 auto",
+              padding: "90px 24px 40px",
+              display: "flex",
+              flexDirection: "column",
+              alignItems: "center",
+              textAlign: "center",
+              gap: "24px",
+            }}
+          >
+            <div
+              style={{
+                fontSize: "11px",
+                fontWeight: 700,
+                letterSpacing: "0.2em",
+                textTransform: "uppercase",
+                color: "#C9A84C",
+              }}
+            >
+              The Story
+            </div>
+            <h2
+              style={{
+                fontSize: "clamp(28px, 4vw, 46px)",
+                fontWeight: 800,
+                letterSpacing: "-0.03em",
+                margin: 0,
+                lineHeight: 1.15,
+              }}
+            >
+              Built for the
+              <br />
+              <span style={{ color: "#C9A84C" }}>heaviest tones.</span>
+            </h2>
+            <p style={{ fontSize: "16px", color: "#999", lineHeight: 1.9, margin: 0 }}>
+              Hades is my amp and cabinet suite for heavy music — coded from the
+              ground up in C++ to push guitars and bass into thick, aggressive
+              territory. Drive your signal through deep saturation, shape crushing
+              low end with Hades Bass, and lock in the perfect speaker character
+              with the built-in cabinet simulator.
+            </p>
+            <p style={{ fontSize: "16px", color: "#999", lineHeight: 1.9, margin: 0 }}>
+              It comes loaded with factory presets tuned for every style of heavy,
+              so you can find your tone fast and go. Hades is also part of the
+              3LIXIR Olympus suite — grab it alongside Apollo and Orion in the
+              Olympus Bundle and save 15%.
+            </p>
+          </div>
+
+          {/* Spec / technical details table */}
+          <div
+            style={{
+              position: "relative",
+              zIndex: 1,
+              maxWidth: "680px",
+              margin: "0 auto",
+              padding: "40px 24px 90px",
+            }}
+          >
+            <div
+              style={{
+                fontSize: "11px",
+                fontWeight: 700,
+                letterSpacing: "0.2em",
+                textTransform: "uppercase",
+                color: "#C9A84C",
+                marginBottom: "24px",
+                textAlign: "center",
+              }}
+            >
+              Technical Details
+            </div>
+            <div
+              style={{
+                border: "1px solid rgba(201,168,76,0.2)",
+                borderRadius: "14px",
+                overflow: "hidden",
+                background: "rgba(10,10,10,0.6)",
+              }}
+            >
+              {([
+                ["Version", "1.1.0"],
+                ["Formats", "VST3, AU"],
+                ["Platforms", "macOS 11+ · Windows 10+"],
+                ["Architecture", "Universal (Intel + Apple Silicon)"],
+                ["DAW Compatibility", "Any VST3/AU-compatible DAW"],
+                ["Type", "Guitar & bass amp + cabinet simulator"],
+                ["Features", "Amp saturation, bass engine, cabinet emulation"],
+                ["Presets", "Factory presets for guitar, bass & cabinets"],
+                ["Bundle", "Olympus Bundle — with Apollo & Orion, save 15%"],
+                ["License", "Unlimited access to the plugin, for life"],
+              ] as [string, string][]).map(([label, value], i, arr) => (
+                <div
+                  key={label}
+                  style={{
+                    display: "flex",
+                    flexDirection: isMobile ? "column" : "row",
+                    justifyContent: "space-between",
+                    alignItems: isMobile ? "flex-start" : "baseline",
+                    gap: isMobile ? "4px" : "24px",
+                    padding: "16px 22px",
+                    borderBottom:
+                      i < arr.length - 1
+                        ? "1px solid rgba(201,168,76,0.1)"
+                        : "none",
+                  }}
+                >
+                  <span
+                    style={{
+                      fontSize: "12px",
+                      fontWeight: 700,
+                      letterSpacing: "0.08em",
+                      textTransform: "uppercase",
+                      color: "#C9A84C",
+                      whiteSpace: "nowrap",
+                      flexShrink: 0,
+                    }}
+                  >
+                    {label}
+                  </span>
+                  <span
+                    style={{
+                      fontSize: "14px",
+                      color: "#ccc",
+                      lineHeight: 1.6,
+                      textAlign: isMobile ? "left" : "right",
+                    }}
+                  >
+                    {value}
+                  </span>
+                </div>
+              ))}
+            </div>
+          </div>
+
+          {/* Divider */}
+          <div style={{ borderTop: "1px solid #111", position: "relative", zIndex: 1 }} />
+
           {/* Bottom CTA */}
           <div
             style={{
@@ -532,10 +675,10 @@ export default function Hades() {
             >
               Get Hades.
               <br />
-              <span style={{ color: "#333" }}>Your tagline.</span>
+              <span style={{ color: "#C9A84C" }}>Unleash the heavy.</span>
             </h2>
-            <p style={{ fontSize: "17px", color: "#555", maxWidth: "420px", lineHeight: 1.7, margin: 0 }}>
-              Add your bottom CTA description here. Drive the user to take action.
+            <p style={{ fontSize: "17px", color: "#888", maxWidth: "440px", lineHeight: 1.7, margin: 0 }}>
+              Amp, saturation, and cabinet in one plugin — built for the heaviest tones. Grab your copy of Hades and turn up.
             </p>
 
             <div style={{ display: "flex", gap: "16px", flexWrap: "wrap", justifyContent: "center" }}>
