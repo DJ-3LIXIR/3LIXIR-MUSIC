@@ -670,22 +670,24 @@ export default function OrionSoundEQ() {
             lineHeight: 1.15,
           }}
         >
-          Every frequency,
+          Find every
           <br />
-          <span style={{ color: "#22c55e" }}>in focus.</span>
+          <span style={{ color: "#22c55e" }}>point of light.</span>
         </h2>
         <p style={{ fontSize: "16px", color: "#999", lineHeight: 1.9, margin: 0 }}>
-          Cut through the noise and bring every frequency into focus. Orion is
-          3LIXIR's precision equalizer, coded from the ground up in C++. Chart a
-          custom curve with up to 32 bands, watch each frequency light up in the
-          real-time spectrum analyzer, and move between single-band and multiband
-          processing without a trace of latency.
+          In the noise of a busy mix, every frequency is a point of light waiting
+          to be found. Orion is 3LIXIR's precision equalizer — coded from the
+          ground up in C++ to bring order to the chaos. Chart a custom curve
+          across up to 32 bands, watch each frequency flare to life in the
+          real-time spectrum analyzer, and navigate between single-band and
+          multiband processing without a trace of latency.
         </p>
         <p style={{ fontSize: "16px", color: "#999", lineHeight: 1.9, margin: 0 }}>
-          Start with 100+ professionally tuned presets for vocals, drums,
-          instruments, and full mixes, then dial in your own — it's light enough
-          to sit on every track. Orion is also part of the 3LIXIR Olympus suite;
-          grab it alongside Apollo and Hades in the Olympus Bundle and save 15%.
+          When you need a fast starting point, 100+ professionally tuned presets
+          for vocals, drums, instruments, and full mixes light the way — then
+          steer them wherever your ear leads. Light enough to sit on every track,
+          Orion also joins Apollo and Hades in the 3LIXIR Olympus suite; claim all
+          three in the Olympus Bundle and save 15%.
         </p>
       </div>
 
