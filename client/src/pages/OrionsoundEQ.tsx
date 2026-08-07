@@ -365,11 +365,9 @@ export default function OrionSoundEQ() {
           refine every frequency in your mix — with precision.
         </p>
 
-        {/* Download buttons */}
+        {/* CTA buttons */}
         <div style={{ display: "flex", gap: "16px", flexWrap: "wrap", justifyContent: "center" }}>
-          {/* Mac */}
           <button
-            onClick={() => downloadOrion('mac')}
             style={{
               display: "inline-flex",
               alignItems: "center",
@@ -389,15 +387,10 @@ export default function OrionSoundEQ() {
             onMouseEnter={(e) => ((e.currentTarget as HTMLElement).style.opacity = "0.85")}
             onMouseLeave={(e) => ((e.currentTarget as HTMLElement).style.opacity = "1")}
           >
-            <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
-              <path d="M11.5 1.5C10.5 1.5 9.5 2 9 3c.8.5 1.5 1.5 1.5 2.5 0 1-.5 2-1.5 2.5.5 1 1.5 1.5 2.5 1.5 1.5 0 3-1.5 3-4 0-2.5-1-4-3-4zM5 4C3 4 1.5 6 1.5 8.5 1.5 11 3 14 5 14c.8 0 1.5-.5 2-.5s1.2.5 2 .5c2 0 3.5-3 3.5-5.5C10.5 7 9 6 8 6c-.8 0-1.5.5-2 .5S5.8 6 5.5 6C5.2 6 5 5 5 4z" fill="currentColor" />
-            </svg>
-            Download for Mac
+            Get Orion
           </button>
 
-          {/* PC */}
           <button
-            onClick={() => downloadOrion('pc')}
             style={{
               display: "inline-flex",
               alignItems: "center",
@@ -423,16 +416,12 @@ export default function OrionSoundEQ() {
               (e.currentTarget as HTMLElement).style.color = "#22c55e";
             }}
           >
-            <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
-              <rect x="1" y="2" width="14" height="10" rx="1.5" stroke="currentColor" strokeWidth="1.4" />
-              <path d="M5 14h6M8 12v2" stroke="currentColor" strokeWidth="1.4" strokeLinecap="round" />
-            </svg>
-            Download for PC
+            Learn More
           </button>
         </div>
 
-        <p style={{ fontSize: "12px", color: "#333", margin: 0 }}>
-          Free · macOS 11+ · Windows 10+ · v1.1.0
+        <p style={{ fontSize: "12px", color: "#555", margin: 0 }}>
+          VST3 &amp; AU · macOS &amp; Windows
         </p>
       </div>
 
@@ -646,184 +635,6 @@ export default function OrionSoundEQ() {
       {/* Divider */}
       <div style={{ borderTop: "1px solid #111", position: "relative", zIndex: 1 }} />
 
-      {/* How it works */}
-      <div
-        style={{
-          position: "relative",
-          zIndex: 1,
-          maxWidth: "1100px",
-          margin: "0 auto",
-          padding: "80px 24px",
-        }}
-      >
-        <div style={{ textAlign: "center", marginBottom: "56px" }}>
-          <div
-            style={{
-              fontSize: "11px",
-              fontWeight: 700,
-              letterSpacing: "0.2em",
-              textTransform: "uppercase",
-              color: "#22c55e",
-              marginBottom: "16px",
-            }}
-          >
-            How It Works
-          </div>
-          <h2
-            style={{
-              fontSize: "clamp(28px, 4vw, 44px)",
-              fontWeight: 800,
-              letterSpacing: "-0.03em",
-              margin: 0,
-            }}
-          >
-            Up and running
-            <br />
-            <span style={{ color: "#333" }}>in three steps.</span>
-          </h2>
-        </div>
-
-        <div
-          style={{
-            display: "grid",
-            gridTemplateColumns: "repeat(auto-fit, minmax(280px, 1fr))",
-            gap: "24px",
-          }}
-        >
-          {steps.map((step, i) => (
-            <div
-              key={i}
-              onMouseEnter={() => setHoveredStep(i)}
-              onMouseLeave={() => setHoveredStep(null)}
-              style={{
-                background: hoveredStep === i ? "#0a0a0a" : "#080808",
-                border: `1px solid ${hoveredStep === i ? "rgba(34,197,94,0.25)" : "#111"}`,
-                borderRadius: "16px",
-                padding: "32px",
-                transition: "border-color 0.2s ease, background 0.2s ease",
-              }}
-            >
-              <div
-                style={{
-                  fontSize: "48px",
-                  fontWeight: 800,
-                  color: "rgba(34,197,94,0.12)",
-                  lineHeight: 1,
-                  marginBottom: "20px",
-                  letterSpacing: "-0.04em",
-                }}
-              >
-                {step.num}
-              </div>
-              <div
-                style={{
-                  fontSize: "17px",
-                  fontWeight: 700,
-                  color: "#fff",
-                  marginBottom: "10px",
-                }}
-              >
-                {step.label}
-              </div>
-              <div style={{ fontSize: "14px", color: "#555", lineHeight: 1.7 }}>
-                {step.desc}
-              </div>
-            </div>
-          ))}
-        </div>
-      </div>
-
-      {/* Divider */}
-      <div style={{ borderTop: "1px solid #111", position: "relative", zIndex: 1 }} />
-
-      {/* Features grid */}
-      <div
-        style={{
-          position: "relative",
-          zIndex: 1,
-          maxWidth: "1100px",
-          margin: "0 auto",
-          padding: "80px 24px",
-        }}
-      >
-        <div style={{ textAlign: "center", marginBottom: "56px" }}>
-          <div
-            style={{
-              fontSize: "11px",
-              fontWeight: 700,
-              letterSpacing: "0.2em",
-              textTransform: "uppercase",
-              color: "#22c55e",
-              marginBottom: "16px",
-            }}
-          >
-            Features
-          </div>
-          <h2
-            style={{
-              fontSize: "clamp(28px, 4vw, 44px)",
-              fontWeight: 800,
-              letterSpacing: "-0.03em",
-              margin: 0,
-            }}
-          >
-            Everything you need,
-            <br />
-            <span style={{ color: "#333" }}>nothing you don't.</span>
-          </h2>
-        </div>
-
-        <div
-          style={{
-            display: "grid",
-            gridTemplateColumns: "repeat(auto-fill, minmax(300px, 1fr))",
-            gap: "16px",
-          }}
-        >
-          {features.map((f, i) => (
-            <div
-              key={i}
-              onMouseEnter={() => setHoveredFeature(i)}
-              onMouseLeave={() => setHoveredFeature(null)}
-              style={{
-                background: hoveredFeature === i ? "#0a0a0a" : "#080808",
-                border: `1px solid ${hoveredFeature === i ? "rgba(34,197,94,0.2)" : "#111"}`,
-                borderRadius: "16px",
-                padding: "28px",
-                display: "flex",
-                flexDirection: "column",
-                gap: "14px",
-                transition: "border-color 0.2s ease, background 0.2s ease",
-              }}
-            >
-              <div
-                style={{
-                  width: "48px",
-                  height: "48px",
-                  borderRadius: "12px",
-                  background: "rgba(34,197,94,0.06)",
-                  border: "1px solid rgba(34,197,94,0.12)",
-                  display: "flex",
-                  alignItems: "center",
-                  justifyContent: "center",
-                }}
-              >
-                {f.icon}
-              </div>
-              <div style={{ fontSize: "16px", fontWeight: 700, color: "#fff" }}>
-                {f.title}
-              </div>
-              <div style={{ fontSize: "14px", color: "#555", lineHeight: 1.7 }}>
-                {f.desc}
-              </div>
-            </div>
-          ))}
-        </div>
-      </div>
-
-      {/* Divider */}
-      <div style={{ borderTop: "1px solid #111", position: "relative", zIndex: 1 }} />
-
       {/* About / Story section */}
       <div
         style={{
@@ -859,22 +670,22 @@ export default function OrionSoundEQ() {
             lineHeight: 1.15,
           }}
         >
-          A pro EQ,
+          Every frequency,
           <br />
-          <span style={{ color: "#22c55e" }}>for everyone.</span>
+          <span style={{ color: "#22c55e" }}>in focus.</span>
         </h2>
         <p style={{ fontSize: "16px", color: "#999", lineHeight: 1.9, margin: 0 }}>
-          Orion Sound EQ is my free gift to the 3LIXIR community — a full-featured
-          equalizer coded from the ground up in C++, with no catch and no price
-          tag. Build a custom curve with up to 32 bands, watch every frequency
-          move in the real-time spectrum analyzer, and switch between single-band
-          and multiband processing, all at zero latency.
+          Cut through the noise and bring every frequency into focus. Orion is
+          3LIXIR's precision equalizer, coded from the ground up in C++. Chart a
+          custom curve with up to 32 bands, watch each frequency light up in the
+          real-time spectrum analyzer, and move between single-band and multiband
+          processing without a trace of latency.
         </p>
         <p style={{ fontSize: "16px", color: "#999", lineHeight: 1.9, margin: 0 }}>
-          It ships with 100+ professionally tuned presets for vocals, drums,
-          instruments, and full mixes, and it's light enough to load on every
-          track. Download it free for Mac or PC and start shaping your sound in
-          under a minute.
+          Start with 100+ professionally tuned presets for vocals, drums,
+          instruments, and full mixes, then dial in your own — it's light enough
+          to sit on every track. Orion is also part of the 3LIXIR Olympus suite;
+          grab it alongside Apollo and Hades in the Olympus Bundle and save 15%.
         </p>
       </div>
 
@@ -911,7 +722,6 @@ export default function OrionSoundEQ() {
         >
           {([
             ["Version", "1.1.0"],
-            ["Price", "Free"],
             ["Formats", "VST3, AU"],
             ["Platforms", "macOS 11+ · Windows 10+"],
             ["Architecture", "Universal (Intel + Apple Silicon)"],
@@ -919,7 +729,8 @@ export default function OrionSoundEQ() {
             ["Type", "Equalizer — single-band & multiband"],
             ["Features", "Up to 32 bands, spectrum analyzer, zero latency, low CPU"],
             ["Presets", "100+ factory presets included"],
-            ["License", "Free — yours to keep"],
+            ["Bundle", "Olympus Bundle — with Apollo & Hades, save 15%"],
+            ["License", "Unlimited access to the plugin, for life"],
           ] as [string, string][]).map(([label, value], i, arr) => (
             <div
               key={label}
@@ -991,17 +802,16 @@ export default function OrionSoundEQ() {
             lineHeight: 1.05,
           }}
         >
-          Get Orion Sound EQ.
+          Get Orion.
           <br />
-          <span style={{ color: "#333" }}>It's free.</span>
+          <span style={{ color: "#22c55e" }}>Sculpt every frequency.</span>
         </h2>
-        <p style={{ fontSize: "17px", color: "#555", maxWidth: "420px", lineHeight: 1.7, margin: 0 }}>
-          Download the plugin and start shaping your sound in under a minute.
+        <p style={{ fontSize: "17px", color: "#888", maxWidth: "440px", lineHeight: 1.7, margin: 0 }}>
+          Precision EQ with 100+ presets, single and multiband modes, and a real-time analyzer. Grab your copy of Orion and dial in your mix.
         </p>
 
         <div style={{ display: "flex", gap: "16px", flexWrap: "wrap", justifyContent: "center" }}>
           <button
-            onClick={() => downloadOrion('mac')}
             style={{
               display: "inline-flex",
               alignItems: "center",
@@ -1021,10 +831,9 @@ export default function OrionSoundEQ() {
             onMouseEnter={(e) => ((e.currentTarget as HTMLElement).style.opacity = "0.85")}
             onMouseLeave={(e) => ((e.currentTarget as HTMLElement).style.opacity = "1")}
           >
-            Download for Mac
+            Get Orion
           </button>
           <button
-            onClick={() => downloadOrion('pc')}
             style={{
               display: "inline-flex",
               alignItems: "center",
@@ -1050,7 +859,7 @@ export default function OrionSoundEQ() {
               (e.currentTarget as HTMLElement).style.color = "#22c55e";
             }}
           >
-            Download for PC
+            Learn More
           </button>
         </div>
       </div>
