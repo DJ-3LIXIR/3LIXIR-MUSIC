@@ -541,22 +541,23 @@ export default function Hades() {
                 lineHeight: 1.15,
               }}
             >
-              Built for the
+              Forged in the
               <br />
-              <span style={{ color: "#C9A84C" }}>heaviest tones.</span>
+              <span style={{ color: "#C9A84C" }}>depths below.</span>
             </h2>
             <p style={{ fontSize: "16px", color: "#999", lineHeight: 1.9, margin: 0 }}>
-              Hades is my amp and cabinet suite for heavy music — coded from the
-              ground up in C++ to push guitars and bass into thick, aggressive
-              territory. Drive your signal through deep saturation, shape crushing
-              low end with Hades Bass, and lock in the perfect speaker character
-              with the built-in cabinet simulator.
+              Deep beneath the mix, where the low end lives, Hades was forged — a
+              guitar and bass powerhouse built from the ground up in C++ to drag
+              heavy tone up from below. Drive your signal into thick, molten
+              saturation, summon earth-shaking low end from Hades Bass, and seal
+              it with real cabinet character until every note erupts through the
+              mix like magma.
             </p>
             <p style={{ fontSize: "16px", color: "#999", lineHeight: 1.9, margin: 0 }}>
-              It comes loaded with factory presets tuned for every style of heavy,
-              so you can find your tone fast and go. Hades is also part of the
-              3LIXIR Olympus suite — grab it alongside Apollo and Orion in the
-              Olympus Bundle and save 15%.
+              Need a finished tone fast? Factory presets tuned for every shade of
+              heavy are ready to unleash — then push them past their limits. And
+              since Hades rules alongside Apollo and Orion in the 3LIXIR Olympus
+              suite, you can claim all three in the Olympus Bundle and save 15%.
             </p>
           </div>
 
