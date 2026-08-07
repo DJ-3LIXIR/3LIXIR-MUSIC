@@ -757,23 +757,24 @@ export default function Apollo() {
                 lineHeight: 1.15,
               }}
             >
-              Real rooms,
+              Every space,
               <br />
-              <span style={{ color: "#C9A84C" }}>real reverb.</span>
+              <span style={{ color: "#C9A84C" }}>brought to light.</span>
             </h2>
             <p style={{ fontSize: "16px", color: "#999", lineHeight: 1.9, margin: 0 }}>
-              Apollo is my studio-grade take on reverb and room simulation — an
-              effect coded from the ground up in C++ to put real acoustic spaces
-              inside your DAW. The reverb engine gives you deep control over size,
-              density, decay, distance, pre-delay, EQ, and modulation, while the
-              room simulator recreates theaters, churches, halls, and studios with
-              early and late reflections you can shape by hand.
+              From the vaulted stone of an ancient temple to the hush of a modern
+              studio, every space has a voice — and Apollo captures them all.
+              Built from the ground up in C++, it drops real acoustic rooms
+              straight into your DAW: shape size, density, decay, distance,
+              pre-delay, EQ, and modulation, and sculpt early and late reflections
+              by hand to place your sound anywhere from a grand cathedral to an
+              intimate booth.
             </p>
             <p style={{ fontSize: "16px", color: "#999", lineHeight: 1.9, margin: 0 }}>
-              It ships with a full factory library of reverb and room presets, so
-              you can drop a finished space onto any track in one click. Apollo is
-              also part of the 3LIXIR Olympus suite — grab it alongside Hades and
-              Orion in the Olympus Bundle and save 15%.
+              A full factory library of reverb and room presets means a finished,
+              mix-ready space is always one click away. And Apollo shines
+              brightest alongside Hades and Orion in the 3LIXIR Olympus suite —
+              grab all three in the Olympus Bundle and save 15%.
             </p>
           </div>
 
