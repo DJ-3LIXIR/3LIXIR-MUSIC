@@ -981,6 +981,90 @@ export default function ARK() {
           {/* Divider */}
           <div style={{ borderTop: "1px solid #111", position: "relative", zIndex: 1 }} />
 
+          {/* How it works */}
+          <div
+            style={{
+              position: "relative",
+              zIndex: 1,
+              maxWidth: "1100px",
+              margin: "0 auto",
+              padding: "80px 24px 40px",
+            }}
+          >
+            <div style={{ textAlign: "center", marginBottom: "48px" }}>
+              <div
+                style={{
+                  fontSize: "11px",
+                  fontWeight: 700,
+                  letterSpacing: "0.2em",
+                  textTransform: "uppercase",
+                  color: "#C9A84C",
+                  marginBottom: "16px",
+                }}
+              >
+                How It Works
+              </div>
+              <h2
+                style={{
+                  fontSize: "clamp(28px, 4vw, 44px)",
+                  fontWeight: 800,
+                  letterSpacing: "-0.03em",
+                  margin: 0,
+                  lineHeight: 1.1,
+                }}
+              >
+                From checkout to your DAW,
+                <br />
+                <span style={{ color: "#C9A84C" }}>in three steps.</span>
+              </h2>
+            </div>
+            <div
+              style={{
+                display: "grid",
+                gridTemplateColumns: "repeat(auto-fit, minmax(260px, 1fr))",
+                gap: "20px",
+              }}
+            >
+              {[
+                { num: "01", label: "Get the Loader", desc: "Download the free 3LIXIR Loader for Mac or PC — the installer app that delivers your plugins straight to your DAW." },
+                { num: "02", label: "Purchase ARK", desc: "Buy ARK right here. Your license is added to your 3LIXIR account the moment checkout completes." },
+                { num: "03", label: "Sign in & install", desc: "Open the Loader, log into your 3LIXIR account, and ARK is ready to install to your DAW with a single click." },
+              ].map((step) => (
+                <div
+                  key={step.num}
+                  style={{
+                    background: "#080808",
+                    border: "1px solid #1a1a1a",
+                    borderRadius: "16px",
+                    padding: "32px",
+                  }}
+                >
+                  <div
+                    style={{
+                      fontSize: "44px",
+                      fontWeight: 800,
+                      color: "rgba(201,168,76,0.14)",
+                      lineHeight: 1,
+                      marginBottom: "18px",
+                      letterSpacing: "-0.04em",
+                    }}
+                  >
+                    {step.num}
+                  </div>
+                  <div style={{ fontSize: "17px", fontWeight: 700, color: "#fff", marginBottom: "10px" }}>
+                    {step.label}
+                  </div>
+                  <div style={{ fontSize: "14px", color: "#888", lineHeight: 1.7 }}>
+                    {step.desc}
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+
+          {/* Divider */}
+          <div style={{ borderTop: "1px solid #111", position: "relative", zIndex: 1 }} />
+
           {/* Spec / technical details table */}
           <div
             id="technical-details"
