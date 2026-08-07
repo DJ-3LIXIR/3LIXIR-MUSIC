@@ -1,8 +1,10 @@
 // client/src/pages/OYSTER.tsx
-import { useState } from "react";
-import { Link } from "wouter";
+import { useState, useEffect } from "react";
+import { Link, useLocation } from "wouter";
 import { Navbar } from "@/components/layout/Navbar";
 import { useIsMobile } from "@/hooks/use-mobile";
+import { useCart } from "@/contexts/CartContext";
+import { supabase } from "@/supabaseClient";
 
 const features = [
   {
@@ -78,6 +80,48 @@ export default function OYSTER() {
   const isMobile = useIsMobile();
   const [hoveredFeature, setHoveredFeature] = useState<number | null>(null);
   const [hoveredStep, setHoveredStep] = useState<number | null>(null);
+  const { addToCart } = useCart();
+  const [, setLocation] = useLocation();
+  const [plugin, setPlugin] = useState<any>(null);
+
+  useEffect(() => {
+    (async () => {
+      const { data } = await supabase.from("plugins").select("*");
+      const match = (data || []).find((p: any) =>
+        (p.name || p.title || "").trim().toLowerCase().includes("oyster")
+      );
+      setPlugin(match || null);
+    })();
+  }, []);
+
+  const handleGet = () => {
+    if (!plugin) {
+      setLocation("/vst");
+      return;
+    }
+    const price =
+      typeof plugin.price === "number"
+        ? plugin.price
+        : parseFloat(String(plugin.price ?? plugin.price_usd ?? "").replace(/[^0-9.]/g, "")) || 0;
+    addToCart({
+      id: String(plugin.id),
+      title: plugin.name || plugin.title || "Oyster",
+      artist: "3LIXIR Music",
+      price,
+      cover: plugin.image || plugin.image_url || "",
+      quantity: 1,
+      type: "plugin",
+      category: plugin.category || "Instruments",
+      image: plugin.image || plugin.image_url || undefined,
+    });
+    setLocation("/shop");
+  };
+
+  const scrollToDetails = () => {
+    document
+      .getElementById("technical-details")
+      ?.scrollIntoView({ behavior: "smooth", block: "start" });
+  };
 
   return (
     <div
@@ -469,6 +513,7 @@ export default function OYSTER() {
             {/* CTA buttons */}
             <div style={{ display: "flex", gap: "16px", flexWrap: "wrap", justifyContent: "center" }}>
               <button
+                onClick={handleGet}
                 style={{
                   display: "inline-flex",
                   alignItems: "center",
@@ -492,6 +537,7 @@ export default function OYSTER() {
               </button>
 
               <button
+                onClick={scrollToDetails}
                 style={{
                   display: "inline-flex",
                   alignItems: "center",
@@ -779,8 +825,103 @@ export default function OYSTER() {
             </p>
           </div>
 
+          {/* Divider */}
+          <div style={{ borderTop: "1px solid #111", position: "relative", zIndex: 1 }} />
+
+          {/* Bottom CTA */}
+          <div
+            style={{
+              position: "relative",
+              zIndex: 1,
+              maxWidth: "1100px",
+              margin: "0 auto",
+              padding: "100px 24px",
+              textAlign: "center",
+              display: "flex",
+              flexDirection: "column",
+              alignItems: "center",
+              gap: "32px",
+            }}
+          >
+            <h2
+              style={{
+                fontSize: "clamp(36px, 6vw, 68px)",
+                fontWeight: 800,
+                letterSpacing: "-0.03em",
+                margin: 0,
+                lineHeight: 1.05,
+              }}
+            >
+              Get Oyster.
+              <br />
+              <span style={{ color: "#C9A84C" }}>Nothing else sounds like it.</span>
+            </h2>
+            <p style={{ fontSize: "17px", color: "#888", maxWidth: "440px", lineHeight: 1.7, margin: 0 }}>
+              A granular playground for textures you won't find anywhere else. Grab your copy of Oyster and start exploring.
+            </p>
+
+            <div style={{ display: "flex", gap: "16px", flexWrap: "wrap", justifyContent: "center" }}>
+              <button
+                onClick={handleGet}
+                style={{
+                  display: "inline-flex",
+                  alignItems: "center",
+                  gap: "10px",
+                  padding: "18px 40px",
+                  background: "#C9A84C",
+                  color: "#000",
+                  fontSize: "13px",
+                  fontWeight: 800,
+                  letterSpacing: "0.12em",
+                  textTransform: "uppercase",
+                  borderRadius: "100px",
+                  border: "none",
+                  cursor: "pointer",
+                  transition: "opacity 0.2s ease",
+                }}
+                onMouseEnter={(e) => ((e.currentTarget as HTMLElement).style.opacity = "0.85")}
+                onMouseLeave={(e) => ((e.currentTarget as HTMLElement).style.opacity = "1")}
+              >
+                Get Oyster
+              </button>
+              <button
+                onClick={scrollToDetails}
+                style={{
+                  display: "inline-flex",
+                  alignItems: "center",
+                  gap: "10px",
+                  padding: "18px 40px",
+                  background: "transparent",
+                  color: "#C9A84C",
+                  fontSize: "13px",
+                  fontWeight: 800,
+                  letterSpacing: "0.12em",
+                  textTransform: "uppercase",
+                  borderRadius: "100px",
+                  border: "1px solid #C9A84C",
+                  cursor: "pointer",
+                  transition: "background 0.2s ease, color 0.2s ease",
+                }}
+                onMouseEnter={(e) => {
+                  (e.currentTarget as HTMLElement).style.background = "#C9A84C";
+                  (e.currentTarget as HTMLElement).style.color = "#000";
+                }}
+                onMouseLeave={(e) => {
+                  (e.currentTarget as HTMLElement).style.background = "transparent";
+                  (e.currentTarget as HTMLElement).style.color = "#C9A84C";
+                }}
+              >
+                Learn More
+              </button>
+            </div>
+          </div>
+
+          {/* Divider */}
+          <div style={{ borderTop: "1px solid #111", position: "relative", zIndex: 1 }} />
+
           {/* Spec / technical details table */}
           <div
+            id="technical-details"
             style={{
               position: "relative",
               zIndex: 1,
@@ -861,95 +1002,6 @@ export default function OYSTER() {
                   </span>
                 </div>
               ))}
-            </div>
-          </div>
-
-          {/* Divider */}
-          <div style={{ borderTop: "1px solid #111", position: "relative", zIndex: 1 }} />
-
-          {/* Bottom CTA */}
-          <div
-            style={{
-              position: "relative",
-              zIndex: 1,
-              maxWidth: "1100px",
-              margin: "0 auto",
-              padding: "100px 24px",
-              textAlign: "center",
-              display: "flex",
-              flexDirection: "column",
-              alignItems: "center",
-              gap: "32px",
-            }}
-          >
-            <h2
-              style={{
-                fontSize: "clamp(36px, 6vw, 68px)",
-                fontWeight: 800,
-                letterSpacing: "-0.03em",
-                margin: 0,
-                lineHeight: 1.05,
-              }}
-            >
-              Get Oyster.
-              <br />
-              <span style={{ color: "#C9A84C" }}>Nothing else sounds like it.</span>
-            </h2>
-            <p style={{ fontSize: "17px", color: "#888", maxWidth: "440px", lineHeight: 1.7, margin: 0 }}>
-              A granular playground for textures you won't find anywhere else. Grab your copy of Oyster and start exploring.
-            </p>
-
-            <div style={{ display: "flex", gap: "16px", flexWrap: "wrap", justifyContent: "center" }}>
-              <button
-                style={{
-                  display: "inline-flex",
-                  alignItems: "center",
-                  gap: "10px",
-                  padding: "18px 40px",
-                  background: "#C9A84C",
-                  color: "#000",
-                  fontSize: "13px",
-                  fontWeight: 800,
-                  letterSpacing: "0.12em",
-                  textTransform: "uppercase",
-                  borderRadius: "100px",
-                  border: "none",
-                  cursor: "pointer",
-                  transition: "opacity 0.2s ease",
-                }}
-                onMouseEnter={(e) => ((e.currentTarget as HTMLElement).style.opacity = "0.85")}
-                onMouseLeave={(e) => ((e.currentTarget as HTMLElement).style.opacity = "1")}
-              >
-                Get Oyster
-              </button>
-              <button
-                style={{
-                  display: "inline-flex",
-                  alignItems: "center",
-                  gap: "10px",
-                  padding: "18px 40px",
-                  background: "transparent",
-                  color: "#C9A84C",
-                  fontSize: "13px",
-                  fontWeight: 800,
-                  letterSpacing: "0.12em",
-                  textTransform: "uppercase",
-                  borderRadius: "100px",
-                  border: "1px solid #C9A84C",
-                  cursor: "pointer",
-                  transition: "background 0.2s ease, color 0.2s ease",
-                }}
-                onMouseEnter={(e) => {
-                  (e.currentTarget as HTMLElement).style.background = "#C9A84C";
-                  (e.currentTarget as HTMLElement).style.color = "#000";
-                }}
-                onMouseLeave={(e) => {
-                  (e.currentTarget as HTMLElement).style.background = "transparent";
-                  (e.currentTarget as HTMLElement).style.color = "#C9A84C";
-                }}
-              >
-                Learn More
-              </button>
             </div>
           </div>
 

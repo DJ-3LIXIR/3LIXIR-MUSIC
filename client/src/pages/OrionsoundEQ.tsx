@@ -1,8 +1,10 @@
 // client/src/pages/OrionsoundEQ.tsx
-import { useState } from "react";
-import { Link } from "wouter";
+import { useState, useEffect } from "react";
+import { Link, useLocation } from "wouter";
 import { Navbar } from "@/components/layout/Navbar";
 import { useIsMobile } from "@/hooks/use-mobile";
+import { useCart } from "@/contexts/CartContext";
+import { supabase } from "@/supabaseClient";
 
 const features = [
   {
@@ -99,6 +101,48 @@ export default function OrionSoundEQ() {
   const isMobile = useIsMobile();
   const [hoveredFeature, setHoveredFeature] = useState<number | null>(null);
   const [hoveredStep, setHoveredStep] = useState<number | null>(null);
+  const { addToCart } = useCart();
+  const [, setLocation] = useLocation();
+  const [plugin, setPlugin] = useState<any>(null);
+
+  useEffect(() => {
+    (async () => {
+      const { data } = await supabase.from("plugins").select("*");
+      const match = (data || []).find((p: any) =>
+        (p.name || p.title || "").trim().toLowerCase().includes("orion")
+      );
+      setPlugin(match || null);
+    })();
+  }, []);
+
+  const handleGet = () => {
+    if (!plugin) {
+      setLocation("/vst");
+      return;
+    }
+    const price =
+      typeof plugin.price === "number"
+        ? plugin.price
+        : parseFloat(String(plugin.price ?? plugin.price_usd ?? "").replace(/[^0-9.]/g, "")) || 0;
+    addToCart({
+      id: String(plugin.id),
+      title: plugin.name || plugin.title || "Orion Sound EQ",
+      artist: "3LIXIR Music",
+      price,
+      cover: plugin.image || plugin.image_url || "",
+      quantity: 1,
+      type: "plugin",
+      category: plugin.category || "Audio Units",
+      image: plugin.image || plugin.image_url || undefined,
+    });
+    setLocation("/shop");
+  };
+
+  const scrollToDetails = () => {
+    document
+      .getElementById("technical-details")
+      ?.scrollIntoView({ behavior: "smooth", block: "start" });
+  };
 
   return (
     <div
@@ -368,6 +412,7 @@ export default function OrionSoundEQ() {
         {/* CTA buttons */}
         <div style={{ display: "flex", gap: "16px", flexWrap: "wrap", justifyContent: "center" }}>
           <button
+            onClick={handleGet}
             style={{
               display: "inline-flex",
               alignItems: "center",
@@ -391,6 +436,7 @@ export default function OrionSoundEQ() {
           </button>
 
           <button
+            onClick={scrollToDetails}
             style={{
               display: "inline-flex",
               alignItems: "center",
@@ -691,8 +737,103 @@ export default function OrionSoundEQ() {
         </p>
       </div>
 
+      {/* Divider */}
+      <div style={{ borderTop: "1px solid #111", position: "relative", zIndex: 1 }} />
+
+      {/* Bottom CTA */}
+      <div
+        style={{
+          position: "relative",
+          zIndex: 1,
+          maxWidth: "1100px",
+          margin: "0 auto",
+          padding: "100px 24px",
+          textAlign: "center",
+          display: "flex",
+          flexDirection: "column",
+          alignItems: "center",
+          gap: "32px",
+        }}
+      >
+        <h2
+          style={{
+            fontSize: "clamp(36px, 6vw, 68px)",
+            fontWeight: 800,
+            letterSpacing: "-0.03em",
+            margin: 0,
+            lineHeight: 1.05,
+          }}
+        >
+          Get Orion.
+          <br />
+          <span style={{ color: "#22c55e" }}>Sculpt every frequency.</span>
+        </h2>
+        <p style={{ fontSize: "17px", color: "#888", maxWidth: "440px", lineHeight: 1.7, margin: 0 }}>
+          Precision EQ with 100+ presets, single and multiband modes, and a real-time analyzer. Grab your copy of Orion and dial in your mix.
+        </p>
+
+        <div style={{ display: "flex", gap: "16px", flexWrap: "wrap", justifyContent: "center" }}>
+          <button
+            onClick={handleGet}
+            style={{
+              display: "inline-flex",
+              alignItems: "center",
+              gap: "10px",
+              padding: "18px 40px",
+              background: "#22c55e",
+              color: "#000",
+              fontSize: "13px",
+              fontWeight: 800,
+              letterSpacing: "0.12em",
+              textTransform: "uppercase",
+              borderRadius: "100px",
+              border: "none",
+              cursor: "pointer",
+              transition: "opacity 0.2s ease",
+            }}
+            onMouseEnter={(e) => ((e.currentTarget as HTMLElement).style.opacity = "0.85")}
+            onMouseLeave={(e) => ((e.currentTarget as HTMLElement).style.opacity = "1")}
+          >
+            Get Orion
+          </button>
+          <button
+            onClick={scrollToDetails}
+            style={{
+              display: "inline-flex",
+              alignItems: "center",
+              gap: "10px",
+              padding: "18px 40px",
+              background: "transparent",
+              color: "#22c55e",
+              fontSize: "13px",
+              fontWeight: 800,
+              letterSpacing: "0.12em",
+              textTransform: "uppercase",
+              borderRadius: "100px",
+              border: "1px solid #22c55e",
+              cursor: "pointer",
+              transition: "background 0.2s ease, color 0.2s ease",
+            }}
+            onMouseEnter={(e) => {
+              (e.currentTarget as HTMLElement).style.background = "#22c55e";
+              (e.currentTarget as HTMLElement).style.color = "#000";
+            }}
+            onMouseLeave={(e) => {
+              (e.currentTarget as HTMLElement).style.background = "transparent";
+              (e.currentTarget as HTMLElement).style.color = "#22c55e";
+            }}
+          >
+            Learn More
+          </button>
+        </div>
+      </div>
+
+      {/* Divider */}
+      <div style={{ borderTop: "1px solid #111", position: "relative", zIndex: 1 }} />
+
       {/* Spec / technical details table */}
       <div
+        id="technical-details"
         style={{
           position: "relative",
           zIndex: 1,
@@ -774,95 +915,6 @@ export default function OrionSoundEQ() {
               </span>
             </div>
           ))}
-        </div>
-      </div>
-
-      {/* Divider */}
-      <div style={{ borderTop: "1px solid #111", position: "relative", zIndex: 1 }} />
-
-      {/* Bottom CTA */}
-      <div
-        style={{
-          position: "relative",
-          zIndex: 1,
-          maxWidth: "1100px",
-          margin: "0 auto",
-          padding: "100px 24px",
-          textAlign: "center",
-          display: "flex",
-          flexDirection: "column",
-          alignItems: "center",
-          gap: "32px",
-        }}
-      >
-        <h2
-          style={{
-            fontSize: "clamp(36px, 6vw, 68px)",
-            fontWeight: 800,
-            letterSpacing: "-0.03em",
-            margin: 0,
-            lineHeight: 1.05,
-          }}
-        >
-          Get Orion.
-          <br />
-          <span style={{ color: "#22c55e" }}>Sculpt every frequency.</span>
-        </h2>
-        <p style={{ fontSize: "17px", color: "#888", maxWidth: "440px", lineHeight: 1.7, margin: 0 }}>
-          Precision EQ with 100+ presets, single and multiband modes, and a real-time analyzer. Grab your copy of Orion and dial in your mix.
-        </p>
-
-        <div style={{ display: "flex", gap: "16px", flexWrap: "wrap", justifyContent: "center" }}>
-          <button
-            style={{
-              display: "inline-flex",
-              alignItems: "center",
-              gap: "10px",
-              padding: "18px 40px",
-              background: "#22c55e",
-              color: "#000",
-              fontSize: "13px",
-              fontWeight: 800,
-              letterSpacing: "0.12em",
-              textTransform: "uppercase",
-              borderRadius: "100px",
-              border: "none",
-              cursor: "pointer",
-              transition: "opacity 0.2s ease",
-            }}
-            onMouseEnter={(e) => ((e.currentTarget as HTMLElement).style.opacity = "0.85")}
-            onMouseLeave={(e) => ((e.currentTarget as HTMLElement).style.opacity = "1")}
-          >
-            Get Orion
-          </button>
-          <button
-            style={{
-              display: "inline-flex",
-              alignItems: "center",
-              gap: "10px",
-              padding: "18px 40px",
-              background: "transparent",
-              color: "#22c55e",
-              fontSize: "13px",
-              fontWeight: 800,
-              letterSpacing: "0.12em",
-              textTransform: "uppercase",
-              borderRadius: "100px",
-              border: "1px solid #22c55e",
-              cursor: "pointer",
-              transition: "background 0.2s ease, color 0.2s ease",
-            }}
-            onMouseEnter={(e) => {
-              (e.currentTarget as HTMLElement).style.background = "#22c55e";
-              (e.currentTarget as HTMLElement).style.color = "#000";
-            }}
-            onMouseLeave={(e) => {
-              (e.currentTarget as HTMLElement).style.background = "transparent";
-              (e.currentTarget as HTMLElement).style.color = "#22c55e";
-            }}
-          >
-            Learn More
-          </button>
         </div>
       </div>
 
