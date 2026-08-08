@@ -5,6 +5,7 @@ import { Link, useLocation } from "wouter";
 import { Navbar } from "@/components/layout/Navbar";
 import { useAuth } from "@/contexts/AuthContext";
 import { supabase } from "@/supabaseClient";
+import { analytics } from "@/utils/analytics";
 
 // Base URL of the tools backend (Render). Override with VITE_TOOLS_API_URL.
 const API_BASE =
@@ -192,6 +193,8 @@ export default function VocalRemover() {
     setSuccess("");
     setResults([]);
     setElapsed(0);
+    analytics.toolStart("vocal_remover", file ? "file" : "url");
+    const startedAt = Date.now();
     timerRef.current = setInterval(() => setElapsed((s) => s + 1), 1000);
 
     try {
@@ -231,6 +234,7 @@ export default function VocalRemover() {
       if (response.status === 429) {
         setUsedToday(DAILY_FREE_LIMIT); // flips UI to "limit reached"
         setError("You've used your free removals for today.");
+        analytics.toolLimitReached("vocal_remover");
         return;
       }
 
@@ -246,6 +250,11 @@ export default function VocalRemover() {
         downloadUrl: string;
       }[];
       setResults(outs);
+      analytics.toolComplete("vocal_remover", {
+        format,
+        resultCount: outs.length,
+        durationSeconds: Math.round((Date.now() - startedAt) / 1000),
+      });
       setSuccess(outs.length ? "Done — preview and download your stems below." : "");
       setUrl("");
       setFile(null);
@@ -273,6 +282,10 @@ export default function VocalRemover() {
     } catch (err) {
       setError(
         err instanceof Error ? err.message : "An error occurred during conversion"
+      );
+      analytics.toolError(
+        "vocal_remover",
+        err instanceof Error ? err.message : "unknown",
       );
     } finally {
       setLoading(false);

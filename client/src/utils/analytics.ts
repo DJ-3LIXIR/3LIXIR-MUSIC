@@ -77,6 +77,45 @@ export const analytics = {
     });
   },
 
+  // Free tool: user started a job (vocal removal, conversion, sample dig)
+  toolStart: (
+    toolName: string,
+    inputType: "file" | "url" | "query" | "random",
+  ) => {
+    trackEvent("tool_start", {
+      tool_name: toolName,
+      input_type: inputType,
+    });
+  },
+
+  // Free tool: job finished successfully — the top-of-funnel conversion
+  toolComplete: (
+    toolName: string,
+    params?: { format?: string; resultCount?: number; durationSeconds?: number },
+  ) => {
+    trackEvent("tool_complete", {
+      tool_name: toolName,
+      format: params?.format,
+      result_count: params?.resultCount,
+      duration_seconds: params?.durationSeconds,
+    });
+  },
+
+  // Free tool: job failed
+  toolError: (toolName: string, reason: string) => {
+    trackEvent("tool_error", {
+      tool_name: toolName,
+      reason,
+    });
+  },
+
+  // Free tool: user hit the daily free limit (upgrade-intent signal)
+  toolLimitReached: (toolName: string) => {
+    trackEvent("tool_limit_reached", {
+      tool_name: toolName,
+    });
+  },
+
   // Search / filter action
   search: (searchTerm: string, category?: string) => {
     trackEvent("search", {

@@ -6,6 +6,7 @@ import { Navbar } from "@/components/layout/Navbar";
 import { useAuth } from "@/contexts/AuthContext";
 import { supabase } from "@/supabaseClient";
 import { useIsMobile } from "@/hooks/use-mobile";
+import { analytics } from "@/utils/analytics";
 
 // Base URL of the tools backend (Render). Override with VITE_TOOLS_API_URL.
 const API_BASE =
@@ -192,6 +193,8 @@ export default function VideoConverter() {
     setError("");
     setSuccess("");
     setElapsed(0);
+    analytics.toolStart("video_converter", file ? "file" : "url");
+    const startedAt = Date.now();
     timerRef.current = setInterval(() => setElapsed((s) => s + 1), 1000);
 
     try {
@@ -230,6 +233,7 @@ export default function VideoConverter() {
       if (response.status === 429) {
         setUsedToday(DAILY_FREE_LIMIT); // flips UI to "limit reached"
         setError("You've used your free conversions for today.");
+        analytics.toolLimitReached("video_converter");
         return;
       }
 
@@ -241,6 +245,11 @@ export default function VideoConverter() {
       const data = await response.json();
       const filename = data.filename || "download";
       triggerDownload(`${API_BASE}${data.downloadUrl}`, filename);
+      analytics.toolComplete("video_converter", {
+        format,
+        resultCount: 1,
+        durationSeconds: Math.round((Date.now() - startedAt) / 1000),
+      });
       setSuccess(`Done — “${filename}” downloaded.`);
       setUrl("");
       setFile(null);
@@ -268,6 +277,10 @@ export default function VideoConverter() {
     } catch (err) {
       setError(
         err instanceof Error ? err.message : "An error occurred during conversion"
+      );
+      analytics.toolError(
+        "video_converter",
+        err instanceof Error ? err.message : "unknown",
       );
     } finally {
       setLoading(false);

@@ -17,6 +17,7 @@ import { Navbar } from "@/components/layout/Navbar";
 import { useAuth } from "@/contexts/AuthContext";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { supabase } from "@/supabaseClient";
+import { analytics } from "@/utils/analytics";
 
 const API_BASE =
   import.meta.env.VITE_TOOLS_API_URL || "https://threelixir-music.onrender.com";
@@ -168,6 +169,8 @@ export default function SampleGenerator() {
     setDigging(true);
     setDigError("");
     setPlaying(false);
+    analytics.toolStart("sample_finder", body.q ? "query" : "random");
+    const startedAt = Date.now();
     try {
       const {
         data: { session },
@@ -189,6 +192,7 @@ export default function SampleGenerator() {
       if (res.status === 429) {
         setUsedToday(DAILY_FREE_LIMIT);
         setDigError("You've used your free digs for today.");
+        analytics.toolLimitReached("sample_finder");
         return;
       }
       if (!res.ok) {
@@ -197,6 +201,10 @@ export default function SampleGenerator() {
       }
 
       const data = await res.json();
+      analytics.toolComplete("sample_finder", {
+        resultCount: data.track ? 1 : 0,
+        durationSeconds: Math.round((Date.now() - startedAt) / 1000),
+      });
       // New track — reset any tapped tempo.
       tapsRef.current = [];
       setTappedBpm(null);
@@ -216,6 +224,10 @@ export default function SampleGenerator() {
       }
     } catch (e) {
       setDigError(e instanceof Error ? e.message : "Dig failed — try again");
+      analytics.toolError(
+        "sample_finder",
+        e instanceof Error ? e.message : "unknown",
+      );
     } finally {
       setDigging(false);
     }
