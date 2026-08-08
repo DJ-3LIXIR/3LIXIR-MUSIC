@@ -149,6 +149,37 @@ export default function VST() {
     >
       <Navbar />
 
+      {/* Opening Sale Banner */}
+      <div
+        style={{
+          position: "relative",
+          zIndex: 1,
+          background: "rgba(201,168,76,0.12)",
+          borderTop: "1px solid rgba(201,168,76,0.3)",
+          borderBottom: "1px solid rgba(201,168,76,0.3)",
+        }}
+      >
+        <div
+          style={{
+            maxWidth: "1100px",
+            margin: "0 auto",
+            padding: "16px 24px",
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+            gap: "12px",
+            textAlign: "center",
+            flexWrap: "wrap",
+          }}
+        >
+          <span style={{ fontSize: "18px" }}>🎉</span>
+          <span style={{ fontSize: "14px", color: "#e8c76a", lineHeight: 1.5 }}>
+            <strong style={{ color: "#f0d97a", fontSize: "15px" }}>Opening Sale!</strong>{" "}
+            OYSTER and ORION Sound EQ are <strong style={{ color: "#f0d97a" }}>50% off</strong> for a limited time.
+          </span>
+        </div>
+      </div>
+
       {/* Hero - Product Box Display */}
       <div
         style={{
