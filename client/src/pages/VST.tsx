@@ -74,8 +74,9 @@ export default function VST() {
     setAddedPlugins(pluginIdsInCart);
   }, [items]);
 
-  const parsePrice = (priceStr: string): number => {
-    const cleaned = priceStr.replace(/[^0-9.]/g, "");
+  const parsePrice = (priceStr: string | null | undefined): number => {
+    if (!priceStr) return 0;
+    const cleaned = String(priceStr).replace(/[^0-9.]/g, "");
     return parseFloat(cleaned) || 0;
   };
 
