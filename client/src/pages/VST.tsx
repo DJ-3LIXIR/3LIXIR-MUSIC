@@ -177,7 +177,7 @@ export default function VST() {
           <span style={{ fontSize: "18px" }}>🎉</span>
           <span style={{ fontSize: "14px", color: "#e8c76a", lineHeight: 1.5 }}>
             <strong style={{ color: "#f0d97a", fontSize: "15px" }}>Opening Sale!</strong>{" "}
-            OYSTER and ORION Sound EQ are <strong style={{ color: "#f0d97a" }}>50% off</strong> for a limited time.
+            OYSTER and ARK are <strong style={{ color: "#f0d97a" }}>50% off</strong> for a limited time.
           </span>
         </div>
       </div>
