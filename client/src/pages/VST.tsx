@@ -155,9 +155,9 @@ export default function VST() {
         style={{
           position: "relative",
           zIndex: 1,
-          background: "rgba(201,168,76,0.12)",
-          borderTop: "1px solid rgba(201,168,76,0.3)",
-          borderBottom: "1px solid rgba(201,168,76,0.3)",
+          background: "rgba(201,168,76,0.15)",
+          borderTop: "1px solid rgba(201,168,76,0.4)",
+          borderBottom: "1px solid rgba(201,168,76,0.4)",
         }}
       >
         <div
