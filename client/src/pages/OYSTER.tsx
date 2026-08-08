@@ -1003,6 +1003,9 @@ export default function OYSTER() {
           {/* Divider */}
           <div style={{ borderTop: "1px solid #111", position: "relative", zIndex: 1 }} />
 
+          {/* Divider */}
+          <div style={{ borderTop: "1px solid #111", position: "relative", zIndex: 1 }} />
+
           {/* Spec / technical details table */}
           <div
             id="technical-details"
