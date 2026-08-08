@@ -155,6 +155,7 @@ export default function VST() {
         style={{
           position: "relative",
           zIndex: 1,
+          marginTop: "80px", // clear the fixed navbar
           background: "rgba(201,168,76,0.15)",
           borderTop: "1px solid rgba(201,168,76,0.4)",
           borderBottom: "1px solid rgba(201,168,76,0.4)",
@@ -186,7 +187,7 @@ export default function VST() {
         style={{
           position: "relative",
           background: "radial-gradient(ellipse at 50% 0%, #0a0a0a 0%, #000 70%)",
-          paddingTop: "100px",
+          paddingTop: "40px", // banner above now provides navbar clearance
           paddingBottom: "0",
           display: "flex",
           flexDirection: "column",
