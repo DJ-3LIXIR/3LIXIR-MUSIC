@@ -782,6 +782,31 @@ export default function Hades() {
             </div>
           </div>
 
+          {/* Video embed */}
+          <div
+            style={{
+              position: "relative",
+              zIndex: 1,
+              maxWidth: "1100px",
+              margin: "0 auto",
+              padding: "40px 24px",
+            }}
+          >
+            <iframe
+              width="100%"
+              height="auto"
+              style={{
+                aspectRatio: "16 / 9",
+                borderRadius: "16px",
+              }}
+              src="https://www.youtube.com/embed/D9meG8GNJ3s"
+              title="HADES Amp — Heavy Guitar & Bass Tones in Your DAW"
+              frameBorder="0"
+              allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+              allowFullScreen
+            />
+          </div>
+
           {/* Divider */}
           <div style={{ borderTop: "1px solid #111", position: "relative", zIndex: 1 }} />
 
