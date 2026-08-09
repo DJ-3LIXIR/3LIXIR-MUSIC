@@ -104,7 +104,7 @@ export default function VocalRemover() {
   useSEO({
     title: "Free Vocal Remover — Split Vocals & Instrumentals Online | 3LIXIR",
     description:
-      "Remove vocals from any song free. Our AI stem splitter separates vocals, drums, bass and instruments online — no signup. Make instant acapellas and clean instrumentals.",
+      "Remove vocals from any song free. Our AI stem splitter separates vocals, drums, bass and instruments online — 10 free separations a day, just sign in with Google. Make instant acapellas and clean instrumentals.",
     canonical: "/tools/vocal-remover",
     jsonLd: toolSchema(
       "3LIXIR Vocal Remover",

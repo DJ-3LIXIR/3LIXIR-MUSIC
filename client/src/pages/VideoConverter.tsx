@@ -107,7 +107,7 @@ export default function VideoConverter() {
   useSEO({
     title: "Free YouTube to MP3 & WAV Converter | 3LIXIR",
     description:
-      "Convert YouTube videos and links to MP3, WAV, or MP4 free. Fast, high-quality audio downloads for producers and creators — no signup, no limits.",
+      "Convert YouTube videos and links to MP3, WAV, or MP4 free. Fast, high-quality audio downloads for producers and creators — 10 free conversions a day, just sign in with Google.",
     canonical: "/tools/video-converter",
     jsonLd: toolSchema(
       "3LIXIR Video Converter",

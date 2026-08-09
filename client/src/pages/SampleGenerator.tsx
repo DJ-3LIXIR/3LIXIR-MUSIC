@@ -108,7 +108,7 @@ export default function SampleGenerator() {
   useSEO({
     title: "Free Sample Finder & Crate Digger — Random Record Generator | 3LIXIR",
     description:
-      "Find samples to flip with our free crate-digging tool. A random record generator with Discogs metadata and genre filtering — discover your next sample to chop.",
+      "Find samples to flip with our free crate-digging tool. A random record generator with Discogs metadata and genre filtering — 25 free digs a day, just sign in with Google.",
     canonical: "/tools/sample-generator",
     jsonLd: toolSchema(
       "3LIXIR Sample Digger",
