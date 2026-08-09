@@ -159,10 +159,12 @@ export default function SampleGenerator() {
 
   const runDig = async (body: Record<string, string>) => {
     if (!user) {
+      analytics.toolSignupRequired("sample_finder");
       openAuthModal();
       return;
     }
     if (limitReached) {
+      analytics.toolLimitReached("sample_finder");
       setLocation("/vip");
       return;
     }

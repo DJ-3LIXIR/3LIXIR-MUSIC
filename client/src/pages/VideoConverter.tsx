@@ -174,12 +174,14 @@ export default function VideoConverter() {
   const handleConvert = async () => {
     // Must be signed in to use the converter.
     if (!user) {
+      analytics.toolSignupRequired("video_converter");
       openAuthModal();
       return;
     }
 
     // Free tier exhausted for the day — send them to membership plans.
     if (limitReached) {
+      analytics.toolLimitReached("video_converter");
       setLocation("/vip");
       return;
     }

@@ -173,12 +173,14 @@ export default function VocalRemover() {
   const handleConvert = async () => {
     // Must be signed in to use the converter.
     if (!user) {
+      analytics.toolSignupRequired("vocal_remover");
       openAuthModal();
       return;
     }
 
     // Free tier exhausted for the day — send them to membership plans.
     if (limitReached) {
+      analytics.toolLimitReached("vocal_remover");
       setLocation("/vip");
       return;
     }

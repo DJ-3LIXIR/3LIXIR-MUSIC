@@ -116,6 +116,15 @@ export const analytics = {
     });
   },
 
+  // Free tool: signed-out user tried to run a job and hit the auth wall.
+  // The biggest funnel leak on cold traffic — they wanted the tool and
+  // were stopped before using it.
+  toolSignupRequired: (toolName: string) => {
+    trackEvent("tool_signup_required", {
+      tool_name: toolName,
+    });
+  },
+
   // Search / filter action
   search: (searchTerm: string, category?: string) => {
     trackEvent("search", {
