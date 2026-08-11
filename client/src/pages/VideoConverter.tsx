@@ -105,13 +105,13 @@ function timeAgo(ts: number): string {
 
 export default function VideoConverter() {
   useSEO({
-    title: "Free YouTube to MP3 & WAV Converter | 3LIXIR",
+    title: "Free Video to MP3 & WAV Converter — Extract Audio | 3LIXIR",
     description:
-      "Convert YouTube videos and links to MP3, WAV, or MP4 free. Fast, high-quality audio downloads for producers and creators — 10 free conversions a day, just sign in with Google.",
+      "Convert any video file or video URL to MP3, WAV, M4A or MP4 free. Upload a file or paste a link — fast, high-quality audio extraction for producers and creators. 10 free conversions a day, just sign in with Google.",
     canonical: "/tools/video-converter",
     jsonLd: toolSchema(
-      "3LIXIR Video Converter",
-      "Free online converter for YouTube links and videos to MP3, WAV and MP4.",
+      "3LIXIR Audio Converter",
+      "Free online converter — upload a video file or paste a video URL and extract audio as MP3, WAV, M4A or MP4.",
       "/tools/video-converter",
     ),
   });
@@ -431,7 +431,7 @@ export default function VideoConverter() {
                   marginBottom: "24px",
                 }}
               >
-                Video Converter
+                Audio Converter
               </div>
               <h1
                 style={{
@@ -464,8 +464,8 @@ export default function VideoConverter() {
                   maxWidth: "480px",
                 }}
               >
-                Paste a YouTube URL or any video link and pull it down as clean
-                audio or video — MP3, WAV, MP4 and more.
+                Upload a video file or paste a video URL and pull it down as
+                clean audio or video — MP3, WAV, MP4 and more.
               </p>
             </div>
 
@@ -494,10 +494,10 @@ export default function VideoConverter() {
                       marginBottom: "4px",
                     }}
                   >
-                    YouTube downloads are in beta
+                    Link downloads are in beta
                   </div>
                   <div style={{ fontSize: "13px", color: "#aaa", lineHeight: 1.5 }}>
-                    YouTube links may be spotty right now while we work on
+                    Some links may be spotty right now while we work on
                     stability. <strong>File upload always works.</strong> Thanks
                     for supporting us as we make it more reliable. 🙏
                   </div>
@@ -587,10 +587,10 @@ export default function VideoConverter() {
                   marginBottom: "10px",
                 }}
               >
-                Video URL
+                Video Link
               </label>
               <input
-                placeholder="https://youtube.com/watch?v=..."
+                placeholder="Paste your video link here…"
                 value={url}
                 onChange={(e) => {
                   setUrl(e.target.value);

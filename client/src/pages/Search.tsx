@@ -126,10 +126,10 @@ const SearchPage = () => {
       keywords: ["tools", "producer tools", "utilities", "free tools", "audio tools"],
     },
     {
-      title: "Video Converter",
+      title: "Audio Converter",
       path: "/tools/video-converter",
       icon: Download,
-      keywords: ["converter", "video converter", "video downloader", "youtube", "download", "mp3", "wav", "mp4", "convert"],
+      keywords: ["converter", "audio converter", "video converter", "extract audio", "youtube", "download", "downloader", "mp3", "wav", "m4a", "mp4", "convert"],
     },
     {
       title: "Sample Digger",

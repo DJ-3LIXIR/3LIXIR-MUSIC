@@ -2274,11 +2274,11 @@ const InfoPage = () => {
                       <div className="bg-white/5 rounded-lg p-5">
                         <h4 className="font-semibold mb-2 flex items-start gap-2">
                           <HelpCircle className="w-5 h-5 text-[hsl(var(--gold))] flex-shrink-0 mt-0.5" />
-                          How do I convert a YouTube video to MP3 or WAV?
+                          How do I convert a video to MP3 or WAV?
                         </h4>
                         <p className="text-muted-foreground pl-7">
-                          Open the free Video Converter under Tools, paste a
-                          YouTube link (or any video URL), choose your format —
+                          Open the free Audio Converter under Tools, upload a
+                          video file or paste a video link, choose your format —
                           MP3, WAV, M4A, or MP4 — and download. It runs right in
                           your browser with no software to install.
                         </p>
@@ -2290,7 +2290,7 @@ const InfoPage = () => {
                           Are the producer tools free to use?
                         </h4>
                         <p className="text-muted-foreground pl-7">
-                          Yes. The Video Converter and Sample Generator are free.
+                          Yes. The Audio Converter and Sample Generator are free.
                           Signed-in members get a set number of free conversions
                           each day, and VIP members get unlimited use with no
                           daily cap.

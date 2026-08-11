@@ -4,8 +4,8 @@ import { Link } from "wouter";
 export function ToolsPreview() {
   const tools = [
     {
-      title: "Video Converter",
-      description: "Convert YouTube links and videos to MP3, WAV, MP4 and more",
+      title: "Audio Converter",
+      description: "Convert any video file or video URL to MP3, WAV, MP4 and more",
       icon: "🎬",
       href: "/tools/video-converter",
     },

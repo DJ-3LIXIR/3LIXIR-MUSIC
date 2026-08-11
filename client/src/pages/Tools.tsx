@@ -8,9 +8,9 @@ import { useIsMobile } from "@/hooks/use-mobile";
 export default function Tools() {
   useSEO({
     title:
-      "Free Music Production Tools — Vocal Remover, YouTube Converter & Sample Finder | 3LIXIR",
+      "Free Music Production Tools — Vocal Remover, Audio Converter & Sample Finder | 3LIXIR",
     description:
-      "Free online tools for music producers: an AI vocal remover / stem splitter, a YouTube to MP3 & WAV converter, and a sample crate-digging generator. Free daily use — just sign in with Google.",
+      "Free online tools for music producers: an AI vocal remover / stem splitter, a video to MP3 & WAV audio converter, and a sample crate-digging generator. Free daily use — just sign in with Google.",
     canonical: "/tools",
   });
   const isMobile = useIsMobile();
@@ -124,7 +124,7 @@ export default function Tools() {
         }}
       >
         {[
-          { label: "Video Converter", href: "/tools/video-converter" },
+          { label: "Audio Converter", href: "/tools/video-converter" },
           { label: "Sample Generator", href: "/tools/sample-generator" },
           { label: "Stem Splitter", href: "/tools" },
         ].map((item, index) => (
@@ -208,10 +208,10 @@ export default function Tools() {
         <div style={{ position: "relative", zIndex: 1 }}>
           <ToolLink
             badge="Live Now"
-            title="Video Converter"
+            title="Audio Converter"
             titleAccent="Any Link."
-            description="Paste a YouTube link or any video URL and pull it down as clean audio or video. MP3, WAV, MP4 and more."
-            tags={["YouTube", "MP3 / WAV", "Instant", "Free"]}
+            description="Upload a video file or paste a video URL and pull it down as clean audio or video. MP3, WAV, MP4 and more."
+            tags={["Any Video", "MP3 / WAV", "Instant", "Free"]}
             ctaLabel="Open Converter"
             href="/tools/video-converter"
             accent="#22d3ee"
