@@ -1,6 +1,7 @@
 // File: src/components/Info/SocialMedia.tsx
 import React, { useState } from "react";
 import { ExternalLink, QrCode } from "lucide-react";
+import { QRCodeSVG } from "qrcode.react";
 
 const YouTubeIcon = () => (
   <svg className="w-6 h-6" fill="currentColor" viewBox="0 0 24 24">
@@ -29,7 +30,9 @@ const InstagramIcon = () => (
 interface SocialLink {
   platform: string;
   url: string;
+  handle: string;
   qrCodeUrl?: string;
+  qrValue?: string;
   icon: React.ReactNode;
   color: string;
 }
@@ -41,6 +44,7 @@ export const SocialMedia = () => {
     {
       platform: "YouTube",
       url: "https://youtube.com/@dj3lixir",
+      handle: "@dj3lixir",
       qrCodeUrl: "/qrcode.png",
       icon: <YouTubeIcon />,
       color: "#FF0000",
@@ -48,6 +52,7 @@ export const SocialMedia = () => {
     {
       platform: "Spotify",
       url: "https://open.spotify.com/artist/your-artist-id",
+      handle: "DJ 3LIXIR",
       qrCodeUrl: "/qr-codes/spotify-qr.png",
       icon: <SpotifyIcon />,
       color: "#1DB954",
@@ -55,14 +60,16 @@ export const SocialMedia = () => {
     {
       platform: "TikTok",
       url: "https://tiktok.com/@dj3lixir",
+      handle: "@dj3lixir",
       qrCodeUrl: "/qr-codes/tiktok-qr.png",
       icon: <TikTokIcon />,
       color: "#000000",
     },
     {
       platform: "Instagram",
-      url: "https://instagram.com/dj3lixir",
-      qrCodeUrl: "/qr-codes/instagram-qr.png",
+      url: "https://www.instagram.com/dj_3lixir/",
+      handle: "@dj_3lixir",
+      qrValue: "https://www.instagram.com/dj_3lixir/",
       icon: <InstagramIcon />,
       color: "#E4405F",
     },
@@ -101,7 +108,7 @@ export const SocialMedia = () => {
                     <h3 className="text-xl font-display font-semibold tracking-tight">
                       {link.platform}
                     </h3>
-                    <p className="text-sm text-muted-foreground">@dj3lixir</p>
+                    <p className="text-sm text-muted-foreground">{link.handle}</p>
                   </div>
                 </div>
               </div>
@@ -129,7 +136,19 @@ export const SocialMedia = () => {
 
               {showQR === link.platform && (
                 <div className="mt-4 p-4 bg-white rounded-xl text-center">
-                  {link.qrCodeUrl ? (
+                  {link.qrValue ? (
+                    <div>
+                      <QRCodeSVG
+                        value={link.qrValue}
+                        size={192}
+                        level="M"
+                        className="mx-auto mb-2"
+                      />
+                      <p className="text-sm text-gray-600">
+                        Scan to follow on {link.platform}
+                      </p>
+                    </div>
+                  ) : link.qrCodeUrl ? (
                     <div>
                       <img
                         src={link.qrCodeUrl}
