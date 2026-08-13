@@ -126,40 +126,6 @@ export default function VIPLicensesimg() {
         {/* BeatSelect Component - Member beats catalog (MOVED ABOVE COMMUNITY) */}
         <BeatSelect />
 
-        {/* VIP Community Section */}
-        {(subscriptionTier === "diamond" ||
-          subscriptionTier === "platinum") && (
-          <section className="pt-16 pb-20 px-6">
-            <div className="container mx-auto max-w-7xl">
-              <div className="flex items-center justify-between mb-6">
-                <h2 className="text-3xl font-display font-bold">
-                  VIP Community
-                </h2>
-                <Crown className="w-6 h-6 text-[hsl(var(--gold))]" />
-              </div>
-
-              <div className="border border-white/10 rounded-xl p-8 bg-black/80 backdrop-blur-sm">
-                <div className="flex flex-col md:flex-row gap-6 items-center">
-                  <div className="flex-grow">
-                    <h3 className="text-2xl font-bold mb-2">
-                      Join Our VIP Discord
-                    </h3>
-                    <p className="text-muted-foreground mb-4">
-                      Connect with other VIP members, get feedback on your
-                      tracks, and network with producers.
-                    </p>
-                    <button className="px-6 py-3 bg-[hsl(var(--gold))] text-black font-bold rounded-full hover:bg-[hsl(var(--gold))]/90 transition-colors uppercase tracking-wider">
-                      Join Discord
-                    </button>
-                  </div>
-                  <div className="w-32 h-32 bg-gradient-to-br from-[hsl(var(--gold))]/20 to-purple-600/20 rounded-full flex items-center justify-center">
-                    <Crown className="w-16 h-16 text-[hsl(var(--gold))]" />
-                  </div>
-                </div>
-              </div>
-            </div>
-          </section>
-        )}
       </div>
     );
   }
