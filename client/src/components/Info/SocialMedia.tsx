@@ -59,9 +59,9 @@ export const SocialMedia = () => {
     },
     {
       platform: "TikTok",
-      url: "https://tiktok.com/@dj3lixir",
+      url: "https://www.tiktok.com/@dj3lixir",
       handle: "@dj3lixir",
-      qrCodeUrl: "/qr-codes/tiktok-qr.png",
+      qrValue: "https://www.tiktok.com/@dj3lixir",
       icon: <TikTokIcon />,
       color: "#000000",
     },
