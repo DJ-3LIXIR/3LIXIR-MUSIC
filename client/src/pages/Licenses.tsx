@@ -603,7 +603,7 @@ export default function Licenses() {
               <p className="text-muted-foreground text-sm">
                 When you purchase beats while subscribed, you'll skip the $50
                 licensing fee automatically and receive a better royalty split.
-                The beats you buy while subscribed grant you royalty rights
+                Beats you publish while subscribed grant you royalty rights
                 forever, even if you cancel later.
               </p>
             </div>
