@@ -11,6 +11,8 @@ import {
   needsModelDownload,
   separateStems,
   clearModelCache,
+  QUALITY_PRESETS,
+  type QualityPreset,
   type StemCapability,
   type StemFile,
 } from "@/lib/stems";
@@ -64,6 +66,7 @@ export default function StemSplitter() {
   const [modelCached, setModelCached] = useState<boolean | null>(null);
   const [file, setFile] = useState<File | null>(null);
   const [url, setUrl] = useState("");
+  const [quality, setQuality] = useState<QualityPreset>("fast");
   const [dragActive, setDragActive] = useState(false);
   const [running, setRunning] = useState(false);
   const [stage, setStage] = useState("");
@@ -235,14 +238,19 @@ export default function StemSplitter() {
         setStage("Fetching audio");
         bytes = await fetchUrlAudio(url.trim());
       }
-      const result = await separateStems(bytes, capability, {
-        onStage: setStage,
-        onModelProgress: (p) => {
-          setDownloadedBytes(p.receivedBytes);
-          setDownloadPct(p.progress);
+      const result = await separateStems(
+        bytes,
+        capability,
+        {
+          onStage: setStage,
+          onModelProgress: (p) => {
+            setDownloadedBytes(p.receivedBytes);
+            setDownloadPct(p.progress);
+          },
+          onProgress: setSeparatePct,
         },
-        onProgress: setSeparatePct,
-      });
+        quality,
+      );
 
       stemUrlsRef.current.push(...result.stems.map((s) => s.url));
       setStems(result.stems);
@@ -478,6 +486,62 @@ export default function StemSplitter() {
                   {capability.reason}
                 </div>
               )}
+
+              {/* Quality: trades time for separation quality. */}
+              <div style={{ marginTop: "20px" }}>
+                <div
+                  style={{
+                    fontSize: "11px",
+                    textTransform: "uppercase",
+                    letterSpacing: "0.18em",
+                    color: "#666",
+                    marginBottom: "10px",
+                  }}
+                >
+                  Quality
+                </div>
+                <div style={{ display: "flex", gap: "8px" }}>
+                  {(
+                    Object.keys(QUALITY_PRESETS) as QualityPreset[]
+                  ).map((key) => {
+                    const active = quality === key;
+                    const preset = QUALITY_PRESETS[key];
+                    return (
+                      <button
+                        key={key}
+                        onClick={() => setQuality(key)}
+                        disabled={running}
+                        style={{
+                          flex: 1,
+                          padding: "10px 8px",
+                          borderRadius: "10px",
+                          cursor: running ? "default" : "pointer",
+                          border: `1px solid ${active ? GOLD : "#2a2724"}`,
+                          background: active ? `${GOLD}14` : "transparent",
+                          color: active ? GOLD : "#888",
+                          fontSize: "13px",
+                          fontWeight: 700,
+                        }}
+                      >
+                        {preset.label}
+                        <span
+                          style={{
+                            display: "block",
+                            fontSize: "11px",
+                            fontWeight: 500,
+                            color: active ? `${GOLD}aa` : "#555",
+                            marginTop: "2px",
+                          }}
+                        >
+                          {preset.costMultiplier === 1
+                            ? "baseline"
+                            : `~${preset.costMultiplier}x slower`}
+                        </span>
+                      </button>
+                    );
+                  })}
+                </div>
+              </div>
 
               {/* Action */}
               <button

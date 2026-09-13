@@ -44,6 +44,18 @@ export type StemFile = {
   url: string;
 };
 
+/**
+ * Quality presets. These trade time for separation quality by varying how much
+ * each analysis window overlaps its neighbour -- the same knob Demucs exposes.
+ */
+export const QUALITY_PRESETS = {
+  fast: { label: "Fast", overlap: 0.25, costMultiplier: 1 },
+  better: { label: "Better", overlap: 0.5, costMultiplier: 1.5 },
+  best: { label: "Best", overlap: 0.75, costMultiplier: 3 },
+} as const;
+
+export type QualityPreset = keyof typeof QUALITY_PRESETS;
+
 export type SeparateEvents = {
   onStage?: (stage: string) => void;
   onModelProgress?: (p: ModelProgress) => void;
@@ -73,6 +85,7 @@ export async function separateStems(
   input: ArrayBuffer,
   capability: StemCapability,
   events: SeparateEvents = {},
+  quality: QualityPreset = "fast",
 ): Promise<SeparateResult> {
   if (!capability.backend) {
     throw new Error(
@@ -135,6 +148,7 @@ export async function separateStems(
           backend: capability.backend as "webgpu" | "wasm",
           threads: capability.threads,
           channels: audio.channels,
+          overlap: QUALITY_PRESETS[quality].overlap,
         };
         worker.postMessage(request, [
           audio.channels[0].buffer,

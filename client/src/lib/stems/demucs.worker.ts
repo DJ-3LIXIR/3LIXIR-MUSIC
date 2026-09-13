@@ -31,8 +31,11 @@ import { loadModel, type ModelProgress } from "./modelCache";
 const SOURCE_NAMES = CONSTANTS.TRACKS;
 // 7.8s at 44.1kHz -- the segment length this graph is exported with.
 const SEGMENT = CONSTANTS.TRAINING_SAMPLES;
-// Fraction of each segment that overlaps its neighbour. Demucs' own default.
-const OVERLAP = CONSTANTS.SEGMENT_OVERLAP;
+// Fraction of each segment that overlaps its neighbour. Demucs' own default is
+// 0.25; higher values average more passes over the same audio, which softens
+// segment-boundary artifacts and generally cleans up separation, at a cost in
+// time that rises with the number of segments.
+const DEFAULT_OVERLAP = CONSTANTS.SEGMENT_OVERLAP;
 
 export type WorkerRequest = {
   type: "separate";
@@ -41,6 +44,8 @@ export type WorkerRequest = {
   backend: "webgpu" | "wasm";
   threads: number;
   channels: [Float32Array, Float32Array];
+  /** 0..0.9. Higher = better separation, proportionally slower. */
+  overlap?: number;
 };
 
 export type WorkerResponse =
@@ -79,6 +84,32 @@ async function separate(req: WorkerRequest): Promise<void> {
   const [left, right] = req.channels;
   const totalSamples = left.length;
 
+  // --- Input normalisation -------------------------------------------------
+  // HTDemucs is trained on a mix normalised to zero mean / unit variance, and
+  // its reference implementation does this before inference and undoes it
+  // after. Feeding raw audio instead hands the model a different input
+  // distribution than it learned on, which costs separation quality -- worst
+  // on quiet or heavily-limited masters. Statistics come from the mono mix of
+  // the whole track, matching apply_model(), not from each segment.
+  let mixMean = 0;
+  for (let i = 0; i < totalSamples; i += 1) {
+    mixMean += (left[i] + right[i]) * 0.5;
+  }
+  mixMean /= Math.max(1, totalSamples);
+
+  let variance = 0;
+  for (let i = 0; i < totalSamples; i += 1) {
+    const d = (left[i] + right[i]) * 0.5 - mixMean;
+    variance += d * d;
+  }
+  // Guard silence: a digital-black track would otherwise divide by zero.
+  const mixStd = Math.sqrt(variance / Math.max(1, totalSamples)) || 1;
+
+  for (let i = 0; i < totalSamples; i += 1) {
+    left[i] = (left[i] - mixMean) / mixStd;
+    right[i] = (right[i] - mixMean) / mixStd;
+  }
+
   // --- Runtime setup -------------------------------------------------------
   ort.env.wasm.wasmPaths = { wasm: ortWasmUrl };
   // numThreads > 1 requires SharedArrayBuffer, which requires cross-origin
@@ -112,7 +143,9 @@ async function separate(req: WorkerRequest): Promise<void> {
   }
 
   const segment = SEGMENT;
-  const stride = Math.max(1, Math.floor(segment * (1 - OVERLAP)));
+  // Clamp: at >=1 the stride collapses to zero and the loop never advances.
+  const overlap = Math.min(0.9, Math.max(0, req.overlap ?? DEFAULT_OVERLAP));
+  const stride = Math.max(1, Math.floor(segment * (1 - overlap)));
   const window = buildWindow(segment);
 
   // This export exposes both of HTDemucs' branches rather than fusing them:
@@ -222,8 +255,9 @@ async function separate(req: WorkerRequest): Promise<void> {
     const w = weightSum[i];
     if (w <= 1e-8) continue;
     for (let t = 0; t < SOURCE_NAMES.length; t += 1) {
-      acc[t][0][i] /= w;
-      acc[t][1][i] /= w;
+      // Undo the weighting, then the normalisation applied to the input.
+      acc[t][0][i] = (acc[t][0][i] / w) * mixStd + mixMean;
+      acc[t][1][i] = (acc[t][1][i] / w) * mixStd + mixMean;
     }
   }
 
