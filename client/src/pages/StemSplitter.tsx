@@ -109,6 +109,24 @@ export default function StemSplitter() {
     [],
   );
 
+  // Warn before a reload or tab close takes a run down with it.
+  //
+  // Separation state lives only in this page's worker: there is no server-side
+  // job to reconnect to, so a reload doesn't interrupt the work, it destroys
+  // it. Browsers ignore custom text here and show their own wording, and the
+  // prompt only appears if the user has interacted with the page -- which,
+  // having clicked Split, they have.
+  useEffect(() => {
+    if (!running) return;
+    const onBeforeUnload = (e: BeforeUnloadEvent) => {
+      e.preventDefault();
+      // Legacy property some browsers still require to trigger the dialog.
+      e.returnValue = "";
+    };
+    window.addEventListener("beforeunload", onBeforeUnload);
+    return () => window.removeEventListener("beforeunload", onBeforeUnload);
+  }, [running]);
+
   // --- Quota counter (display only) ---------------------------------------
   const refreshQuota = useCallback(async () => {
     if (!user) return;
