@@ -41,6 +41,7 @@ import Tools from "@/pages/Tools";
 import VideoConverter from "@/pages/VideoConverter";
 import SampleGenerator from "@/pages/SampleGenerator";
 import VocalRemover from "@/pages/VocalRemover";
+import StemSplitter from "@/pages/StemSplitter";
 
 // Contract Pages
 import Terms from "@/components/Shop/Contract/Terms";
@@ -79,6 +80,7 @@ function Router() {
       <Route path="/tools/video-converter" component={VideoConverter} />
       <Route path="/tools/sample-generator" component={SampleGenerator} />
       <Route path="/tools/vocal-remover" component={VocalRemover} />
+      <Route path="/tools/stem-splitter" component={StemSplitter} />
       <Route path="/ark" component={ARK} />
       <Route path="/apollo" component={Apollo} />
       <Route path="/hades" component={Hades} />

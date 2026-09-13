@@ -91,13 +91,21 @@ export const analytics = {
   // Free tool: job finished successfully — the top-of-funnel conversion
   toolComplete: (
     toolName: string,
-    params?: { format?: string; resultCount?: number; durationSeconds?: number },
+    params?: {
+      format?: string;
+      resultCount?: number;
+      durationSeconds?: number;
+      // Compute backend for tools that run locally (e.g. "webgpu" | "wasm").
+      // The GPU/CPU split is what decides whether the tool feels fast.
+      backend?: string;
+    },
   ) => {
     trackEvent("tool_complete", {
       tool_name: toolName,
       format: params?.format,
       result_count: params?.resultCount,
       duration_seconds: params?.durationSeconds,
+      backend: params?.backend,
     });
   },
 
