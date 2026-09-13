@@ -76,6 +76,79 @@ function buildWindow(length: number): Float32Array {
   return w;
 }
 
+// --- Session cache -----------------------------------------------------------
+// One inference session for the life of this worker, reused across runs.
+//
+// Building a session per run meant loading the 172MB weights and allocating the
+// engine's GPU memory again for every song. Safari doesn't hand GPU memory back
+// promptly after a session is released, so a second run in the same tab
+// stacked on top of the first one's leftovers and could run out of memory
+// where the first had not. Reuse also skips the startup cost after run one.
+type CachedSession = { session: ort.InferenceSession; backend: string };
+let sessionKey = "";
+let sessionPromise: Promise<CachedSession> | null = null;
+
+async function createSession(req: WorkerRequest): Promise<CachedSession> {
+  ort.env.wasm.wasmPaths = { wasm: ortWasmUrl };
+  // numThreads > 1 requires SharedArrayBuffer, which requires cross-origin
+  // isolation. The caller has already checked; honour whatever it decided.
+  // ORT reads this once, when the first session initialises the runtime.
+  ort.env.wasm.numThreads = req.threads;
+
+  post({ type: "stage", stage: "Loading AI model" });
+  // `let` so the reference can be dropped once the session holds the weights:
+  // ORT copies them into its own memory, and keeping this 172MB buffer alive
+  // is pure waste.
+  let modelBytes: ArrayBuffer | null = await loadModel(
+    req.modelUrl,
+    req.cacheKey,
+    (payload) => post({ type: "model-progress", payload }),
+  );
+
+  post({ type: "stage", stage: "Starting engine" });
+
+  // Prefer WebGPU, but a WebGPU adapter can still fail at session-creation time
+  // on drivers that advertise support they don't have. Fall back rather than
+  // dead-ending the user.
+  try {
+    try {
+      const session = await ort.InferenceSession.create(modelBytes, {
+        executionProviders:
+          req.backend === "webgpu" ? ["webgpu", "wasm"] : ["wasm"],
+        graphOptimizationLevel: "all",
+      });
+      return { session, backend: req.backend };
+    } catch (err) {
+      if (req.backend !== "webgpu") throw err;
+      const session = await ort.InferenceSession.create(modelBytes, {
+        executionProviders: ["wasm"],
+        graphOptimizationLevel: "all",
+      });
+      return { session, backend: "wasm" };
+    }
+  } finally {
+    modelBytes = null;
+  }
+}
+
+function getSession(req: WorkerRequest): Promise<CachedSession> {
+  const key = [req.modelUrl, req.cacheKey, req.backend, req.threads].join("|");
+  if (sessionPromise && key === sessionKey) return sessionPromise;
+
+  // Different model or backend: free the old session before building another.
+  const previous = sessionPromise;
+  if (previous) void previous.then(({ session }) => session.release()).catch(() => {});
+
+  sessionKey = key;
+  sessionPromise = createSession(req).catch((err) => {
+    // Don't cache a failure; the next run should get a fresh attempt.
+    sessionPromise = null;
+    sessionKey = "";
+    throw err;
+  });
+  return sessionPromise;
+}
+
 async function separate(req: WorkerRequest): Promise<void> {
   const [left, right] = req.channels;
   const totalSamples = left.length;
@@ -106,44 +179,7 @@ async function separate(req: WorkerRequest): Promise<void> {
     right[i] = (right[i] - mixMean) / mixStd;
   }
 
-  // --- Runtime setup -------------------------------------------------------
-  ort.env.wasm.wasmPaths = { wasm: ortWasmUrl };
-  // numThreads > 1 requires SharedArrayBuffer, which requires cross-origin
-  // isolation. The caller has already checked; honour whatever it decided.
-  ort.env.wasm.numThreads = req.threads;
-
-  post({ type: "stage", stage: "Loading AI model" });
-  // `let` so the reference can be dropped once the session holds the weights:
-  // ORT copies them into its own memory, and keeping this 172MB buffer alive
-  // for a multi-minute run is pure waste.
-  let modelBytes: ArrayBuffer | null = await loadModel(
-    req.modelUrl,
-    req.cacheKey,
-    (payload) => post({ type: "model-progress", payload }),
-  );
-
-  post({ type: "stage", stage: "Starting engine" });
-
-  // Prefer WebGPU, but a WebGPU adapter can still fail at session-creation time
-  // on drivers that advertise support they don't have. Fall back rather than
-  // dead-ending the user.
-  let session: ort.InferenceSession;
-  let backendUsed = req.backend;
-  try {
-    session = await ort.InferenceSession.create(modelBytes, {
-      executionProviders: req.backend === "webgpu" ? ["webgpu", "wasm"] : ["wasm"],
-      graphOptimizationLevel: "all",
-    });
-  } catch (err) {
-    if (req.backend !== "webgpu") throw err;
-    backendUsed = "wasm";
-    session = await ort.InferenceSession.create(modelBytes, {
-      executionProviders: ["wasm"],
-      graphOptimizationLevel: "all",
-    });
-  }
-
-  modelBytes = null;
+  const { session, backend: backendUsed } = await getSession(req);
 
   const segment = SEGMENT;
   // Clamp: at >=1 the stride collapses to zero and the loop never advances.
@@ -276,8 +312,6 @@ async function separate(req: WorkerRequest): Promise<void> {
       acc[t][1][i] = (acc[t][1][i] / w) * mixStd + mixMean;
     }
   }
-
-  await session.release();
 
   const stems: Record<string, [Float32Array, Float32Array]> = {};
   const transfer: Transferable[] = [];

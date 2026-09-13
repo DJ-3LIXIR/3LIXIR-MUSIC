@@ -11,6 +11,7 @@ import {
   needsModelDownload,
   separateStems,
   clearModelCache,
+  releaseStemEngine,
   QUALITY_PRESETS,
   type QualityPreset,
   type StemCapability,
@@ -100,11 +101,14 @@ export default function StemSplitter() {
     };
   }, []);
 
-  // Revoke every object URL we ever handed out, on unmount.
+  // On leaving the tool: revoke every object URL we handed out, and shut the
+  // engine down so the model and its GPU memory don't follow the user around
+  // the rest of the site.
   useEffect(
     () => () => {
       stemUrlsRef.current.forEach((u) => URL.revokeObjectURL(u));
       if (timerRef.current) clearInterval(timerRef.current);
+      releaseStemEngine();
     },
     [],
   );

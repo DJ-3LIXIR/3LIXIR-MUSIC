@@ -69,6 +69,35 @@ export type SeparateResult = {
   durationSeconds: number;
 };
 
+// --- Engine lifetime ---------------------------------------------------------
+// One worker per page, kept between runs so the model and inference session it
+// holds are built once rather than per song. See the session cache in the
+// worker for why rebuilding them each run ran out of memory.
+let engine: Worker | null = null;
+// Rejects the run in flight, if any, when the engine is torn down under it.
+let cancelActive: ((err: Error) => void) | null = null;
+
+function getEngine(): Worker {
+  if (!engine) {
+    engine = new Worker(new URL("./demucs.worker.ts", import.meta.url), {
+      type: "module",
+    });
+  }
+  return engine;
+}
+
+/**
+ * Terminate the engine and free everything it holds -- the model, the
+ * inference session and its GPU memory. Call when leaving the tool; the next
+ * run builds a fresh engine (the weights come back from the local cache).
+ */
+export function releaseStemEngine(): void {
+  cancelActive?.(new Error("Separation cancelled."));
+  cancelActive = null;
+  engine?.terminate();
+  engine = null;
+}
+
 /** True when the model still has to be downloaded, so the UI can warn first. */
 export async function needsModelDownload(): Promise<boolean> {
   return !(await isModelCached(MODEL_CACHE_KEY));
@@ -98,9 +127,10 @@ export async function separateStems(
   events.onStage?.("Reading audio");
   const audio = await decodeToStereo44k(input);
 
-  const worker = new Worker(new URL("./demucs.worker.ts", import.meta.url), {
-    type: "module",
-  });
+  // A run still in flight (e.g. the page was left and reopened mid-run) would
+  // interleave its messages with this one. Start from a clean engine instead.
+  if (cancelActive) releaseStemEngine();
+  const worker = getEngine();
 
   try {
     const outcome = await new Promise<{
@@ -108,6 +138,7 @@ export async function separateStems(
       backend: string;
     }>(
       (resolve, reject) => {
+        cancelActive = reject;
         worker.onmessage = (event: MessageEvent<WorkerResponse>) => {
           const msg = event.data;
           switch (msg.type) {
@@ -183,7 +214,16 @@ export async function separateStems(
       backend: outcome.backend,
       durationSeconds: (performance.now() - startedAt) / 1000,
     };
+  } catch (err) {
+    // A worker that errored may have lost its GPU device or be out of memory;
+    // don't reuse it for the next run.
+    releaseStemEngine();
+    throw err;
   } finally {
-    worker.terminate();
+    cancelActive = null;
+    if (engine === worker) {
+      worker.onmessage = null;
+      worker.onerror = null;
+    }
   }
 }
