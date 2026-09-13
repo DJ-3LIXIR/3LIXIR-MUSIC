@@ -28,8 +28,6 @@ export type DecodedAudio = {
 export async function decodeToStereo44k(
   input: ArrayBuffer,
 ): Promise<DecodedAudio> {
-  // decodeAudioData detaches the buffer it is handed, and we may need the bytes
-  // again if the first decode throws, so hand over a copy.
   const AudioCtx =
     window.AudioContext ||
     (window as unknown as { webkitAudioContext: typeof AudioContext })
@@ -38,7 +36,9 @@ export async function decodeToStereo44k(
   const probeCtx = new AudioCtx();
   let decoded: AudioBuffer;
   try {
-    decoded = await probeCtx.decodeAudioData(input.slice(0));
+    // Hand over the original rather than a copy: nothing reads these bytes
+    // again, and copying a long uncompressed WAV doubles its footprint.
+    decoded = await probeCtx.decodeAudioData(input);
   } catch {
     throw new Error(
       "Couldn't read that audio file. Try MP3, WAV, M4A, FLAC or OGG.",

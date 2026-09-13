@@ -18,6 +18,26 @@ declare module "demucs-web" {
     DEFAULT_MODEL_URL: string;
   };
 
+  /** Radix-2 FFT. Imaginary input is taken as zero. */
+  export function fft(
+    realOut: Float32Array,
+    imagOut: Float32Array,
+    realIn: Float32Array,
+    n: number,
+  ): void;
+
+  /** Radix-2 inverse FFT, normalised by n. */
+  export function ifft(
+    realOut: Float32Array,
+    imagOut: Float32Array,
+    realIn: Float32Array,
+    imagIn: Float32Array,
+    n: number,
+  ): void;
+
+  /** Cached periodic Hann window. */
+  export function getHannWindow(size: number): Float32Array;
+
   export type TrackSpec = {
     leftReal: Float32Array;
     leftImag: Float32Array;

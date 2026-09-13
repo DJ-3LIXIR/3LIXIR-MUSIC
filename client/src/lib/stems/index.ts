@@ -158,15 +158,21 @@ export async function separateStems(
     );
 
     events.onStage?.("Encoding stems");
-    const files: StemFile[] = Object.entries(outcome.stems).map(([name, channels]) => {
-      const blob = encodeWav(channels, TARGET_SAMPLE_RATE);
-      return {
+    // Encode one stem at a time and drop its float buffers as soon as its WAV
+    // exists. Mapping all four at once keeps every raw stem alive until the
+    // last WAV is built -- on a long track that's several hundred MB of peak
+    // memory spent at the very end of a run.
+    const files: StemFile[] = [];
+    for (const name of Object.keys(outcome.stems)) {
+      const blob = encodeWav(outcome.stems[name], TARGET_SAMPLE_RATE);
+      delete outcome.stems[name];
+      files.push({
         name,
         label: STEM_LABELS[name] || name,
         blob,
         url: URL.createObjectURL(blob),
-      };
-    });
+      });
+    }
 
     // Present in the order people actually reach for.
     const order = ["vocals", "drums", "bass", "other"];

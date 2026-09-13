@@ -18,13 +18,9 @@ import * as ort from "onnxruntime-web/webgpu";
 // build instead leaves ORT requesting a file that was never emitted.
 import ortWasmUrl from "onnxruntime-web/ort-wasm-simd-threaded.asyncify.wasm?url";
 
-import {
-  CONSTANTS,
-  prepareModelInput,
-  standaloneIspec,
-  standaloneMask,
-} from "demucs-web";
+import { CONSTANTS } from "demucs-web";
 
+import { DemucsDsp } from "./dsp";
 import { loadModel, type ModelProgress } from "./modelCache";
 
 // Order HTDemucs emits its four sources in. Fixed by the model, not by us.
@@ -117,8 +113,13 @@ async function separate(req: WorkerRequest): Promise<void> {
   ort.env.wasm.numThreads = req.threads;
 
   post({ type: "stage", stage: "Loading AI model" });
-  const modelBytes = await loadModel(req.modelUrl, req.cacheKey, (payload) =>
-    post({ type: "model-progress", payload }),
+  // `let` so the reference can be dropped once the session holds the weights:
+  // ORT copies them into its own memory, and keeping this 172MB buffer alive
+  // for a multi-minute run is pure waste.
+  let modelBytes: ArrayBuffer | null = await loadModel(
+    req.modelUrl,
+    req.cacheKey,
+    (payload) => post({ type: "model-progress", payload }),
   );
 
   post({ type: "stage", stage: "Starting engine" });
@@ -141,6 +142,8 @@ async function separate(req: WorkerRequest): Promise<void> {
       graphOptimizationLevel: "all",
     });
   }
+
+  modelBytes = null;
 
   const segment = SEGMENT;
   // Clamp: at >=1 the stride collapses to zero and the loop never advances.
@@ -175,6 +178,15 @@ async function separate(req: WorkerRequest): Promise<void> {
 
   const segLeft = new Float32Array(segment);
   const segRight = new Float32Array(segment);
+  // All per-segment spectrogram work happens in buffers allocated here, once.
+  const dsp = new DemucsDsp();
+  const waveformTensor = new ort.Tensor("float32", dsp.waveform, [1, 2, segment]);
+  const specTensor = new ort.Tensor("float32", dsp.magSpec, [
+    1,
+    4,
+    CONSTANTS.MODEL_SPEC_BINS,
+    CONSTANTS.MODEL_SPEC_FRAMES,
+  ]);
 
   for (let index = 0, offset = 0; offset < totalSamples; index += 1, offset += stride) {
     const valid = Math.min(segment, totalSamples - offset);
@@ -185,20 +197,12 @@ async function separate(req: WorkerRequest): Promise<void> {
     segLeft.set(left.subarray(offset, offset + valid));
     segRight.set(right.subarray(offset, offset + valid));
 
-    const prepared = prepareModelInput(segLeft, segRight);
+    // Rewrites the buffers the two input tensors already wrap.
+    dsp.prepare(segLeft, segRight);
 
     const result = await session.run({
-      [waveformInput]: new ort.Tensor("float32", prepared.waveform, [
-        1,
-        2,
-        segment,
-      ]),
-      [specInput]: new ort.Tensor("float32", prepared.magSpec, [
-        1,
-        4,
-        CONSTANTS.MODEL_SPEC_BINS,
-        CONSTANTS.MODEL_SPEC_FRAMES,
-      ]),
+      [waveformInput]: waveformTensor,
+      [specInput]: specTensor,
     });
 
     // Identify the two branches by shape rather than by name, so a re-export
@@ -226,25 +230,37 @@ async function separate(req: WorkerRequest): Promise<void> {
 
     const produced = timeDims[3];
     const channels = timeDims[2];
-    // Present only when the frequency branch is exposed; without it we'd be
-    // writing out the time branch alone, which is not the finished stem.
-    const trackSpecs = freqData ? standaloneMask(freqData) : null;
     const copyLen = Math.min(valid, produced);
 
     for (let t = 0; t < SOURCE_NAMES.length; t += 1) {
-      const freq = trackSpecs ? standaloneIspec(trackSpecs[t], segment) : null;
       const base = t * channels * produced;
+      // ispec() returns a view into one shared buffer, so each channel is
+      // consumed completely before the next call overwrites it.
       const accL = acc[t][0];
-      const accR = acc[t][1];
+      const freqL = freqData ? dsp.ispec(freqData, t, 0) : null;
       for (let i = 0; i < copyLen; i += 1) {
-        const w = window[i];
-        const l = timeData[base + i] + (freq ? freq.left[i] : 0);
-        const r = timeData[base + produced + i] + (freq ? freq.right[i] : 0);
-        accL[offset + i] += l * w;
-        accR[offset + i] += r * w;
+        accL[offset + i] +=
+          (timeData[base + i] + (freqL ? freqL[i] : 0)) * window[i];
+      }
+      const accR = acc[t][1];
+      const freqR = freqData ? dsp.ispec(freqData, t, 1) : null;
+      for (let i = 0; i < copyLen; i += 1) {
+        accR[offset + i] +=
+          (timeData[base + produced + i] + (freqR ? freqR[i] : 0)) * window[i];
       }
     }
     for (let i = 0; i < copyLen; i += 1) weightSum[offset + i] += window[i];
+
+    // The ~55MB of output tensors ORT hands back are the one per-segment
+    // allocation we can't avoid; release them explicitly rather than waiting
+    // for the collector.
+    for (const name of session.outputNames) result[name].dispose();
+    timeData = null;
+    freqData = null;
+
+    // Give the collector a turn. Without it, fast WebGPU inference can
+    // outpace GC and memory ratchets up across a long, high-overlap run.
+    await new Promise((resolve) => setTimeout(resolve, 0));
 
     post({ type: "progress", completed: index + 1, total: totalChunks });
   }
