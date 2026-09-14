@@ -10,7 +10,7 @@ export default function Tools() {
     title:
       "Free Music Production Tools — Vocal Remover, Audio Converter & Sample Finder | 3LIXIR",
     description:
-      "Free online tools for music producers: an AI vocal remover / stem splitter, a video to MP3 & WAV audio converter, and a sample crate-digging generator. Free daily use — just sign in with Google.",
+      "Free online tools for music producers: an AI stem splitter for vocals, drums and bass, a quick vocal remover, a video to MP3 & WAV audio converter, and a sample crate-digging generator. Free daily use — just sign in with Google.",
     canonical: "/tools",
   });
   const isMobile = useIsMobile();

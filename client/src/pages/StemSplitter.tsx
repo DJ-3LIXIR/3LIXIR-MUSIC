@@ -1,7 +1,7 @@
 // client/src/pages/StemSplitter.tsx
 import { useCallback, useEffect, useRef, useState } from "react";
 import { useSEO, toolSchema } from "@/hooks/useSEO";
-import { Link } from "wouter";
+import { Link, useLocation } from "wouter";
 import { Navbar } from "@/components/layout/Navbar";
 import { useAuth } from "@/contexts/AuthContext";
 import { supabase } from "@/supabaseClient";
@@ -27,6 +27,9 @@ const GOLD = "#C9A84C";
 const GOLD_LIGHT = "#e8c76a";
 
 const MODEL_SIZE_LABEL = "~172MB";
+
+// Display fallback until the backend reports the real limit.
+const FREE_SPLITS_PER_DAY = 10;
 
 function formatMb(bytes: number): string {
   return `${(bytes / 1024 / 1024).toFixed(0)}MB`;
@@ -80,7 +83,14 @@ export default function StemSplitter() {
   const [lastRun, setLastRun] = useState<{ seconds: number; backend: string } | null>(
     null,
   );
-  const [remaining, setRemaining] = useState<number | null>(null);
+  // Today's free-split allowance, as last reported by the tools backend. null
+  // until known; a failed lookup leaves it null rather than locking anyone out.
+  const [quota, setQuota] = useState<{
+    remaining: number | null;
+    limit: number;
+    isMember: boolean;
+  } | null>(null);
+  const [, setLocation] = useLocation();
 
   const fileInputRef = useRef<HTMLInputElement>(null);
   const timerRef = useRef<ReturnType<typeof setInterval> | null>(null);
@@ -131,53 +141,75 @@ export default function StemSplitter() {
     return () => window.removeEventListener("beforeunload", onBeforeUnload);
   }, [running]);
 
-  // --- Quota counter (display only) ---------------------------------------
-  const refreshQuota = useCallback(async () => {
-    if (!user) return;
+  // --- Daily quota -----------------------------------------------------------
+  // Free users get a set number of splits a day, members are unlimited. The
+  // backend owns the count; see /api/quota/stems.
+  const getToken = async (): Promise<string | null> => {
+    const {
+      data: { session },
+    } = await supabase.auth.getSession();
+    return session?.access_token ?? null;
+  };
+
+  type QuotaBody = { remaining?: number | null; limit?: number; isMember?: boolean };
+  const applyQuota = (body: QuotaBody) => {
+    const next = {
+      remaining: body.isMember
+        ? null
+        : typeof body.remaining === "number"
+          ? body.remaining
+          : null,
+      limit: typeof body.limit === "number" ? body.limit : FREE_SPLITS_PER_DAY,
+      isMember: !!body.isMember,
+    };
+    setQuota(next);
+    return next;
+  };
+
+  /** Fetch today's allowance. Returns null when it couldn't be determined. */
+  const fetchQuota = useCallback(async () => {
+    if (!user) return null;
     try {
-      const {
-        data: { session },
-      } = await supabase.auth.getSession();
-      const token = session?.access_token;
-      if (!token) return;
+      const token = await getToken();
+      if (!token) return null;
       const res = await fetch(`${API_BASE}/api/quota/stems`, {
         headers: { Authorization: `Bearer ${token}` },
       });
-      if (!res.ok) return;
-      const body = await res.json();
-      setRemaining(body.isMember ? null : body.remaining ?? null);
+      if (!res.ok) return null;
+      return applyQuota(await res.json());
     } catch {
-      // Counter is cosmetic -- never block the tool on it.
+      return null;
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [user]);
 
   useEffect(() => {
-    void refreshQuota();
-  }, [refreshQuota]);
+    void fetchQuota();
+  }, [fetchQuota]);
 
   /**
-   * Record a completed separation. Deliberately fire-and-forget: the work
-   * already happened on this machine and cost us nothing, so a failed or
-   * blocked counter write must not surface as an error.
+   * Record a completed split from a file. Link sources are counted by the
+   * backend when it downloads them, so they never come through here.
    */
-  const recordUsage = useCallback(async () => {
+  const recordUsage = async () => {
     try {
-      const {
-        data: { session },
-      } = await supabase.auth.getSession();
-      const token = session?.access_token;
+      const token = await getToken();
       if (!token) return;
       const res = await fetch(`${API_BASE}/api/quota/stems`, {
         method: "POST",
         headers: { Authorization: `Bearer ${token}` },
       });
-      if (!res.ok) return;
-      const body = await res.json();
-      setRemaining(body.isMember ? null : body.remaining ?? null);
+      if (res.status === 429 || res.ok) applyQuota(await res.json());
     } catch {
-      /* ignore */
+      // The split already finished on this machine; a failed count isn't an
+      // error worth showing.
     }
-  }, []);
+  };
+
+  const sendToMembership = () => {
+    analytics.toolLimitReached("stem_splitter");
+    setLocation("/vip");
+  };
 
   const handleFiles = (files: FileList | null) => {
     if (!files?.length) return;
@@ -196,8 +228,8 @@ export default function StemSplitter() {
    *
    * yt-dlp only exists on the tools backend, so the download has to happen
    * there -- but it hands back a plain WAV, and the separation itself still
-   * runs here on this machine. Note this spends one of the user's *converter*
-   * credits, since it is literally a conversion.
+   * runs here on this machine. `purpose: "stems"` makes the backend count this
+   * as one stem-splitter use instead of a converter credit.
    */
   const fetchUrlAudio = async (sourceUrl: string): Promise<ArrayBuffer> => {
     const {
@@ -212,16 +244,24 @@ export default function StemSplitter() {
         Authorization: `Bearer ${token}`,
         "Content-Type": "application/json",
       },
-      body: JSON.stringify({ url: sourceUrl, format: "wav" }),
+      body: JSON.stringify({ url: sourceUrl, format: "wav", purpose: "stems" }),
     });
     if (res.status === 429) {
-      throw new Error("You've used your free downloads for today.");
+      setQuota((q) => (q ? { ...q, remaining: 0 } : q));
+      throw new Error("You've used your free splits for today.");
     }
     if (!res.ok) {
       const body = await res.json().catch(() => null);
       throw new Error(body?.error || "Couldn't fetch audio from that link.");
     }
-    const { downloadUrl } = await res.json();
+    const { downloadUrl, remaining } = await res.json();
+    if (typeof remaining === "number") {
+      setQuota((q) => ({
+        remaining,
+        limit: q?.limit ?? FREE_SPLITS_PER_DAY,
+        isMember: false,
+      }));
+    }
     const audio = await fetch(`${API_BASE}${downloadUrl}`);
     if (!audio.ok) throw new Error("Couldn't retrieve the downloaded audio.");
     return await audio.arrayBuffer();
@@ -244,7 +284,19 @@ export default function StemSplitter() {
       openAuthModal();
       return;
     }
+    if (limitReached) {
+      sendToMembership();
+      return;
+    }
     if ((!file && !url.trim()) || !capability?.backend) return;
+
+    // Re-check right before starting: the count shown may be stale if the user
+    // split in another tab. An unreachable backend doesn't block the run.
+    const latest = await fetchQuota();
+    if (latest && !latest.isMember && latest.remaining === 0) {
+      sendToMembership();
+      return;
+    }
 
     reset();
     setRunning(true);
@@ -283,7 +335,7 @@ export default function StemSplitter() {
         resultCount: result.stems.length,
         durationSeconds: Math.round(result.durationSeconds),
       });
-      void recordUsage();
+      if (file) void recordUsage();
     } catch (err) {
       setError(
         err instanceof Error ? err.message : "Separation failed. Please try again.",
@@ -297,6 +349,7 @@ export default function StemSplitter() {
 
   const baseName = file?.name.replace(/\.[^.]+$/, "") || "track";
   const hasSource = !!file || !!url.trim();
+  const limitReached = !!user && !!quota && !quota.isMember && quota.remaining === 0;
   const unsupported = capability && !capability.backend;
 
   return (
@@ -568,7 +621,7 @@ export default function StemSplitter() {
               {/* Action */}
               <button
                 onClick={handleSplit}
-                disabled={running || !hasSource}
+                disabled={running || (!hasSource && !limitReached)}
                 style={{
                   width: "100%",
                   marginTop: "20px",
@@ -577,17 +630,20 @@ export default function StemSplitter() {
                   border: "none",
                   fontSize: "15px",
                   fontWeight: 700,
-                  cursor: running || !hasSource ? "default" : "pointer",
-                  opacity: running || !hasSource ? 0.5 : 1,
+                  cursor:
+                    running || (!hasSource && !limitReached) ? "default" : "pointer",
+                  opacity: running || (!hasSource && !limitReached) ? 0.5 : 1,
                   background: `linear-gradient(90deg, ${GOLD}, ${GOLD_LIGHT})`,
                   color: "#0a0a0a",
                 }}
               >
                 {running
                   ? stage || "Working…"
-                  : user
-                    ? "Split Into Stems"
-                    : "Sign In to Split"}
+                  : !user
+                    ? "Sign In to Split"
+                    : limitReached
+                      ? "Upgrade for Unlimited"
+                      : "Split Into Stems"}
               </button>
 
               {/* Progress */}
@@ -741,11 +797,20 @@ export default function StemSplitter() {
                 }}
               >
                 <span>
-                  {!user
-                    ? "Sign in to start splitting"
-                    : remaining == null
-                      ? "Unlimited splits"
-                      : `${remaining} free splits left today`}
+                  {!user ? (
+                    `Sign in for ${FREE_SPLITS_PER_DAY} free splits a day`
+                  ) : quota?.isMember ? (
+                    "Unlimited splits"
+                  ) : quota?.remaining != null ? (
+                    <>
+                      {`${quota.remaining} of ${quota.limit} free left today · `}
+                      <Link href="/vip" style={{ color: GOLD }}>
+                        Go unlimited
+                      </Link>
+                    </>
+                  ) : (
+                    `${FREE_SPLITS_PER_DAY} free splits a day`
+                  )}
                 </span>
                 {modelCached && (
                   <button

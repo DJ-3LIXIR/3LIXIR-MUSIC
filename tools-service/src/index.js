@@ -22,9 +22,7 @@ const LIMITS = {
   convert: 10,
   dig: 25,
   vocals: 10,
-  // Client-side stem splitter. Separation runs in the visitor's browser, so
-  // this is a usage counter for reporting -- not a compute guard. See
-  // /api/quota/stems below.
+  // Stem splitter free splits per day. See /api/quota/stems below.
   stems: Number(process.env.STEMS_DAILY_LIMIT || 10),
 };
 
@@ -93,10 +91,16 @@ app.post("/api/convert", upload.single("file"), async (req, res) => {
       return res.status(400).json({ error: "Unsupported format" });
     }
 
+    // A link fetched for the stem splitter is one stem-splitter use, not a
+    // conversion: count it against "stems" so it doesn't also spend one of the
+    // user's converter credits. The page skips its own usage report for these
+    // runs, so each split is still counted exactly once.
+    const quotaTool = String(req.body.purpose || "") === "stems" ? "stems" : "convert";
+
     // Quota check (before doing the work).
     if (!isMember) {
-      const used = await getUsageToday(user.id, "convert");
-      if (used >= LIMITS.convert) {
+      const used = await getUsageToday(user.id, quotaTool);
+      if (used >= LIMITS[quotaTool]) {
         return res
           .status(429)
           .json({ error: "Daily free limit reached", remaining: 0 });
@@ -138,8 +142,8 @@ app.post("/api/convert", upload.single("file"), async (req, res) => {
     let remaining = null;
     if (!isMember) {
       try {
-        const count = await incrementUsage(user.id, "convert");
-        remaining = Math.max(0, LIMITS.convert - count);
+        const count = await incrementUsage(user.id, quotaTool);
+        remaining = Math.max(0, LIMITS[quotaTool] - count);
       } catch (e) {
         console.error(
           "[convert] quota update failed (check SUPABASE_SERVICE_ROLE_KEY):",
@@ -266,18 +270,21 @@ app.post("/api/remove-vocals", upload.single("file"), async (req, res) => {
 });
 
 // --- Stem Splitter quota ---------------------------------------------------
-// The stem splitter runs entirely in the visitor's browser (WASM), so no audio
-// ever reaches this server and there is no compute to meter. This endpoint
-// exists purely so usage still lands in `tool_usage` for reporting.
+// The stem splitter runs in the visitor's browser, so no audio reaches this
+// server for a file upload. Free users get LIMITS.stems splits a day, members
+// are unlimited, same as the other tools.
 //
-// Two things follow from the work being client-side:
-//   * It cannot be enforced. Anyone can block this request and keep splitting.
-//     Treat the numbers as a floor on real usage, not a ledger.
-//   * The client must not wait on it. `check` is advisory; the browser starts
-//     loading the model immediately and reports afterwards.
+// The page checks the limit before starting and reports each completed split.
+// Because the work itself is client-side, that check lives in the page: a
+// determined user can bypass it, which costs us nothing but the count. Link
+// sources are the exception -- they are downloaded here via /api/convert with
+// purpose "stems", which enforces and counts server-side.
 //
-// GET  /api/quota/stems -> today's usage, for rendering the counter.
-// POST /api/quota/stems -> record one completed separation.
+// Lookup failures answer permissively (remaining: null) rather than lock
+// people out of a tool that is free to run.
+//
+// GET  /api/quota/stems -> today's usage, for the counter and pre-run check.
+// POST /api/quota/stems -> record one completed split; 429 once the limit is hit.
 app.get("/api/quota/stems", async (req, res) => {
   try {
     const token = bearerToken(req);
@@ -285,18 +292,20 @@ app.get("/api/quota/stems", async (req, res) => {
     const { user, isMember } = await getUserContext(token);
     if (!user) return res.status(401).json({ error: "Invalid session" });
 
-    if (isMember) return res.json({ used: 0, remaining: null, isMember: true });
+    if (isMember) {
+      return res.json({ used: 0, remaining: null, limit: LIMITS.stems, isMember: true });
+    }
 
     const used = await getUsageToday(user.id, "stems");
     res.json({
       used,
       remaining: Math.max(0, LIMITS.stems - used),
+      limit: LIMITS.stems,
       isMember: false,
     });
   } catch (err) {
     console.error("[stems] usage lookup failed:", err?.message || err);
-    // Never let a reporting failure gate the tool -- it costs us nothing to run.
-    res.json({ used: 0, remaining: null, isMember: false });
+    res.json({ used: 0, remaining: null, limit: LIMITS.stems, isMember: false });
   }
 });
 
@@ -307,16 +316,28 @@ app.post("/api/quota/stems", async (req, res) => {
     const { user, isMember } = await getUserContext(token);
     if (!user) return res.status(401).json({ error: "Invalid session" });
 
-    if (isMember) return res.json({ remaining: null, isMember: true });
+    if (isMember) {
+      return res.json({ remaining: null, limit: LIMITS.stems, isMember: true });
+    }
+
+    const used = await getUsageToday(user.id, "stems");
+    if (used >= LIMITS.stems) {
+      return res.status(429).json({
+        error: "Daily free limit reached",
+        remaining: 0,
+        limit: LIMITS.stems,
+      });
+    }
 
     const count = await incrementUsage(user.id, "stems");
     res.json({
       remaining: Math.max(0, LIMITS.stems - count),
+      limit: LIMITS.stems,
       isMember: false,
     });
   } catch (err) {
     console.error("[stems] quota update failed:", err?.message || err);
-    res.json({ remaining: null, isMember: false });
+    res.json({ remaining: null, limit: LIMITS.stems, isMember: false });
   }
 });
 
