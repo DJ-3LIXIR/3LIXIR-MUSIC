@@ -6,8 +6,9 @@
 # them -- without it the converter, vocal remover and link downloads all fail.
 # src/index.js puts ./bin first on PATH when the directory exists.
 #
-# Render build command (Root Directory: tools-service):
-#   npm install && bash scripts/install-binaries.sh
+# Runs as `npm run build`, which is what Render's native Node build command
+# (`npm install; npm run build`, Root Directory: tools-service) already calls.
+# The Docker build never runs it.
 set -euo pipefail
 
 cd "$(dirname "$0")/.."

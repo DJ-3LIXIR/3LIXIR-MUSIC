@@ -5,6 +5,7 @@
   "type": "module",
   "description": "Shared backend for 3LIXIR producer tools (Video Converter + Sample Digger)",
   "scripts": {
+    "build": "bash scripts/install-binaries.sh",
     "start": "node src/index.js"
   },
   "dependencies": {
