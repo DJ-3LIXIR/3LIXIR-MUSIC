@@ -9,9 +9,20 @@ import fs from "node:fs";
 import fsp from "node:fs/promises";
 import path from "node:path";
 import os from "node:os";
+import { fileURLToPath } from "node:url";
 import { getUserContext, getUsageToday, incrementUsage } from "./quota.js";
 
 const execFileP = promisify(execFile);
+
+// Render's native Node runtime has no ffmpeg, yt-dlp or deno. When the service
+// is built that way, scripts/install-binaries.sh downloads them into ../bin;
+// put that first on PATH so every execFile call (and yt-dlp's own deno lookup)
+// finds them. Under Docker the directory doesn't exist and the system-wide
+// installs are used as before.
+const LOCAL_BIN = fileURLToPath(new URL("../bin", import.meta.url));
+if (fs.existsSync(LOCAL_BIN)) {
+  process.env.PATH = `${LOCAL_BIN}${path.delimiter}${process.env.PATH || ""}`;
+}
 
 const PORT = process.env.PORT || 3001;
 const OUT_DIR = path.join(os.tmpdir(), "tool-outputs");
