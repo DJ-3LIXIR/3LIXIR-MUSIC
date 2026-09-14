@@ -18,7 +18,13 @@ const OUT_DIR = path.join(os.tmpdir(), "tool-outputs");
 fs.mkdirSync(OUT_DIR, { recursive: true });
 
 // Daily free limits per tool (members = unlimited).
-const LIMITS = { convert: 10, dig: 25, vocals: 10 };
+const LIMITS = {
+  convert: 10,
+  dig: 25,
+  vocals: 10,
+  // Stem splitter free splits per day. See /api/quota/stems below.
+  stems: Number(process.env.STEMS_DAILY_LIMIT || 10),
+};
 
 const AUDIO = new Set(["mp3", "wav", "m4a"]);
 const VIDEO = new Set(["mp4", "webm"]);
@@ -85,10 +91,16 @@ app.post("/api/convert", upload.single("file"), async (req, res) => {
       return res.status(400).json({ error: "Unsupported format" });
     }
 
+    // A link fetched for the stem splitter is one stem-splitter use, not a
+    // conversion: count it against "stems" so it doesn't also spend one of the
+    // user's converter credits. The page skips its own usage report for these
+    // runs, so each split is still counted exactly once.
+    const quotaTool = String(req.body.purpose || "") === "stems" ? "stems" : "convert";
+
     // Quota check (before doing the work).
     if (!isMember) {
-      const used = await getUsageToday(user.id, "convert");
-      if (used >= LIMITS.convert) {
+      const used = await getUsageToday(user.id, quotaTool);
+      if (used >= LIMITS[quotaTool]) {
         return res
           .status(429)
           .json({ error: "Daily free limit reached", remaining: 0 });
@@ -130,8 +142,8 @@ app.post("/api/convert", upload.single("file"), async (req, res) => {
     let remaining = null;
     if (!isMember) {
       try {
-        const count = await incrementUsage(user.id, "convert");
-        remaining = Math.max(0, LIMITS.convert - count);
+        const count = await incrementUsage(user.id, quotaTool);
+        remaining = Math.max(0, LIMITS[quotaTool] - count);
       } catch (e) {
         console.error(
           "[convert] quota update failed (check SUPABASE_SERVICE_ROLE_KEY):",
@@ -254,6 +266,78 @@ app.post("/api/remove-vocals", upload.single("file"), async (req, res) => {
     res.status(500).json({ error: "Vocal removal failed. Check the URL/file and try again." });
   } finally {
     if (uploadPath) await fsp.unlink(uploadPath).catch(() => {});
+  }
+});
+
+// --- Stem Splitter quota ---------------------------------------------------
+// The stem splitter runs in the visitor's browser, so no audio reaches this
+// server for a file upload. Free users get LIMITS.stems splits a day, members
+// are unlimited, same as the other tools.
+//
+// The page checks the limit before starting and reports each completed split.
+// Because the work itself is client-side, that check lives in the page: a
+// determined user can bypass it, which costs us nothing but the count. Link
+// sources are the exception -- they are downloaded here via /api/convert with
+// purpose "stems", which enforces and counts server-side.
+//
+// Lookup failures answer permissively (remaining: null) rather than lock
+// people out of a tool that is free to run.
+//
+// GET  /api/quota/stems -> today's usage, for the counter and pre-run check.
+// POST /api/quota/stems -> record one completed split; 429 once the limit is hit.
+app.get("/api/quota/stems", async (req, res) => {
+  try {
+    const token = bearerToken(req);
+    if (!token) return res.status(401).json({ error: "Sign in required" });
+    const { user, isMember } = await getUserContext(token);
+    if (!user) return res.status(401).json({ error: "Invalid session" });
+
+    if (isMember) {
+      return res.json({ used: 0, remaining: null, limit: LIMITS.stems, isMember: true });
+    }
+
+    const used = await getUsageToday(user.id, "stems");
+    res.json({
+      used,
+      remaining: Math.max(0, LIMITS.stems - used),
+      limit: LIMITS.stems,
+      isMember: false,
+    });
+  } catch (err) {
+    console.error("[stems] usage lookup failed:", err?.message || err);
+    res.json({ used: 0, remaining: null, limit: LIMITS.stems, isMember: false });
+  }
+});
+
+app.post("/api/quota/stems", async (req, res) => {
+  try {
+    const token = bearerToken(req);
+    if (!token) return res.status(401).json({ error: "Sign in required" });
+    const { user, isMember } = await getUserContext(token);
+    if (!user) return res.status(401).json({ error: "Invalid session" });
+
+    if (isMember) {
+      return res.json({ remaining: null, limit: LIMITS.stems, isMember: true });
+    }
+
+    const used = await getUsageToday(user.id, "stems");
+    if (used >= LIMITS.stems) {
+      return res.status(429).json({
+        error: "Daily free limit reached",
+        remaining: 0,
+        limit: LIMITS.stems,
+      });
+    }
+
+    const count = await incrementUsage(user.id, "stems");
+    res.json({
+      remaining: Math.max(0, LIMITS.stems - count),
+      limit: LIMITS.stems,
+      isMember: false,
+    });
+  } catch (err) {
+    console.error("[stems] quota update failed:", err?.message || err);
+    res.json({ remaining: null, limit: LIMITS.stems, isMember: false });
   }
 });
 

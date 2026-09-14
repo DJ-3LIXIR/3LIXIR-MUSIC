@@ -10,7 +10,7 @@ export default function Tools() {
     title:
       "Free Music Production Tools — Vocal Remover, Audio Converter & Sample Finder | 3LIXIR",
     description:
-      "Free online tools for music producers: an AI vocal remover / stem splitter, a video to MP3 & WAV audio converter, and a sample crate-digging generator. Free daily use — just sign in with Google.",
+      "Free online tools for music producers: an AI stem splitter for vocals, drums and bass, a quick vocal remover, a video to MP3 & WAV audio converter, and a sample crate-digging generator. Free daily use — just sign in with Google.",
     canonical: "/tools",
   });
   const isMobile = useIsMobile();
@@ -265,14 +265,13 @@ export default function Tools() {
             }
           />
           <ToolLink
-            comingSoon
-            badge="Coming Soon"
+            badge="Free"
             title="Stem Splitter"
             titleAccent="Vocals, Drums, Bass."
-            description="AI-powered separation into clean stems — vocals, instrumental, and more. Real isolation, landing once we bring the AI engine online."
-            tags={["Vocals", "Instrumental", "AI", "Soon"]}
-            ctaLabel="Coming Soon"
-            href="/tools"
+            description="Real AI separation into four clean stems — vocals, drums, bass and everything else. Runs on your own machine, so nothing is ever uploaded."
+            tags={["Vocals", "Drums", "Bass", "AI"]}
+            ctaLabel="Split a Track"
+            href="/tools/stem-splitter"
             accent="#C9A84C"
             imageSrc="/stem-splitter.png"
             imagePlaceholderLabel="Splitter"

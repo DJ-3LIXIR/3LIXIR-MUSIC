@@ -104,11 +104,11 @@ export default function VocalRemover() {
   useSEO({
     title: "Free Vocal Remover — Split Vocals & Instrumentals Online | 3LIXIR",
     description:
-      "Remove vocals from any song free. Our AI stem splitter separates vocals, drums, bass and instruments online — 10 free separations a day, just sign in with Google. Make instant acapellas and clean instrumentals.",
+      "Remove vocals from any song free — get an instant karaoke instrumental or a rough acapella in seconds. Works best on center-panned vocals. 10 free a day, just sign in with Google. Need separate drums and bass? Use our AI Stem Splitter.",
     canonical: "/tools/vocal-remover",
     jsonLd: toolSchema(
       "3LIXIR Vocal Remover",
-      "Free online AI vocal remover and stem splitter — separate vocals and instruments from any song.",
+      "Free online vocal remover — make instant instrumentals and rough acapellas from any song.",
       "/tools/vocal-remover",
     ),
   });
@@ -459,6 +459,12 @@ export default function VocalRemover() {
                 Paste a YouTube link or drop a track and pull the vocals out —
                 get a clean instrumental in seconds. Works best on songs with
                 center-panned vocals.
+              </p>
+              <p style={{ fontSize: "14px", color: "#777", margin: "12px 0 0" }}>
+                Need vocals, drums and bass as separate stems?{" "}
+                <Link href="/tools/stem-splitter" style={{ color: GOLD }}>
+                  Try the AI Stem Splitter →
+                </Link>
               </p>
             </div>
 
