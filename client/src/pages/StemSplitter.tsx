@@ -3,6 +3,7 @@ import { useCallback, useEffect, useRef, useState } from "react";
 import { useSEO, toolSchema } from "@/hooks/useSEO";
 import { Link, useLocation } from "wouter";
 import { Navbar } from "@/components/layout/Navbar";
+import { useIsMobile } from "@/hooks/use-mobile";
 import { useAuth } from "@/contexts/AuthContext";
 import { supabase } from "@/supabaseClient";
 import { analytics } from "@/utils/analytics";
@@ -65,6 +66,7 @@ export default function StemSplitter() {
   });
 
   const { user, openAuthModal } = useAuth();
+  const isMobile = useIsMobile();
 
   const [capability, setCapability] = useState<StemCapability | null>(null);
   const [modelCached, setModelCached] = useState<boolean | null>(null);
@@ -80,9 +82,10 @@ export default function StemSplitter() {
   const [error, setError] = useState("");
   const [stems, setStems] = useState<StemFile[]>([]);
   const [elapsed, setElapsed] = useState(0);
-  const [lastRun, setLastRun] = useState<{ seconds: number; backend: string } | null>(
-    null,
-  );
+  const [lastRun, setLastRun] = useState<{
+    seconds: number;
+    backend: string;
+  } | null>(null);
   // Today's free-split allowance, as last reported by the tools backend. null
   // until known; a failed lookup leaves it null rather than locking anyone out.
   const [quota, setQuota] = useState<{
@@ -151,7 +154,11 @@ export default function StemSplitter() {
     return session?.access_token ?? null;
   };
 
-  type QuotaBody = { remaining?: number | null; limit?: number; isMember?: boolean };
+  type QuotaBody = {
+    remaining?: number | null;
+    limit?: number;
+    isMember?: boolean;
+  };
   const applyQuota = (body: QuotaBody) => {
     const next = {
       remaining: body.isMember
@@ -338,7 +345,9 @@ export default function StemSplitter() {
       if (file) void recordUsage();
     } catch (err) {
       setError(
-        err instanceof Error ? err.message : "Separation failed. Please try again.",
+        err instanceof Error
+          ? err.message
+          : "Separation failed. Please try again.",
       );
     } finally {
       if (timerRef.current) clearInterval(timerRef.current);
@@ -349,490 +358,652 @@ export default function StemSplitter() {
 
   const baseName = file?.name.replace(/\.[^.]+$/, "") || "track";
   const hasSource = !!file || !!url.trim();
-  const limitReached = !!user && !!quota && !quota.isMember && quota.remaining === 0;
+  const limitReached =
+    !!user && !!quota && !quota.isMember && quota.remaining === 0;
   const unsupported = capability && !capability.backend;
 
   return (
-    <div style={{ background: "#0a0a0a", color: "#fff", minHeight: "100vh" }}>
+    <div
+      style={{
+        minHeight: "100vh",
+        background: "#000",
+        color: "#fff",
+        fontFamily: "'DM Sans', 'Helvetica Neue', sans-serif",
+        overflowX: "hidden",
+      }}
+    >
       <Navbar />
-      <div style={{ padding: "0 24px" }}>
+
+      {/* 3-Panel Layout (single column on mobile), matching the other tools */}
+      <div
+        style={{
+          display: "grid",
+          gridTemplateColumns: isMobile ? "1fr" : "1fr 2px 2fr 2px 1fr",
+          minHeight: "calc(100vh - 80px)",
+          position: "relative",
+        }}
+      >
+        {/* Left Panel - Brick Texture */}
+        {!isMobile && (
+          <>
+            <div
+              style={{
+                background: 'url("/black_gold_brick_texture.png")',
+                backgroundSize: "cover",
+                backgroundPosition: "center",
+                backgroundRepeat: "repeat",
+                opacity: 0.55,
+                position: "relative",
+              }}
+            />
+
+            {/* Left Divider */}
+            <div
+              style={{
+                background: `linear-gradient(to bottom, transparent, ${GOLD}, transparent)`,
+                width: "2px",
+              }}
+            />
+          </>
+        )}
+
+        {/* Center Panel - Stem Splitter UI */}
         <div
           style={{
-            maxWidth: "620px",
-            width: "100%",
-            margin: "0 auto",
-            paddingTop: "24px",
-            paddingBottom: "64px",
+            position: "relative",
+            display: "flex",
+            flexDirection: "column",
+            padding: isMobile ? "88px 20px 40px" : "48px 56px",
+            overflow: "hidden",
           }}
         >
-          {/* Header */}
-          <div style={{ marginBottom: "40px" }}>
-            <div
+          {/* Gold ambient glow behind card */}
+          <div
+            style={{
+              position: "absolute",
+              top: "45%",
+              left: "50%",
+              transform: "translate(-50%, -50%)",
+              width: "600px",
+              height: "600px",
+              background: `radial-gradient(circle, ${GOLD}18 0%, transparent 65%)`,
+              pointerEvents: "none",
+              zIndex: 0,
+            }}
+          />
+
+          {/* Back button */}
+          <Link href="/tools">
+            <span
               style={{
-                display: "inline-block",
-                fontSize: "11px",
+                position: "relative",
+                zIndex: 1,
+                display: "inline-flex",
+                alignItems: "center",
+                gap: "6px",
+                fontSize: "12px",
                 fontWeight: 700,
-                letterSpacing: "0.25em",
+                letterSpacing: "0.1em",
                 textTransform: "uppercase",
-                color: GOLD,
-                border: `1px solid ${GOLD}44`,
-                background: `${GOLD}0a`,
+                color: "#bbb",
+                cursor: "pointer",
+                transition: "all 0.2s",
+                alignSelf: "flex-start",
+                border: "1px solid #2a2620",
                 borderRadius: "100px",
-                padding: "6px 18px",
-                marginBottom: "24px",
+                padding: "9px 18px",
+                background: "#0a0a0a",
+              }}
+              onMouseEnter={(e) => {
+                (e.currentTarget as HTMLElement).style.color = GOLD;
+                (e.currentTarget as HTMLElement).style.borderColor = GOLD;
+              }}
+              onMouseLeave={(e) => {
+                (e.currentTarget as HTMLElement).style.color = "#bbb";
+                (e.currentTarget as HTMLElement).style.borderColor = "#2a2620";
               }}
             >
-              Stem Splitter
-            </div>
-            <h1
-              style={{
-                fontSize: "clamp(44px, 5vw, 64px)",
-                fontWeight: 800,
-                lineHeight: 0.98,
-                letterSpacing: "-0.03em",
-                margin: "0 0 18px",
-              }}
-            >
-              Four Stems.
-              <br />
-              <span
-                style={{
-                  background: `linear-gradient(90deg, ${GOLD}, ${GOLD_LIGHT})`,
-                  WebkitBackgroundClip: "text",
-                  WebkitTextFillColor: "transparent",
-                  backgroundClip: "text",
-                }}
-              >
-                Zero Uploads.
-              </span>
-            </h1>
-            <p
-              style={{
-                fontSize: "16px",
-                color: "#888",
-                lineHeight: 1.6,
-                margin: 0,
-                maxWidth: "480px",
-              }}
-            >
-              Real AI separation — vocals, drums, bass and everything else — running
-              entirely on your own machine. Your audio is never uploaded anywhere.
-            </p>
-          </div>
+              ← Back
+            </span>
+          </Link>
 
-          {/* Unsupported device: send them to the lightweight tool instead. */}
-          {unsupported && (
-            <div
-              style={{
-                border: "1px solid #3a2a1a",
-                background: "#150f08",
-                borderRadius: "14px",
-                padding: "22px",
-                marginBottom: "24px",
-              }}
-            >
-              <div style={{ fontWeight: 700, marginBottom: "8px" }}>
-                Not available on this device
-              </div>
-              <p style={{ color: "#999", fontSize: "14px", lineHeight: 1.6, margin: "0 0 14px" }}>
-                {capability?.reason}
-              </p>
-              <Link
-                href="/tools/vocal-remover"
-                style={{ color: GOLD, fontWeight: 600, fontSize: "14px" }}
-              >
-                Use the Vocal Remover instead →
-              </Link>
-            </div>
-          )}
-
-          {!unsupported && (
-            <div
-              style={{
-                width: "100%",
-                background: "linear-gradient(160deg, #121110 0%, #0a0a0a 100%)",
-                border: "1px solid #1f1d1a",
-                borderRadius: "18px",
-                padding: "28px",
-              }}
-            >
-              {/* Source: a link, or a local file. */}
-              <input
-                value={url}
-                onChange={(e) => {
-                  setUrl(e.target.value);
-                  if (e.target.value) setFile(null);
-                }}
-                disabled={running}
-                placeholder="Paste a YouTube or SoundCloud link"
-                style={{
-                  width: "100%",
-                  padding: "14px 16px",
-                  borderRadius: "12px",
-                  border: "1px solid #2a2724",
-                  background: "#0e0d0c",
-                  color: "#fff",
-                  fontSize: "14px",
-                  outline: "none",
-                  marginBottom: "14px",
-                  boxSizing: "border-box",
-                }}
-              />
+          <div
+            style={{
+              position: "relative",
+              zIndex: 1,
+              flex: 1,
+              display: "flex",
+              flexDirection: "column",
+              justifyContent: "center",
+              maxWidth: "620px",
+              width: "100%",
+              margin: "0 auto",
+              paddingTop: "24px",
+              paddingBottom: "24px",
+            }}
+          >
+            {/* Header */}
+            <div style={{ marginBottom: "40px" }}>
               <div
                 style={{
-                  display: "flex",
-                  alignItems: "center",
-                  gap: "12px",
-                  margin: "0 0 14px",
-                  color: "#555",
+                  display: "inline-block",
                   fontSize: "11px",
-                  letterSpacing: "0.18em",
+                  fontWeight: 700,
+                  letterSpacing: "0.25em",
+                  textTransform: "uppercase",
+                  color: GOLD,
+                  border: `1px solid ${GOLD}44`,
+                  background: `${GOLD}0a`,
+                  borderRadius: "100px",
+                  padding: "6px 18px",
+                  marginBottom: "24px",
                 }}
               >
-                <span style={{ flex: 1, height: "1px", background: "#1a1816" }} />
-                OR
-                <span style={{ flex: 1, height: "1px", background: "#1a1816" }} />
+                Stem Splitter
               </div>
-
-              {/* Dropzone */}
-              <div
-                onDragOver={(e) => {
-                  e.preventDefault();
-                  setDragActive(true);
-                }}
-                onDragLeave={() => setDragActive(false)}
-                onDrop={(e) => {
-                  e.preventDefault();
-                  setDragActive(false);
-                  handleFiles(e.dataTransfer.files);
-                }}
-                onClick={() => !running && fileInputRef.current?.click()}
+              <h1
                 style={{
-                  border: `1.5px dashed ${dragActive ? GOLD : "#2a2724"}`,
-                  background: dragActive ? `${GOLD}0a` : "transparent",
-                  borderRadius: "14px",
-                  padding: "32px 20px",
-                  textAlign: "center",
-                  cursor: running ? "default" : "pointer",
-                  transition: "all .15s ease",
+                  fontSize: "clamp(44px, 5vw, 64px)",
+                  fontWeight: 800,
+                  lineHeight: 0.98,
+                  letterSpacing: "-0.03em",
+                  margin: "0 0 18px",
                 }}
               >
-                <div style={{ fontSize: "15px", fontWeight: 600, marginBottom: "6px" }}>
-                  {file ? file.name : "Drop a track, or click to browse"}
-                </div>
-                <div style={{ fontSize: "13px", color: "#777" }}>
-                  {file
-                    ? `${formatMb(file.size)} · ready to split`
-                    : "MP3, WAV, M4A, FLAC or OGG"}
-                </div>
-                <input
-                  ref={fileInputRef}
-                  type="file"
-                  accept="audio/*,video/*"
-                  hidden
-                  onChange={(e) => handleFiles(e.target.files)}
-                />
-              </div>
-
-              {/* First-run download warning */}
-              {modelCached === false && !running && (
-                <div
+                Four Stems.
+                <br />
+                <span
                   style={{
-                    marginTop: "16px",
-                    fontSize: "13px",
-                    color: "#9a8a66",
+                    background: `linear-gradient(90deg, ${GOLD}, ${GOLD_LIGHT})`,
+                    WebkitBackgroundClip: "text",
+                    WebkitTextFillColor: "transparent",
+                    backgroundClip: "text",
+                  }}
+                >
+                  Zero Uploads.
+                </span>
+              </h1>
+              <p
+                style={{
+                  fontSize: "16px",
+                  color: "#888",
+                  lineHeight: 1.6,
+                  margin: 0,
+                  maxWidth: "480px",
+                }}
+              >
+                Real AI separation — vocals, drums, bass and everything else —
+                running entirely on your own machine. Your audio is never
+                uploaded anywhere.
+              </p>
+            </div>
+
+            {/* Unsupported device: send them to the lightweight tool instead. */}
+            {unsupported && (
+              <div
+                style={{
+                  border: "1px solid #3a2a1a",
+                  background: "#150f08",
+                  borderRadius: "14px",
+                  padding: "22px",
+                  marginBottom: "24px",
+                }}
+              >
+                <div style={{ fontWeight: 700, marginBottom: "8px" }}>
+                  Not available on this device
+                </div>
+                <p
+                  style={{
+                    color: "#999",
+                    fontSize: "14px",
                     lineHeight: 1.6,
+                    margin: "0 0 14px",
                   }}
                 >
-                  First run downloads the {MODEL_SIZE_LABEL} AI model. It's cached
-                  afterwards, so this only happens once.
-                </div>
-              )}
-
-              {capability?.reason && capability.backend && (
-                <div
-                  style={{
-                    marginTop: "12px",
-                    fontSize: "13px",
-                    color: "#9a8a66",
-                    lineHeight: 1.6,
-                  }}
+                  {capability?.reason}
+                </p>
+                <Link
+                  href="/tools/vocal-remover"
+                  style={{ color: GOLD, fontWeight: 600, fontSize: "14px" }}
                 >
-                  {capability.reason}
-                </div>
-              )}
-
-              {/* Quality: trades time for separation quality. */}
-              <div style={{ marginTop: "20px" }}>
-                <div
-                  style={{
-                    fontSize: "11px",
-                    textTransform: "uppercase",
-                    letterSpacing: "0.18em",
-                    color: "#666",
-                    marginBottom: "10px",
-                  }}
-                >
-                  Quality
-                </div>
-                <div style={{ display: "flex", gap: "8px" }}>
-                  {(
-                    Object.keys(QUALITY_PRESETS) as QualityPreset[]
-                  ).map((key) => {
-                    const active = quality === key;
-                    const preset = QUALITY_PRESETS[key];
-                    return (
-                      <button
-                        key={key}
-                        onClick={() => setQuality(key)}
-                        disabled={running}
-                        style={{
-                          flex: 1,
-                          padding: "10px 8px",
-                          borderRadius: "10px",
-                          cursor: running ? "default" : "pointer",
-                          border: `1px solid ${active ? GOLD : "#2a2724"}`,
-                          background: active ? `${GOLD}14` : "transparent",
-                          color: active ? GOLD : "#888",
-                          fontSize: "13px",
-                          fontWeight: 700,
-                        }}
-                      >
-                        {preset.label}
-                        <span
-                          style={{
-                            display: "block",
-                            fontSize: "11px",
-                            fontWeight: 500,
-                            color: active ? `${GOLD}aa` : "#555",
-                            marginTop: "2px",
-                          }}
-                        >
-                          {preset.costMultiplier === 1
-                            ? "baseline"
-                            : `~${preset.costMultiplier}x slower`}
-                        </span>
-                      </button>
-                    );
-                  })}
-                </div>
+                  Use the Vocal Remover instead →
+                </Link>
               </div>
+            )}
 
-              {/* Action */}
-              <button
-                onClick={handleSplit}
-                disabled={running || (!hasSource && !limitReached)}
+            {!unsupported && (
+              <div
                 style={{
                   width: "100%",
-                  marginTop: "20px",
-                  padding: "16px",
-                  borderRadius: "12px",
-                  border: "none",
-                  fontSize: "15px",
-                  fontWeight: 700,
-                  cursor:
-                    running || (!hasSource && !limitReached) ? "default" : "pointer",
-                  opacity: running || (!hasSource && !limitReached) ? 0.5 : 1,
-                  background: `linear-gradient(90deg, ${GOLD}, ${GOLD_LIGHT})`,
-                  color: "#0a0a0a",
+                  background:
+                    "linear-gradient(160deg, #121110 0%, #0a0a0a 100%)",
+                  border: "1px solid #1f1d1a",
+                  borderRadius: "18px",
+                  padding: "28px",
                 }}
               >
-                {running
-                  ? stage || "Working…"
-                  : !user
-                    ? "Sign In to Split"
-                    : limitReached
-                      ? "Upgrade for Unlimited"
-                      : "Split Into Stems"}
-              </button>
-
-              {/* Progress */}
-              {running && (
-                <div style={{ marginTop: "18px" }}>
-                  <div
-                    style={{
-                      height: "6px",
-                      background: "#1a1816",
-                      borderRadius: "100px",
-                      overflow: "hidden",
-                    }}
-                  >
-                    <div
-                      style={{
-                        height: "100%",
-                        width: `${Math.round(
-                          (stage === "Separating"
-                            ? separatePct
-                            : (downloadPct ?? 0)) * 100,
-                        )}%`,
-                        background: `linear-gradient(90deg, ${GOLD}, ${GOLD_LIGHT})`,
-                        transition: "width .2s ease",
-                      }}
-                    />
-                  </div>
-                  <div
-                    style={{
-                      display: "flex",
-                      justifyContent: "space-between",
-                      fontSize: "12px",
-                      color: "#777",
-                      marginTop: "8px",
-                    }}
-                  >
-                    <span>
-                      {stage === "Separating"
-                        ? `Separating — ${Math.round(separatePct * 100)}%`
-                        : downloadPct != null
-                          ? `Downloading model — ${Math.round(downloadPct * 100)}%`
-                          : downloadedBytes
-                            ? `Downloading model — ${formatMb(downloadedBytes)}`
-                            : stage}
-                    </span>
-                    <span>{formatDuration(elapsed)}</span>
-                  </div>
-                  <div style={{ fontSize: "12px", color: "#666", marginTop: "10px" }}>
-                    Keep this tab open — the separation runs here, on your computer.
-                  </div>
-                </div>
-              )}
-
-              {error && (
+                {/* Source: a link, or a local file. */}
+                <input
+                  value={url}
+                  onChange={(e) => {
+                    setUrl(e.target.value);
+                    if (e.target.value) setFile(null);
+                  }}
+                  disabled={running}
+                  placeholder="Paste a YouTube or SoundCloud link"
+                  style={{
+                    width: "100%",
+                    padding: "14px 16px",
+                    borderRadius: "12px",
+                    border: "1px solid #2a2724",
+                    background: "#0e0d0c",
+                    color: "#fff",
+                    fontSize: "14px",
+                    outline: "none",
+                    marginBottom: "14px",
+                    boxSizing: "border-box",
+                  }}
+                />
                 <div
                   style={{
-                    marginTop: "16px",
-                    padding: "12px 14px",
-                    borderRadius: "10px",
-                    background: "#2a1212",
-                    border: "1px solid #4a1f1f",
-                    color: "#ff9b9b",
-                    fontSize: "13px",
-                    lineHeight: 1.5,
+                    display: "flex",
+                    alignItems: "center",
+                    gap: "12px",
+                    margin: "0 0 14px",
+                    color: "#555",
+                    fontSize: "11px",
+                    letterSpacing: "0.18em",
                   }}
                 >
-                  {error}
+                  <span
+                    style={{ flex: 1, height: "1px", background: "#1a1816" }}
+                  />
+                  OR
+                  <span
+                    style={{ flex: 1, height: "1px", background: "#1a1816" }}
+                  />
                 </div>
-              )}
 
-              {/* Results */}
-              {stems.length > 0 && (
-                <div style={{ marginTop: "28px" }}>
+                {/* Dropzone */}
+                <div
+                  onDragOver={(e) => {
+                    e.preventDefault();
+                    setDragActive(true);
+                  }}
+                  onDragLeave={() => setDragActive(false)}
+                  onDrop={(e) => {
+                    e.preventDefault();
+                    setDragActive(false);
+                    handleFiles(e.dataTransfer.files);
+                  }}
+                  onClick={() => !running && fileInputRef.current?.click()}
+                  style={{
+                    border: `1.5px dashed ${dragActive ? GOLD : "#2a2724"}`,
+                    background: dragActive ? `${GOLD}0a` : "transparent",
+                    borderRadius: "14px",
+                    padding: "32px 20px",
+                    textAlign: "center",
+                    cursor: running ? "default" : "pointer",
+                    transition: "all .15s ease",
+                  }}
+                >
                   <div
                     style={{
-                      fontSize: "12px",
+                      fontSize: "15px",
+                      fontWeight: 600,
+                      marginBottom: "6px",
+                    }}
+                  >
+                    {file ? file.name : "Drop a track, or click to browse"}
+                  </div>
+                  <div style={{ fontSize: "13px", color: "#777" }}>
+                    {file
+                      ? `${formatMb(file.size)} · ready to split`
+                      : "MP3, WAV, M4A, FLAC or OGG"}
+                  </div>
+                  <input
+                    ref={fileInputRef}
+                    type="file"
+                    accept="audio/*,video/*"
+                    hidden
+                    onChange={(e) => handleFiles(e.target.files)}
+                  />
+                </div>
+
+                {/* First-run download warning */}
+                {modelCached === false && !running && (
+                  <div
+                    style={{
+                      marginTop: "16px",
+                      fontSize: "13px",
+                      color: "#9a8a66",
+                      lineHeight: 1.6,
+                    }}
+                  >
+                    First run downloads the {MODEL_SIZE_LABEL} AI model. It's
+                    cached afterwards, so this only happens once.
+                  </div>
+                )}
+
+                {capability?.reason && capability.backend && (
+                  <div
+                    style={{
+                      marginTop: "12px",
+                      fontSize: "13px",
+                      color: "#9a8a66",
+                      lineHeight: 1.6,
+                    }}
+                  >
+                    {capability.reason}
+                  </div>
+                )}
+
+                {/* Quality: trades time for separation quality. */}
+                <div style={{ marginTop: "20px" }}>
+                  <div
+                    style={{
+                      fontSize: "11px",
                       textTransform: "uppercase",
                       letterSpacing: "0.18em",
                       color: "#666",
-                      marginBottom: "14px",
+                      marginBottom: "10px",
                     }}
                   >
-                    Your stems
-                    {lastRun &&
-                      ` · ${formatDuration(lastRun.seconds)} on ${
-                        lastRun.backend === "webgpu" ? "GPU" : "CPU"
-                      }`}
+                    Quality
                   </div>
-                  {stems.map((stem) => (
+                  <div style={{ display: "flex", gap: "8px" }}>
+                    {(Object.keys(QUALITY_PRESETS) as QualityPreset[]).map(
+                      (key) => {
+                        const active = quality === key;
+                        const preset = QUALITY_PRESETS[key];
+                        return (
+                          <button
+                            key={key}
+                            onClick={() => setQuality(key)}
+                            disabled={running}
+                            style={{
+                              flex: 1,
+                              padding: "10px 8px",
+                              borderRadius: "10px",
+                              cursor: running ? "default" : "pointer",
+                              border: `1px solid ${active ? GOLD : "#2a2724"}`,
+                              background: active ? `${GOLD}14` : "transparent",
+                              color: active ? GOLD : "#888",
+                              fontSize: "13px",
+                              fontWeight: 700,
+                            }}
+                          >
+                            {preset.label}
+                            <span
+                              style={{
+                                display: "block",
+                                fontSize: "11px",
+                                fontWeight: 500,
+                                color: active ? `${GOLD}aa` : "#555",
+                                marginTop: "2px",
+                              }}
+                            >
+                              {preset.costMultiplier === 1
+                                ? "baseline"
+                                : `~${preset.costMultiplier}x slower`}
+                            </span>
+                          </button>
+                        );
+                      },
+                    )}
+                  </div>
+                </div>
+
+                {/* Action */}
+                <button
+                  onClick={handleSplit}
+                  disabled={running || (!hasSource && !limitReached)}
+                  style={{
+                    width: "100%",
+                    marginTop: "20px",
+                    padding: "16px",
+                    borderRadius: "12px",
+                    border: "none",
+                    fontSize: "15px",
+                    fontWeight: 700,
+                    cursor:
+                      running || (!hasSource && !limitReached)
+                        ? "default"
+                        : "pointer",
+                    opacity: running || (!hasSource && !limitReached) ? 0.5 : 1,
+                    background: `linear-gradient(90deg, ${GOLD}, ${GOLD_LIGHT})`,
+                    color: "#0a0a0a",
+                  }}
+                >
+                  {running
+                    ? stage || "Working…"
+                    : !user
+                      ? "Sign In to Split"
+                      : limitReached
+                        ? "Upgrade for Unlimited"
+                        : "Split Into Stems"}
+                </button>
+
+                {/* Progress */}
+                {running && (
+                  <div style={{ marginTop: "18px" }}>
                     <div
-                      key={stem.name}
                       style={{
-                        border: "1px solid #1f1d1a",
-                        borderRadius: "12px",
-                        padding: "14px 16px",
-                        marginBottom: "10px",
-                        background: "#0e0d0c",
+                        height: "6px",
+                        background: "#1a1816",
+                        borderRadius: "100px",
+                        overflow: "hidden",
                       }}
                     >
                       <div
                         style={{
-                          display: "flex",
-                          alignItems: "center",
-                          justifyContent: "space-between",
-                          marginBottom: "10px",
+                          height: "100%",
+                          width: `${Math.round(
+                            (stage === "Separating"
+                              ? separatePct
+                              : (downloadPct ?? 0)) * 100,
+                          )}%`,
+                          background: `linear-gradient(90deg, ${GOLD}, ${GOLD_LIGHT})`,
+                          transition: "width .2s ease",
                         }}
-                      >
-                        <span style={{ fontWeight: 700, fontSize: "14px" }}>
-                          {stem.label}
-                        </span>
-                        <button
-                          onClick={() =>
-                            triggerDownload(
-                              stem.url,
-                              `${baseName} (${stem.label}).wav`,
-                            )
-                          }
-                          style={{
-                            background: "transparent",
-                            border: `1px solid ${GOLD}55`,
-                            color: GOLD,
-                            borderRadius: "8px",
-                            padding: "6px 14px",
-                            fontSize: "12px",
-                            fontWeight: 700,
-                            cursor: "pointer",
-                          }}
-                        >
-                          Download
-                        </button>
-                      </div>
-                      <audio
-                        controls
-                        src={stem.url}
-                        style={{ width: "100%", height: "34px" }}
                       />
                     </div>
-                  ))}
-                </div>
-              )}
+                    <div
+                      style={{
+                        display: "flex",
+                        justifyContent: "space-between",
+                        fontSize: "12px",
+                        color: "#777",
+                        marginTop: "8px",
+                      }}
+                    >
+                      <span>
+                        {stage === "Separating"
+                          ? `Separating — ${Math.round(separatePct * 100)}%`
+                          : downloadPct != null
+                            ? `Downloading model — ${Math.round(downloadPct * 100)}%`
+                            : downloadedBytes
+                              ? `Downloading model — ${formatMb(downloadedBytes)}`
+                              : stage}
+                      </span>
+                      <span>{formatDuration(elapsed)}</span>
+                    </div>
+                    <div
+                      style={{
+                        fontSize: "12px",
+                        color: "#666",
+                        marginTop: "10px",
+                      }}
+                    >
+                      Keep this tab open — the separation runs here, on your
+                      computer.
+                    </div>
+                  </div>
+                )}
 
-              {/* Footer meta */}
-              <div
-                style={{
-                  marginTop: "22px",
-                  paddingTop: "18px",
-                  borderTop: "1px solid #1a1816",
-                  display: "flex",
-                  justifyContent: "space-between",
-                  fontSize: "12px",
-                  color: "#666",
-                }}
-              >
-                <span>
-                  {!user ? (
-                    `Sign in for ${FREE_SPLITS_PER_DAY} free splits a day`
-                  ) : quota?.isMember ? (
-                    "Unlimited splits"
-                  ) : quota?.remaining != null ? (
-                    <>
-                      {`${quota.remaining} of ${quota.limit} free left today · `}
-                      <Link href="/vip" style={{ color: GOLD }}>
-                        Go unlimited
-                      </Link>
-                    </>
-                  ) : (
-                    `${FREE_SPLITS_PER_DAY} free splits a day`
-                  )}
-                </span>
-                {modelCached && (
-                  <button
-                    onClick={() => {
-                      void clearModelCache().then(() => setModelCached(false));
-                    }}
+                {error && (
+                  <div
                     style={{
-                      background: "none",
-                      border: "none",
-                      color: "#666",
-                      fontSize: "12px",
-                      cursor: "pointer",
-                      textDecoration: "underline",
+                      marginTop: "16px",
+                      padding: "12px 14px",
+                      borderRadius: "10px",
+                      background: "#2a1212",
+                      border: "1px solid #4a1f1f",
+                      color: "#ff9b9b",
+                      fontSize: "13px",
+                      lineHeight: 1.5,
                     }}
                   >
-                    Clear cached model ({MODEL_SIZE_LABEL})
-                  </button>
+                    {error}
+                  </div>
                 )}
+
+                {/* Results */}
+                {stems.length > 0 && (
+                  <div style={{ marginTop: "28px" }}>
+                    <div
+                      style={{
+                        fontSize: "12px",
+                        textTransform: "uppercase",
+                        letterSpacing: "0.18em",
+                        color: "#666",
+                        marginBottom: "14px",
+                      }}
+                    >
+                      Your stems
+                      {lastRun &&
+                        ` · ${formatDuration(lastRun.seconds)} on ${
+                          lastRun.backend === "webgpu" ? "GPU" : "CPU"
+                        }`}
+                    </div>
+                    {stems.map((stem) => (
+                      <div
+                        key={stem.name}
+                        style={{
+                          border: "1px solid #1f1d1a",
+                          borderRadius: "12px",
+                          padding: "14px 16px",
+                          marginBottom: "10px",
+                          background: "#0e0d0c",
+                        }}
+                      >
+                        <div
+                          style={{
+                            display: "flex",
+                            alignItems: "center",
+                            justifyContent: "space-between",
+                            marginBottom: "10px",
+                          }}
+                        >
+                          <span style={{ fontWeight: 700, fontSize: "14px" }}>
+                            {stem.label}
+                          </span>
+                          <button
+                            onClick={() =>
+                              triggerDownload(
+                                stem.url,
+                                `${baseName} (${stem.label}).wav`,
+                              )
+                            }
+                            style={{
+                              background: "transparent",
+                              border: `1px solid ${GOLD}55`,
+                              color: GOLD,
+                              borderRadius: "8px",
+                              padding: "6px 14px",
+                              fontSize: "12px",
+                              fontWeight: 700,
+                              cursor: "pointer",
+                            }}
+                          >
+                            Download
+                          </button>
+                        </div>
+                        <audio
+                          controls
+                          src={stem.url}
+                          style={{ width: "100%", height: "34px" }}
+                        />
+                      </div>
+                    ))}
+                  </div>
+                )}
+
+                {/* Footer meta */}
+                <div
+                  style={{
+                    marginTop: "22px",
+                    paddingTop: "18px",
+                    borderTop: "1px solid #1a1816",
+                    display: "flex",
+                    justifyContent: "space-between",
+                    fontSize: "12px",
+                    color: "#666",
+                  }}
+                >
+                  <span>
+                    {!user ? (
+                      `Sign in for ${FREE_SPLITS_PER_DAY} free splits a day`
+                    ) : quota?.isMember ? (
+                      "Unlimited splits"
+                    ) : quota?.remaining != null ? (
+                      <>
+                        {`${quota.remaining} of ${quota.limit} free left today · `}
+                        <Link href="/vip" style={{ color: GOLD }}>
+                          Go unlimited
+                        </Link>
+                      </>
+                    ) : (
+                      `${FREE_SPLITS_PER_DAY} free splits a day`
+                    )}
+                  </span>
+                  {modelCached && (
+                    <button
+                      onClick={() => {
+                        void clearModelCache().then(() =>
+                          setModelCached(false),
+                        );
+                      }}
+                      style={{
+                        background: "none",
+                        border: "none",
+                        color: "#666",
+                        fontSize: "12px",
+                        cursor: "pointer",
+                        textDecoration: "underline",
+                      }}
+                    >
+                      Clear cached model ({MODEL_SIZE_LABEL})
+                    </button>
+                  )}
+                </div>
               </div>
-            </div>
-          )}
+            )}
+          </div>
         </div>
+
+        {/* Right Divider + Brick (desktop only) */}
+        {!isMobile && (
+          <>
+            <div
+              style={{
+                background: `linear-gradient(to bottom, transparent, ${GOLD}, transparent)`,
+                width: "2px",
+              }}
+            />
+            <div
+              style={{
+                background: 'url("/black_gold_brick_texture.png")',
+                backgroundSize: "cover",
+                backgroundPosition: "center",
+                backgroundRepeat: "repeat",
+                opacity: 0.55,
+                position: "relative",
+                transform: "scaleX(-1)",
+              }}
+            />
+          </>
+        )}
       </div>
     </div>
   );
